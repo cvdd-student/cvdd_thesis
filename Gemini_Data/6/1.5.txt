@@ -1,0 +1,59 @@
+def solve():
+    map_lines = []
+    with open("input.txt") as f:
+        for line in f:
+            map_lines.append(line.strip())
+
+    rows = len(map_lines)
+    cols = len(map_lines[0])
+
+    def get_guard_pos(grid):
+        for r in range(rows):
+            for c in range(cols):
+                if grid[r][c] == '^':
+                    return r, c, 0
+
+    def move_guard(grid, r, c, direction):
+        if direction == 0:  # Up
+            next_r, next_c = r - 1, c
+        elif direction == 1:  # Right
+            next_r, next_c = r, c + 1
+        elif direction == 2:  # Down
+            next_r, next_c = r + 1, c
+        elif direction == 3:  # Left
+            next_r, next_c = r, c - 1
+        else:
+            raise ValueError("Invalid direction")
+
+        if 0 <= next_r < rows and 0 <= next_c < cols and grid[next_r][next_c] != '#':
+            return next_r, next_c, direction
+        else:
+            return r, c, (direction + 1) % 4
+
+
+    grid = [list(line) for line in map_lines]
+    r, c, direction = get_guard_pos(grid)
+    visited = set([(r, c)])
+
+    while True:
+        r, c, direction = move_guard(grid, r, c, direction)
+
+        if (r, c) in visited:
+           break
+        visited.add((r, c))
+        grid[r][c] = 'X'
+        
+
+
+    count = len(visited)
+    
+    
+    for row in grid:
+      print("".join(row))
+
+
+    return count
+
+
+result = solve()
+print(result)

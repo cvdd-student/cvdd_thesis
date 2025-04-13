@@ -1,0 +1,61 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    wires = {}
+    gates = {}
+
+    # Parse initial wire values
+    for line in lines:
+        if ":" in line:
+            parts = line.split(":")
+            wire_name = parts[0]
+            value = int(parts[1])
+            wires[wire_name] = value
+
+    # Parse gate connections
+    for line in lines:
+        if "->" in line:
+            parts = line.split("->")
+            output_wire = parts[1]
+            input_part = parts[0]
+            
+            # Check for simple values
+            if input_part.isdigit():
+                wires[output_wire] = int(input_part)
+                continue
+            
+            tokens = input_part.split()
+            if len(tokens) == 3:
+                op1 = tokens[0]
+                op2 = tokens[2]
+                op = tokens[1]
+                
+                if op == "AND":
+                    gates[(output_wire)] = lambda x, y: int(x) & int(y)
+                elif op == "OR":
+                    gates[(output_wire)] = lambda x, y: int(x) | int(y)
+                elif op == "XOR":
+                    gates[(output_wire)] = lambda x, y: int(x) ^ int(y)
+                
+                wires[output_wire] = None
+                
+    # Evaluate gates
+    while any(val is None for val in wires.values() if val is not None):
+        for wire, func in gates.items():
+            if wires[wire] is None:
+                input1 = wires.get(tokens[0])
+                input2 = wires.get(tokens[2])
+                if input1 is not None and input2 is not None:
+                    wires[wire] = func(input1, input2)
+    
+    # Extract z-wires and form binary number
+    z_wires = [wires[f"z{i}"] for i in range(max(int(k[1:]) for k in wires if k.startswith("z")) + 1)]
+    binary_number = int("".join(str(bit) for bit in z_wires), 2)
+    
+    return binary_number
+
+result = solve()
+print(result)

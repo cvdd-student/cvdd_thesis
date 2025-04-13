@@ -1,0 +1,42 @@
+from collections import deque
+
+def solve():
+    map_data = [list(map(int, list(line))) for line in input().split()]
+    rows = len(map_data)
+    cols = len(map_data[0])
+
+    def is_valid(row, col):
+        return 0 <= row < rows and 0 <= col < cols
+
+    def find_trailheads():
+        trailheads = []
+        for r in range(rows):
+            for c in range(cols):
+                if map_data[r][c] == 0:
+                    trailheads.append((r, c))
+        return trailheads
+    
+    def bfs(r, c):
+        queue = deque([(r, c, 0)])
+        visited = set([(r, c)])
+        score = 0
+        while queue:
+            curr_r, curr_c, curr_h = queue.popleft()
+            if map_data[curr_r][curr_c] == 9:
+                score += 1
+
+            for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                next_r, next_c = curr_r + dr, curr_c + dc
+                if is_valid(next_r, next_c) and map_data[next_r][next_c] == curr_h + 1 and (next_r, next_c) not in visited:
+                    queue.append((next_r, next_c, curr_h + 1))
+                    visited.add((next_r, next_c))
+        return score
+
+    trailheads = find_trailheads()
+    total_score = 0
+    for tr, tc in trailheads:
+        total_score += bfs(tr, tc)
+    print(total_score)
+
+
+solve()

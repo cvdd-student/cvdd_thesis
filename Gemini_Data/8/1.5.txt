@@ -1,0 +1,51 @@
+import re
+
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    antennas = {}
+    for r in range(rows):
+        for c in range(cols):
+            char = grid[r][c]
+            if char.isalnum():
+                if char not in antennas:
+                    antennas[char] = []
+                antennas[char].append((r, c))
+
+    antinodes = set()
+    for char, locations in antennas.items():
+        for i in range(len(locations)):
+            for j in range(i + 1, len(locations)):
+                r1, c1 = locations[i]
+                r2, c2 = locations[j]
+                
+                # Check if antennas are in a 2:1 ratio
+                if (2 * r1 == r2 + r2) and (c1*2 == c2+c2) and abs(r1-r2) > 0 or \
+                        (2 * c1 == c2 + c2) and (r1*2 == r2+r2) and abs(c1-c2) > 0:
+
+                  #calculate antinodes locations based on r1,c1 & r2,c2
+                    if r1 * 2 == r2 + r2 and 2 * c1 != c2 + c2:
+                        x = (r1 + r2) // 2 
+                        y = c1
+
+                    elif c1 * 2 == c2 + c2 and 2 * r1 != r2 + r2:
+                         x = r1 
+                         y = (c1 + c2) // 2
+
+
+                    
+                    #check antinode valid position.  Avoid index errors and other bounds checks here!
+                    if 0 <= x < rows and 0 <= y < cols : 
+                        antinodes.add((x, y))
+
+    return len(antinodes)
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

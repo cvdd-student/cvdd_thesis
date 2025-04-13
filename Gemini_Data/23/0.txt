@@ -1,0 +1,29 @@
+def solve():
+    connections = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            connections.append(line.strip())
+
+    computers = set()
+    for connection in connections:
+        computers.add(connection.split("-")[0])
+        computers.add(connection.split("-")[1])
+
+    interconnected_sets = []
+    for c1 in computers:
+        for c2 in computers:
+            for c3 in computers:
+                if c1 == c2 or c1 == c3 or c2 == c3:
+                    continue
+                
+                if all(f"{c1}-{c2}" in connections or f"{c1}-{c3}" in connections or f"{c2}-{c1}" in connections or f"{c2}-{c3}" in connections or f"{c3}-{c1}" in connections or f"{c3}-{c2}" in connections for f in [f"{c1}-{c2}", f"{c1}-{c3}", f"{c2}-{c3}"]):
+                    interconnected_sets.append((c1, c2, c3))
+
+    count = 0
+    for c1, c2, c3 in interconnected_sets:
+        if c1.startswith("t") or c2.startswith("t") or c3.startswith("t"):
+            count += 1
+    
+    print(count)
+
+solve()

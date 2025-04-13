@@ -1,0 +1,42 @@
+def solve():
+    grid = [input() for _ in range(100)]
+    rows = len(grid)
+    cols = len(grid[0])
+
+    visited = set()
+    def dfs(r, c, char, region_dict):
+        if r < 0 or r >= rows or c < 0 or c >= cols or (r, c) in visited or grid[r][c] != char:
+            return
+        visited.add((r, c))
+        region_dict.add((r, c))
+        dfs(r + 1, c, char, region_dict)
+        dfs(r - 1, c, char, region_dict)
+        dfs(r, c + 1, char, region_dict)
+        dfs(r, c - 1, char, region_dict)
+
+    total_price = 0
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) not in visited:
+                region_dict = set()
+                char = grid[r][c]
+                dfs(r, c, char, region_dict)
+                
+                area = len(region_dict)
+                perimeter = 0
+                for row, col in region_dict:
+                    perimeter += 0
+                    if row > 0 and (row - 1, col) not in region_dict:
+                        perimeter += 1
+                    if row < rows - 1 and (row + 1, col) not in region_dict:
+                        perimeter += 1
+                    if col > 0 and (row, col - 1) not in region_dict:
+                        perimeter += 1
+                    if col < cols - 1 and (row, col + 1) not in region_dict:
+                        perimeter += 1
+                total_price += area * perimeter
+
+    print(total_price)
+
+
+solve()

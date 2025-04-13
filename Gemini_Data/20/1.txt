@@ -1,0 +1,75 @@
+import collections
+
+def solve():
+    grid = []
+    start = None
+    end = None
+    with open("input.txt", "r") as file:
+        for y, line in enumerate(file):
+            row = list(line.strip())
+            grid.append(row)
+            if 'S' in row:
+                start = (row.index('S'), y)
+            if 'E' in row:
+                end = (row.index('E'), y)
+
+    def get_neighbors(pos):
+        x, y = pos
+        neighbors = []
+        for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid):
+                neighbors.append((nx, ny))
+        return neighbors
+
+    def bfs(grid, start, end):
+        queue = collections.deque([(start, 0)])
+        visited = set([start])
+        while queue:
+            (x, y), dist = queue.popleft()
+            if (x, y) == end:
+                return dist
+            for nx, ny in get_neighbors((x, y)):
+                if grid[ny][nx] != '#' and (nx, ny) not in visited:
+                    queue.append(((nx, ny), dist + 1))
+                    visited.add((nx, ny))
+        return float('inf')
+
+    cheats = []
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == '.':
+                for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                    nx, ny = j + dx, i + dy
+                    if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid) and grid[ny][nx] != "#":
+                        cheats.append(((j, i), (nx, ny)))
+
+    best_cheats = {}
+    for cheat_start, cheat_end in cheats:
+        cheat_grid = [row[:] for row in grid]
+        cheat_grid[cheat_start[1]][cheat_start[0]] = '1'  # mark start
+        cheat_grid[cheat_end[1]][cheat_end[0]] = '2'  # mark end
+        temp_grid = [row[:] for row in cheat_grid]  # important copy
+        # Ensure the start point is not a wall
+        if temp_grid[cheat_start[1]][cheat_start[0]] == '#':
+            continue
+        temp_grid[cheat_start[1]][cheat_start[0]] = '.'
+        temp_grid[cheat_end[1]][cheat_end[0]] = '.'
+
+        original_dist = bfs(grid, start, end)
+        cheat_dist = bfs(temp_grid, start, end)
+
+        saving = original_dist - cheat_dist
+        if saving > 0:
+            if saving not in best_cheats:
+                best_cheats[saving] = 0
+            best_cheats[saving] += 1
+
+    count_100plus = 0
+    for saving in best_cheats:
+        if saving >= 100:
+            count_100plus += best_cheats[saving]
+
+    return count_100plus
+
+print(solve())

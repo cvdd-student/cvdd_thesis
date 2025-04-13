@@ -1,0 +1,74 @@
+import heapq
+
+def solve():
+    grid = []
+    start = None
+    end = None
+    for i, line in enumerate(open("input.txt").readlines()):
+        row = list(line.strip())
+        grid.append(row)
+        if 'S' in row:
+            start = (i, row.index('S'))
+        if 'E' in row:
+            end = (i, row.index('E'))
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
+                neighbors.append((nr, nc))
+        return neighbors
+
+    def bfs(start_r, start_c, end_r, end_c):
+        queue = [(0, [(start_r, start_c)])]  
+        visited = set()
+        visited.add((start_r, start_c))
+        
+        while queue:
+            dist, path = heapq.heappop(queue)
+            r, c = path[-1]
+            if r == end_r and c == end_c:
+                return dist, path
+
+            for nr, nc in get_neighbors(r, c):
+                if grid[nr][nc] != '#':
+                  new_path = path + [(nr,nc)]
+                  if (nr,nc) not in visited:
+                    heapq.heappush(queue, (dist + 1, new_path))
+                    visited.add((nr,nc))
+
+
+        return float('inf'), []  
+
+    
+    shortest_path, _ = bfs(start[0], start[1], end[0], end[1])
+
+
+    cheats = []
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] != '#' and grid[r][c] != '.' :
+               
+                for dr, dc in [(0,1),(0,-1), (1,0), (-1,0)]:
+
+                   nr = r + dr*2
+                   nc = c + dc * 2
+                   
+                   if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]) and grid[nr][nc]!='#' and grid[r][c] == '.' : 
+
+                        path_len, _ = bfs(nr, nc, end[0], end[1])
+
+                        cheats.append((r,c, nr, nc, path_len, shortest_path-(path_len-1) )) 
+
+
+    
+    count = 0
+    for (start_r,start_c,end_r,end_c, path_len, saving_time) in cheats: 
+         if saving_time>=100:
+             count += 1
+
+
+    print(count)
+
+solve()

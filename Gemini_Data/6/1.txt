@@ -1,0 +1,36 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(list(line.strip()))
+
+    row, col = 0, 0
+    direction = 0  # 0: up, 1: right, 2: down, 3: left
+
+    visited = set()
+    visited.add((row, col))
+
+    while True:
+        if direction == 0:
+            new_row, new_col = row - 1, col
+        elif direction == 1:
+            new_row, new_col = row, col + 1
+        elif direction == 2:
+            new_row, new_col = row + 1, col
+        else:
+            new_row, new_col = row, col - 1
+
+        if 0 <= new_row < len(grid) and 0 <= new_col < len(grid[0]) and grid[new_row][new_col] != '#':
+            row, col = new_row, new_col
+            visited.add((row, col))
+            grid[row] = grid[row][:col] + 'X' + grid[row][col + 1:]
+        else:
+            direction = (direction + 1) % 4
+            
+        if not (0 <= row < len(grid) and 0 <= col < len(grid[0])):
+                break
+
+    print(len(visited))
+
+
+solve()

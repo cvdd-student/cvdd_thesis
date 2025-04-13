@@ -1,0 +1,43 @@
+import heapq
+
+def solve():
+    memory_size = 70
+    bytes_to_simulate = 1024
+    
+    corrupted_coords = set()
+    
+    # Simulate the first kilobyte of falling bytes (replace with your actual input)
+    for i in range(bytes_to_simulate):
+        x = i % 100  #Example input -  Replace with actual data
+        y = i // 100
+        corrupted_coords.add((x, y))
+
+    
+    def bfs(start, end, blocked):
+        queue = [(0, start)]
+        visited = {start}
+        
+        while queue:
+            steps, current_pos = heapq.heappop(queue)
+            
+            if current_pos == end:
+                return steps
+            
+            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                next_pos = (current_pos[0] + dx, current_pos[1] + dy)
+                
+                if (0 <= next_pos[0] < memory_size and
+                    0 <= next_pos[1] < memory_size and
+                    next_pos not in blocked and
+                    next_pos not in visited):
+                    visited.add(next_pos)
+                    heapq.heappush(queue, (steps + 1, next_pos))
+
+        return float('inf')  # Return infinity if no path found
+    
+    
+    shortest_path = bfs((0, 0), (memory_size-1, memory_size-1), corrupted_coords)
+    print(shortest_path)
+
+
+solve()

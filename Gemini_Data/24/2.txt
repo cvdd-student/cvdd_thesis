@@ -1,0 +1,69 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as file:
+        lines = file.readlines()
+    
+    wire_values = {}
+    gates = {}
+    
+    for line in lines:
+        parts = line.strip().split("->")
+        target = parts[1].strip()
+        source = parts[0].strip()
+        
+        if ":" in source:
+            key, value = source.split(":")
+            wire_values[key.strip()] = int(value.strip())
+        else:
+            gates[target] = source
+
+    
+    while any(target in gates for target in gates):
+        new_gates = {}
+        for target, source in gates.items():
+            parts = source.split()
+            if len(parts) == 3:
+                val1 = parts[0].strip()
+                val2 = parts[2].strip()
+                if val1[0].isalpha(): 
+                   val1_bool = wire_values[val1]
+                else: 
+                    val1_bool = wire_values.get(val1)
+
+                if val2[0].isalpha(): 
+                   val2_bool = wire_values[val2]
+                else: 
+                    val2_bool = wire_values.get(val2)
+
+                op = parts[1].strip()
+
+
+                if not val1_bool is None and not val2_bool is None:
+
+                  if op == "AND":
+                     output = int(val1_bool and val2_bool)
+                  elif op == "OR":
+                     output = int(val1_bool or val2_bool)
+                  elif op == "XOR":
+                     output = int(val1_bool != val2_bool)
+
+                  wire_values[target] = output
+                  new_gates[target] = None
+            else:
+                if source[0].isalpha() and source not in wire_values:
+                    wire_values[target]=wire_values.get(source, -1)
+                else:
+                    wire_values[target]= int(source)
+        
+        gates = new_gates
+
+    output_values = [wire_values[f"z{i}"] for i in range(100) if f"z{i}" in wire_values ]
+    
+    binary_number = int("".join(str(x) for x in output_values if x is not None),2)
+    
+    return binary_number
+
+
+
+result = solve()
+print(result)

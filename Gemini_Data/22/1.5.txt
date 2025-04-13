@@ -1,0 +1,20 @@
+def next_secret(secret):
+    secret = (secret * 64) ^ secret
+    secret %= 16777216
+    secret = (secret // 32) ^ secret
+    secret %= 16777216
+    secret = (secret * 2048) ^ secret
+    secret %= 16777216
+    return secret
+
+def solve():
+    initial_secrets = [int(line.strip()) for line in input().split()]
+    total_2000th_secrets = 0
+    for secret in initial_secrets:
+        current_secret = secret
+        for _ in range(2000):
+            current_secret = next_secret(current_secret)
+        total_2000th_secrets += current_secret
+    print(total_2000th_secrets)
+
+solve()

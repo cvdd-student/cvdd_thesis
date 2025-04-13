@@ -1,0 +1,37 @@
+def solve():
+    connections = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            connections.append(line.strip())
+
+    computers = set()
+    for connection in connections:
+        computers.add(connection.split("-")[0])
+        computers.add(connection.split("-")[1])
+
+    computer_dict = {}
+    for computer in computers:
+        computer_dict[computer] = []
+    
+    for connection in connections:
+        c1, c2 = connection.split("-")
+        computer_dict[c1].append(c2)
+        computer_dict[c2].append(c1)
+
+
+    triplets = []
+    for c1 in computers:
+        for c2 in computer_dict[c1]:
+            for c3 in computer_dict[c2]:
+                if c1 != c2 and c1 != c3 and c2 != c3 and c1 in computer_dict and c2 in computer_dict and c3 in computer_dict and c2 in computer_dict[c1] and c3 in computer_dict[c1] and c3 in computer_dict[c2]:
+                    triplet = sorted([c1, c2, c3])
+                    triplets.append(triplet)
+    
+    count = 0
+    for triplet in triplets:
+        if any(computer.startswith("t") for computer in triplet):
+            count += 1
+
+    print(count)
+
+solve()

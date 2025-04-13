@@ -1,0 +1,77 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    wire_values = {}
+    gates = []
+
+    # Parse initial wire values
+    for line in lines:
+        if ":" in line:
+            parts = line.split(":")
+            wire_name = parts[0]
+            value = int(parts[1])
+            wire_values[wire_name] = value
+
+    # Parse gates
+    for line in lines:
+        if "->" in line:
+            parts = line.split("->")
+            output_wire = parts[1]
+            input_part = parts[0]
+            gates.append((input_part, output_wire))
+    
+    def evaluate(expression):
+        if expression.isdigit():
+            return int(expression)
+        if expression in wire_values:
+            return wire_values[expression]
+        
+        parts = expression.split()
+        op1 = parts[0]
+        op2 = parts[2]
+        op = parts[1]
+
+        val1 = evaluate(op1)
+        val2 = evaluate(op2)
+        
+        if op == "AND":
+            return int(val1 and val2)
+        elif op == "OR":
+            return int(val1 or val2)
+        elif op == "XOR":
+            return int(val1 != val2)
+        else:
+            raise Exception(f"Unknown operator: {op}")
+
+    # Evaluate gates until no more changes
+    while True:
+        changed = False
+        for gate in gates:
+            input_part, output_wire = gate
+            try:
+                value = evaluate(input_part)
+                wire_values[output_wire] = value
+                changed = True
+            except Exception as e:
+                pass  # Skip if inputs are not yet available
+        if not changed:
+            break
+
+    # Extract output values
+    output_bits = []
+    for wire_name in sorted(wire_values):
+        if wire_name.startswith("z"):
+            output_bits.append(wire_values[wire_name])
+
+    # Calculate decimal value
+    decimal_value = 0
+    for bit in output_bits:
+        decimal_value = (decimal_value << 1) | bit
+    
+    return decimal_value
+
+result = solve()
+print(result)

@@ -1,0 +1,26 @@
+import re
+
+def solve(memory):
+    total_result = 0
+    pattern = r"mul\(([\d]+),([\d]+)\)"
+    
+    matches = re.findall(pattern, memory)
+    
+    for match in matches:
+        try:
+            x = int(match[0])
+            y = int(match[1])
+            total_result += x * y
+        except ValueError:
+            #Handle potential errors (e.g., non-digit values) gracefully. 
+            pass
+
+    return total_result
+
+
+# Example usage (replace with your input):
+# Example from prompt:
+memory = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
+
+result = solve(memory)
+print(result)

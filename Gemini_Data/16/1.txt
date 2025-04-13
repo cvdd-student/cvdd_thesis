@@ -1,0 +1,60 @@
+import heapq
+
+def solve():
+    grid = []
+    start_pos = None
+    end_pos = None
+    with open("input.txt", "r") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if "S" in row:
+                start_pos = (row.index("S"), y)
+            if "E" in row:
+                end_pos = (row.index("E"), y)
+
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    
+    def get_neighbors(pos, direction):
+        neighbors = []
+        x, y = pos
+        nx, ny = x + directions[direction][0], y + directions[direction][1]
+        if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid):
+          if grid[ny][nx] != "#":
+            neighbors.append(((nx, ny), 1))  # Move forward
+        
+        neighbors.append(((x, y), 1000)) # Rotate left or right
+        
+        return neighbors
+
+
+    def heuristic(pos):
+        x, y = pos
+        ex, ey = end_pos
+        return abs(x - ex) + abs(y - ey)
+
+    queue = [(0, 0, start_pos, 0, 0)]  # (score, priority, position, direction, steps)
+    visited = set()
+    
+    while queue:
+        score, priority, pos, direction, steps = heapq.heappop(queue)
+        
+        if pos == end_pos:
+            return score
+        
+        if pos in visited:
+            continue
+        visited.add(pos)
+
+
+        for neighbor_pos, neighbor_cost in get_neighbors(pos, direction):
+            new_score = score + neighbor_cost
+            new_direction = (direction + 1) % 4 if neighbor_cost == 1000 else direction 
+            new_steps = steps + neighbor_cost if neighbor_cost == 1 else steps
+            new_priority = new_score + heuristic(neighbor_pos)
+            heapq.heappush(queue, (new_score, new_priority, neighbor_pos, new_direction, new_steps))
+
+    return -1  # Should not reach here if a path exists
+
+result = solve()
+print(result)

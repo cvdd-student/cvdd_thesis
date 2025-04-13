@@ -1,0 +1,44 @@
+def solve():
+    topo_map = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            topo_map.append(line.strip())
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(topo_map) and 0 <= nc < len(topo_map[0]):
+                neighbors.append((nr, nc))
+        return neighbors
+
+    def dfs(r, c, visited):
+        if (r, c) in visited:
+            return 0
+        visited.add((r, c))
+        height = int(topo_map[r][c])
+        if height == 9:
+            return 1
+        count = 0
+        for nr, nc in get_neighbors(r, c):
+            if int(topo_map[nr][nc]) == height + 1:
+                count += dfs(nr, nc, visited)
+        return count
+
+    trailheads = []
+    for r in range(len(topo_map)):
+        for c in range(len(topo_map[0])):
+            if topo_map[r][c] == '0':
+                trailheads.append((r, c))
+
+    total_score = 0
+    for r, c in trailheads:
+        visited = set()
+        total_score += dfs(r, c, visited)
+
+    return total_score
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

@@ -1,0 +1,38 @@
+def solve():
+    connections = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            connections.append(line.strip())
+    
+    computers = set()
+    for connection in connections:
+        computers.add(connection.split("-")[0])
+        computers.add(connection.split("-")[1])
+
+    count = 0
+    for a in computers:
+        for b in computers:
+            for c in computers:
+                if a == b or a == c or b == c:
+                    continue
+
+                ab_connected = any(
+                    f"{a}-{b}" in connection or f"{b}-{a}" in connection
+                    for connection in connections
+                )
+                ac_connected = any(
+                    f"{a}-{c}" in connection or f"{c}-{a}" in connection
+                    for connection in connections
+                )
+                bc_connected = any(
+                    f"{b}-{c}" in connection or f"{c}-{b}" in connection
+                    for connection in connections
+                )
+                if ab_connected and ac_connected and bc_connected:
+                    if any(computer.startswith("t") for computer in (a, b, c)):
+                        count += 1
+    print(count)
+
+
+if __name__ == "__main__":
+    solve()

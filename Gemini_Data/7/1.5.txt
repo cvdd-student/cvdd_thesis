@@ -1,0 +1,55 @@
+def solve():
+    equations = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split(":")
+            test_value = int(parts[0])
+            numbers = list(map(int, parts[1].split()))
+            equations.append((test_value, numbers))
+    
+    possible_equations = []
+    for test_value, numbers in equations:
+        for i in range(len(numbers) - 1):
+            left_side = numbers[:i + 1]
+            right_side = numbers[i + 1:]
+            
+            def evaluate(expression, ops):
+                result = expression[0]
+                for j in range(len(ops)):
+                    if ops[j] == '+':
+                        result += expression[j + 1]
+                    else:
+                        result *= expression[j + 1]
+                return result
+
+            for op_combination in product(['+', '*'], repeat=len(numbers)-1):
+              
+                expression = left_side[:]
+                operators = op_combination
+                
+                result = expression[0]
+                for j in range(len(operators)):
+                  
+                    if operators[j] == '+':
+                        result += expression[j + 1]
+                    else:
+                        result *= expression[j + 1]
+              
+                if result == test_value:
+                  
+                    possible_equations.append(test_value)
+                    break
+            else:
+                continue  #Move to the next equation if no valid combination was found
+            break  #Move to the next equation after finding a valid one
+                
+
+            
+            
+    total_calibration = sum(possible_equations)
+    print(total_calibration)
+
+from itertools import product
+
+
+solve()

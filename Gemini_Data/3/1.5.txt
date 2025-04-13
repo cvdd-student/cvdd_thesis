@@ -1,0 +1,11 @@
+import re
+
+def solve():
+    memory = input()
+    mul_instructions = re.findall(r"mul\(([\d]+),([\d]+)\)", memory)
+    total_sum = 0
+    for x, y in mul_instructions:
+        total_sum += int(x) * int(y)
+    return total_sum
+
+print(solve())

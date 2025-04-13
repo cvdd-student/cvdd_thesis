@@ -1,0 +1,58 @@
+import heapq
+
+def solve():
+    grid = []
+    start_pos = None
+    end_pos = None
+    with open("input.txt", "r") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if "S" in row:
+                start_pos = (row.index("S"), y)
+            if "E" in row:
+                end_pos = (row.index("E"), y)
+
+    def get_neighbors(pos, direction):
+        neighbors = []
+        x, y = pos
+        if direction == 0:  # East
+            if x + 1 < len(grid[0]) and grid[y][x + 1] != "#":
+                neighbors.append(((x + 1, y), 1))
+        elif direction == 1:  # North
+            if y - 1 >= 0 and grid[y - 1][x] != "#":
+                neighbors.append(((x, y - 1), 1))
+        elif direction == 2:  # West
+            if x - 1 >= 0 and grid[y][x - 1] != "#":
+                neighbors.append(((x - 1, y), 1))
+        elif direction == 3:  # South
+            if y + 1 < len(grid) and grid[y + 1][x] != "#":
+                neighbors.append(((x, y + 1), 1))
+        neighbors.append(((x, y), 1000))  # Rotate CW
+        neighbors.append(((x, y), 1000))  # Rotate CCW
+        return neighbors
+
+    def heuristic(pos):
+        return abs(pos[0] - end_pos[0]) + abs(pos[1] - end_pos[1])
+
+    queue = [(0, 0, start_pos, 0)]  # (score, priority, pos, direction)
+    visited = set()
+
+    while queue:
+        score, priority, current_pos, direction = heapq.heappop(queue)
+        if current_pos == end_pos:
+            return score
+        if current_pos in visited:
+            continue
+        visited.add(current_pos)
+
+        for neighbor_pos, neighbor_cost in get_neighbors(current_pos, direction):
+            new_score = score + neighbor_cost
+            new_direction = (direction + (neighbor_pos == current_pos and neighbor_cost == 1000)) % 4
+            new_priority = new_score + heuristic(neighbor_pos)
+            heapq.heappush(queue, (new_score, new_priority, neighbor_pos, new_direction))
+
+    return float('inf')
+
+
+print(solve())

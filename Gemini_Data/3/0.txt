@@ -1,0 +1,21 @@
+import re
+
+def solve():
+    memory = input()
+    total_sum = 0
+    
+    # Use a regular expression to find all valid mul instructions
+    mul_instructions = re.findall(r"mul\((\d+),\s*(\d+)\)", memory)
+    
+    for instruction in mul_instructions:
+        try:
+            x = int(instruction[0])
+            y = int(instruction[1])
+            total_sum += x * y
+        except ValueError:
+            # Handle potential errors if the extracted numbers aren't integers
+            pass  # Skip invalid instructions
+
+    return total_sum
+
+print(solve())

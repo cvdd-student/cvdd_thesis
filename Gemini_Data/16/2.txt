@@ -1,0 +1,47 @@
+import collections
+
+def solve():
+    maze = []
+    start = None
+    end = None
+    with open("input.txt", "r") as f:
+        for i, row in enumerate(f):
+            maze.append(row.strip())
+            if "S" in row:
+                start = (i, row.index("S"))
+            if "E" in row:
+                end = (i, row.index("E"))
+    
+    
+    q = collections.deque([(start, 0, 0, (0, 1))])  # (pos, score, turns, direction)
+    visited = set()
+    
+    best_score = float('inf')
+    
+    while q:
+        (row, col), score, turns, direction = q.popleft()
+        
+        if (row, col, direction) in visited:
+            continue
+        visited.add((row, col, direction))
+        
+        if (row, col) == end:
+            best_score = min(best_score, score)
+            continue
+        
+        
+        next_row, next_col = row + direction[0], col + direction[1]
+        
+        if 0 <= next_row < len(maze) and 0 <= next_col < len(maze[0]) and maze[next_row][next_col] != '#':
+            q.append(((next_row, next_col), score + 1, turns, direction))
+        
+        #Try Rotating
+        for turn_dir in [(0,1), (0,-1)]:
+            next_direction = ((direction[1] * turn_dir[0]), (-direction[0] * turn_dir[0]))
+            q.append(((row, col), score+1000, turns +1, next_direction))
+
+    return best_score
+
+
+if __name__ == "__main__":
+    print(solve())

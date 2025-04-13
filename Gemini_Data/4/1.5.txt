@@ -1,0 +1,54 @@
+def count_xmas(grid):
+    """
+    Counts the occurrences of the word "XMAS" in a word search grid.
+
+    Args:
+        grid: A list of strings representing the word search grid.
+
+    Returns:
+        The number of times "XMAS" appears in the grid.
+    """
+
+    rows = len(grid)
+    cols = len(grid[0])
+    count = 0
+
+    def check(r, c):
+        # Check horizontal
+        if c + 3 < cols and grid[r][c:c + 4] == "XMAS":
+            return True
+        # Check vertical
+        if r + 3 < rows and "".join([grid[i][c] for i in range(r, r + 4)]) == "XMAS":
+            return True
+        # Check diagonal (top-right to bottom-left)
+        if r + 3 < rows and c + 3 < cols and "".join([grid[r + i][c + i] for i in range(4)]) == "XMAS":
+            return True
+        # Check diagonal (top-left to bottom-right)
+        if r + 3 < rows and c - 3 >= 0 and "".join([grid[r + i][c - i] for i in range(4)]) == "XMAS":
+            return True
+        
+        return False
+
+    for r in range(rows):
+        for c in range(cols):
+            if check(r, c):
+                count += 1
+
+    return count
+
+# Example usage (replace with your puzzle input)
+puzzle_input = [
+    "MMMSXXMASM",
+    "MSAMXMSMSA",
+    "AMXSXMAAMM",
+    "MSAMASMSMX",
+    "XMASAMXAMM",
+    "XXAMMXXAMA",
+    "SMSMSASXSS",
+    "SAXAMASAAA",
+    "MAMMMXMMMM",
+    "MXMXAXMASX"
+]
+
+result = count_xmas(puzzle_input)
+print(result)  # Output: 18

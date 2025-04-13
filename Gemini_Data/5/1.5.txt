@@ -1,0 +1,67 @@
+def solve():
+    rules_str = """
+47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+"""
+    rules = {}
+    for line in rules_str.strip().splitlines():
+        if line:
+            page1, page2 = line.split("|")
+            rules[int(page1)] = rules.get(int(page1), set()) | {int(page2)}
+
+
+    updates_str = """
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47
+"""
+    updates = [list(map(int, update.split(","))) for update in updates_str.strip().splitlines()]
+
+
+    correct_updates = []
+    for update in updates:
+        is_correct = True
+        for i in range(len(update)):
+            for j in range(i + 1, len(update)):
+                page1 = update[i]
+                page2 = update[j]
+
+                if page2 in rules.get(page1, set()):
+                    if update.index(page2) < update.index(page1):
+                        is_correct = False
+                        break
+            if not is_correct:
+                break
+        if is_correct:
+            correct_updates.append(update)
+
+
+    total_middle_pages = 0
+    for update in correct_updates:
+        middle_page = update[len(update)//2]
+        total_middle_pages += middle_page
+    print(total_middle_pages)
+
+solve()

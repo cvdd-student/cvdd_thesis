@@ -1,0 +1,52 @@
+def solve():
+    registers = {}
+    program = []
+    
+    lines = input().split('\n')
+    for line in lines:
+        if "Register" in line:
+            parts = line.split(":")
+            reg, val = parts[0].split()[1], int(parts[1].strip())
+            registers[reg] = val
+        elif "Program" in line:
+            parts = line.split(":")
+            program_str = parts[1].strip()
+            program = [int(x) for x in program_str.split(',')]
+
+    instruction_pointer = 0
+    output = []
+    
+    while instruction_pointer < len(program):
+        opcode = program[instruction_pointer]
+        operand = program[instruction_pointer + 1]
+        
+        if opcode == 0:  # adv
+            numerator = registers['A']
+            denominator = 2**operand
+            registers['A'] = numerator // denominator
+        elif opcode == 1:  # bxl
+            registers['B'] = registers['B'] ^ operand
+        elif opcode == 2:  # bst
+            registers['B'] = operand % 8
+        elif opcode == 3:  # jnz
+            if registers['A'] != 0:
+                instruction_pointer = operand
+                continue
+        elif opcode == 4:  # bxc
+            registers['B'] = registers['B'] ^ registers['C']
+        elif opcode == 5:  # out
+            output.append(operand % 8)
+        elif opcode == 6:  # bdv
+            numerator = registers['A']
+            denominator = 2**operand
+            registers['B'] = numerator // denominator
+        elif opcode == 7:  # cdv
+            numerator = registers['A']
+            denominator = 2**operand
+            registers['C'] = numerator // denominator
+        
+        instruction_pointer += 2
+    
+    return ",".join(map(str, output))
+
+print(solve())

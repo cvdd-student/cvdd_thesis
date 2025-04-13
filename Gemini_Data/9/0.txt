@@ -1,0 +1,18 @@
+def compact_disk(disk_map):
+    """Compacts the disk map according to the given rules."""
+    disk_list = list(disk_map)
+    file_lengths = [int(x) for x in disk_map]
+    file_ids = []
+    current_id = 0
+    for length in file_lengths:
+        file_ids.append(current_id)
+        current_id += 1
+
+    disk_chars = []
+    current_index = 0
+    for i in range(len(file_lengths)):
+        for j in range(file_lengths[i]):
+            disk_chars.append(str(file_ids[i]))
+    
+    for i in range(len(disk_chars)):
+        disk_list[i] = disk_chars[i]

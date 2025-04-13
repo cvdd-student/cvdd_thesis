@@ -1,0 +1,58 @@
+def solve():
+    robots = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split("=")
+            pos_parts = parts[1].split(",")
+            vel_parts = parts[2].split(",")
+            x = int(pos_parts[0])
+            y = int(pos_parts[1])
+            vx = int(vel_parts[0])
+            vy = int(vel_parts[1])
+            robots.append((x, y, vx, vy))
+            
+    width = 101
+    height = 103
+    
+    positions = {}
+    for _ in range(100):
+        new_positions = {}
+        for i, (x, y, vx, vy) in enumerate(robots):
+            x += vx
+            y += vy
+            
+            #Teleporting if robot runs off edges
+            x = x % width
+            y = y % height
+
+            key = (x, y)
+            if key in new_positions:
+                new_positions[key] += 1
+            else:
+                new_positions[key] = 1
+        positions = new_positions
+
+
+    quadrant_counts = [0, 0, 0, 0]
+    for (x,y),count in positions.items():
+        if x < width // 2 and y < height //2:
+           quadrant_counts[0] += count
+        elif x < width // 2 and y >= height // 2:
+           quadrant_counts[1] += count
+        elif x >= width //2 and y < height // 2:
+            quadrant_counts[2] += count
+        elif x >= width //2 and y >= height //2:
+            quadrant_counts[3] += count
+
+
+    safety_factor = 1
+    for count in quadrant_counts:
+        safety_factor *= count
+    
+    return safety_factor
+
+
+
+if __name__ == "__main__":
+  result = solve()
+  print(result)

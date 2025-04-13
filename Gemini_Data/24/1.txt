@@ -1,0 +1,61 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    wires = {}
+    gates = {}
+
+    for line in lines:
+        if "->" in line:
+            parts = line.split("->")
+            output_wire = parts[1].strip()
+            input_part = parts[0].strip()
+            gates[output_wire] = input_part
+        else:
+            parts = line.split(":")
+            wire_name = parts[0].strip()
+            wire_value = int(parts[1].strip())
+            wires[wire_name] = wire_value
+
+    def evaluate(expr):
+        if expr.isdigit():
+            return int(expr)
+        elif expr in wires:
+            return wires[expr]
+        else:
+            parts = expr.split()
+            op1 = parts[0]
+            op2 = parts[2]
+            op = parts[1]
+            val1 = evaluate(op1)
+            val2 = evaluate(op2)
+            if op == "AND":
+                return int(val1 and val2)
+            elif op == "OR":
+                return int(val1 or val2)
+            elif op == "XOR":
+                return int(val1 != val2)
+            else:
+                raise ValueError(f"Unknown operation: {op}")
+
+    while any(wire in gates for wire in gates):
+        for wire, expr in gates.items():
+            if all(w in wires for w in expr.split() if w.isalpha()):
+                value = evaluate(expr)
+                wires[wire] = value
+                del gates[wire]
+
+    result = 0
+    for i in range(100):  # Adjust limit if necessary
+      if f"z{i}" in wires:
+        result = result * 2 + wires[f"z{i}"]
+      else:
+        break
+    return result
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

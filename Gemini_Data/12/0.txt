@@ -1,0 +1,57 @@
+      
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+    visited = set()
+    
+    def dfs(r, c, char, region_dict):
+        if r < 0 or r >= rows or c < 0 or c >= cols or (r, c) in visited or grid[r][c] != char:
+            return 0
+        visited.add((r, c))
+        count = 1
+        count += dfs(r + 1, c, char, region_dict)
+        count += dfs(r - 1, c, char, region_dict)
+        count += dfs(r, c + 1, char, region_dict)
+        count += dfs(r, c - 1, char, region_dict)
+        
+        region_dict[char] = region_dict.get(char, 0) + 1
+        return count
+
+    region_areas = {}
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) not in visited:
+                char = grid[r][c]
+                dfs(r, c, char, region_areas)
+    
+    total_cost = 0
+    for r in range(rows):
+        for c in range(cols):
+            char = grid[r][c]
+            if (r, c) not in visited:
+                continue
+            
+            visited_neighbors = set()
+            
+            if r > 0 and grid[r-1][c] == char:
+                visited_neighbors.add((r-1, c))
+            if r < rows - 1 and grid[r+1][c] == char:
+                visited_neighbors.add((r+1, c))
+            if c > 0 and grid[r][c-1] == char:
+                visited_neighbors.add((r, c-1))
+            if c < cols - 1 and grid[r][c+1] == char:
+                visited_neighbors.add((r, c+1))
+            
+            perimeter = 4 * region_areas[char] - len(visited_neighbors) * 2
+            total_cost += region_areas[char] * perimeter
+    
+    return total_cost
+
+print(solve())
+
+    

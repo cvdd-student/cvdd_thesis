@@ -1,0 +1,50 @@
+def parse_schematic(schematic):
+    """Parses a schematic into a list of pin heights."""
+    lines = schematic.splitlines()
+    height = len(lines)
+    width = len(lines[0])
+    pins = []
+    for j in range(width):
+        pin_height = 0
+        for i in range(height):
+            if lines[i][j] == '#':
+                pin_height += 1
+        pins.append(pin_height)
+    return pins
+
+def solve():
+    locks = []
+    keys = []
+    
+    # Example input (replace with your actual input)
+    lock_schematics = [
+        ".####\n.####\n.####\n.#.#.\n.#...\n.....",
+        "#####\n##.##\n.#.##\n...##\n...#.\n...#.\n....."
+    ]
+    key_schematics = [
+        ".....\n#....\n#....\n#...#\n#.#.#\n#.###\n#####",
+        ".....\n.....\n#.#..\n###..\n###.#\n###.#\n#####",
+        ".....\n.....\n.....\n#....\n#.#..\n#.#.#\n#####"
+    ]
+
+    for schematic in lock_schematics:
+        locks.append(parse_schematic(schematic))
+    for schematic in key_schematics:
+        keys.append(parse_schematic(schematic))
+
+    count = 0
+    for lock in locks:
+        for key in keys:
+            fits = True
+            for i in range(len(lock)):
+                if lock[i] + key[i] > 5:  # Assuming 5 is the maximum height
+                    fits = False
+                    break
+            if fits:
+                count += 1
+    return count
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

@@ -1,0 +1,43 @@
+from collections import deque
+
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+    
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    def is_valid(r, c):
+        return 0 <= r < rows and 0 <= c < cols
+
+    def bfs(r, c):
+        q = deque([(r, c, 0)])
+        visited = set([(r, c)])
+        count = 0
+        
+        while q:
+            curr_r, curr_c, curr_h = q.popleft()
+            
+            if grid[curr_r][curr_c] == '9':
+                count += 1
+            
+            for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                next_r, next_c = curr_r + dr, curr_c + dc
+                next_h = int(grid[next_r][next_c])
+                
+                if is_valid(next_r, next_c) and next_h == curr_h + 1 and (next_r, next_c) not in visited:
+                    q.append((next_r, next_c, next_h))
+                    visited.add((next_r, next_c))
+        return count
+
+    total_score = 0
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '0':
+                total_score += bfs(r, c)
+    
+    print(total_score)
+
+solve()

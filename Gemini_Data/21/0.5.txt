@@ -1,0 +1,53 @@
+def solve():
+    codes = [
+        "029A",
+        "980A",
+        "179A",
+        "456A",
+        "379A",
+    ]
+
+    keypad_layout = {
+        "7": (0, 0),
+        "8": (0, 1),
+        "9": (0, 2),
+        "4": (1, 0),
+        "5": (1, 1),
+        "6": (1, 2),
+        "1": (2, 0),
+        "2": (2, 1),
+        "3": (2, 2),
+        "0": (3, 0),
+        "A": (3, 1),
+    }
+
+    def get_shortest_path(target_code):
+        target_code = target_code.replace("A", "")
+        current_pos = (3, 1)  # Initial position on the numeric keypad
+        path = ""
+        for digit in target_code:
+            target_pos = keypad_layout[digit]
+            row_diff = target_pos[0] - current_pos[0]
+            col_diff = target_pos[1] - current_pos[1]
+            if row_diff > 0:
+                path += "^" * row_diff
+            elif row_diff < 0:
+                path += "v" * abs(row_diff)
+            if col_diff > 0:
+                path += ">" * col_diff
+            elif col_diff < 0:
+                path += "<" * abs(col_diff)
+            path += "A"
+            current_pos = target_pos
+        return path
+
+    total_complexity = 0
+    for code in codes:
+        shortest_path = get_shortest_path(code)
+        numeric_part = int(code.replace("A", ""))
+        complexity = len(shortest_path) * numeric_part
+        total_complexity += complexity
+
+    return total_complexity
+
+print(solve())

@@ -1,0 +1,45 @@
+def calculate_distance(left_list, right_list):
+    """Calculates the total distance between two lists of location IDs.
+
+    Args:
+        left_list: A list of integers representing location IDs.
+        right_list: A list of integers representing location IDs.
+
+    Returns:
+        An integer representing the total distance between the lists.
+        Returns 0 if either list is empty.
+    """
+
+    if not left_list or not right_list:
+        return 0
+
+    sorted_left = sorted(left_list)
+    sorted_right = sorted(right_list)
+    total_distance = 0
+
+    for i in range(len(sorted_left)):
+        total_distance += abs(sorted_left[i] - sorted_right[i])
+
+    return total_distance
+
+
+if __name__ == "__main__":
+    # Example usage (replace with your input)
+    input_data = """3   4
+4   3
+2   5
+1   3
+3   9
+3   3"""
+
+    left_list = []
+    right_list = []
+
+    lines = input_data.strip().split('\n')
+    for line in lines:
+        parts = line.split()
+        left_list.append(int(parts[0]))
+        right_list.append(int(parts[1]))
+
+    total_distance = calculate_distance(left_list, right_list)
+    print(f"The total distance between the lists is: {total_distance}")

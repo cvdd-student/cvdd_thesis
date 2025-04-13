@@ -1,0 +1,42 @@
+import collections
+
+def solve():
+    memory_space_size = 70
+    bytes_to_simulate = 1024
+    
+    corrupted_coords = set()
+    for i in range(bytes_to_simulate):
+        # Example input (replace with your input)
+        # Assuming input is like x,y pairs, separated by newlines.
+        #x, y = map(int, input().split(',')) #Uncomment this to read from input.
+        # corrupts_coord (example)
+        #if 0 <= x < memory_space_size and 0 <= y < memory_space_size:
+        x = i % memory_space_size
+        y = i // memory_space_size
+        if 0 <= x < memory_space_size and 0 <= y < memory_space_size:
+            corrupted_coords.add((x, y))
+            
+            
+    
+    queue = collections.deque([(0, 0, 0)]) # (x, y, steps)
+    visited = set([(0, 0)])
+    
+    while queue:
+        x, y, steps = queue.popleft()
+        
+        if x == memory_space_size - 1 and y == memory_space_size - 1:
+            return steps
+        
+        for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < memory_space_size and 0 <= ny < memory_space_size and \
+               (nx, ny) not in corrupted_coords and (nx, ny) not in visited:
+                queue.append((nx, ny, steps + 1))
+                visited.add((nx, ny))
+    
+    return -1 # Should not happen in this problem definition
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

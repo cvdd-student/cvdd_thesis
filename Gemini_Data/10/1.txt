@@ -1,0 +1,48 @@
+from collections import deque
+
+def solve():
+    topo_map = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            topo_map.append(line.strip())
+
+    rows = len(topo_map)
+    cols = len(topo_map[0])
+
+    def is_valid(row, col):
+        return 0 <= row < rows and 0 <= col < cols
+
+    def get_neighbors(row, col):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            new_row, new_col = row + dr, col + dc
+            if is_valid(new_row, new_col):
+                neighbors.append((new_row, new_col))
+        return neighbors
+    
+    def bfs(start_row, start_col):
+        queue = deque([(start_row, start_col, 0)])
+        visited = set([(start_row, start_col)])
+        reachable_9s = 0
+        
+        while queue:
+            row, col, height = queue.popleft()
+            
+            if int(topo_map[row][col]) == 9:
+                reachable_9s += 1
+
+            for nr, nc in get_neighbors(row, col):
+                if (nr, nc) not in visited and int(topo_map[nr][nc]) == height + 1:
+                    queue.append((nr, nc, height + 1))
+                    visited.add((nr, nc))
+        return reachable_9s
+    
+    trailheads_scores = []
+    for r in range(rows):
+        for c in range(cols):
+            if int(topo_map[r][c]) == 0:
+                trailheads_scores.append(bfs(r, c))
+
+    print(sum(trailheads_scores))
+
+solve()

@@ -1,0 +1,51 @@
+      
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+    
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    visited = set()
+    def dfs(r, c, char, region_coords):
+        if r < 0 or r >= rows or c < 0 or c >= cols or (r, c) in visited or grid[r][c] != char:
+            return
+        visited.add((r, c))
+        region_coords.append((r, c))
+        
+        dfs(r + 1, c, char, region_coords)
+        dfs(r - 1, c, char, region_coords)
+        dfs(r, c + 1, char, region_coords)
+        dfs(r, c - 1, char, region_coords)
+        
+    
+    region_data = {}
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) not in visited:
+                char = grid[r][c]
+                region_coords = []
+                dfs(r, c, char, region_coords)
+                area = len(region_coords)
+                perimeter = 0
+                for rr, cc in region_coords:
+                    if rr > 0 and grid[rr-1][cc] != char:
+                        perimeter += 1
+                    if rr < rows - 1 and grid[rr+1][cc] != char:
+                        perimeter += 1
+                    if cc > 0 and grid[rr][cc-1] != char:
+                        perimeter += 1
+                    if cc < cols - 1 and grid[rr][cc+1] != char:
+                        perimeter += 1
+                region_data[char] = (area, perimeter)
+                
+    total_price = 0
+    for char, (area, perimeter) in region_data.items():
+        total_price += area * perimeter
+    
+    return total_price
+
+
+print(solve())

@@ -1,0 +1,65 @@
+def solve():
+    codes = [
+        "029A",
+        "980A",
+        "179A",
+        "456A",
+        "379A",
+    ]
+
+    def keypad_to_coords(keypad_char):
+        if keypad_char == '7': return (0, 0)
+        if keypad_char == '8': return (0, 1)
+        if keypad_char == '9': return (0, 2)
+        if keypad_char == '4': return (1, 0)
+        if keypad_char == '5': return (1, 1)
+        if keypad_char == '6': return (1, 2)
+        if keypad_char == '1': return (2, 0)
+        if keypad_char == '2': return (2, 1)
+        if keypad_char == '3': return (2, 2)
+        if keypad_char == '0': return (3, 0)
+        if keypad_char == 'A': return (3, 1)
+        return None  # invalid char
+
+    def coords_to_keypad(coords):
+        if coords == (0, 0): return '7'
+        if coords == (0, 1): return '8'
+        if coords == (0, 2): return '9'
+        if coords == (1, 0): return '4'
+        if coords == (1, 1): return '5'
+        if coords == (1, 2): return '6'
+        if coords == (2, 0): return '1'
+        if coords == (2, 1): return '2'
+        if coords == (2, 2): return '3'
+        if coords == (3, 0): return '0'
+        if coords == (3, 1): return 'A'
+        return None
+
+    def shortest_sequence(code):
+      curr = (3, 1)
+      sequence = ""
+      for char in code[:-1]:
+        target = keypad_to_coords(char)
+        dx = target[0] - curr[0]
+        dy = target[1] - curr[1]
+        
+        if dx > 0: sequence += '^'*dx
+        if dx < 0: sequence += 'v'*-dx
+        if dy > 0: sequence += '>'*dy
+        if dy < 0: sequence += '<'*-dy
+        
+        sequence += 'A'
+        curr = target
+      return sequence
+
+    total_complexity = 0
+    for code in codes:
+      seq = shortest_sequence(code)
+      numeric_part = int(code[:-1])
+      total_complexity += len(seq) * numeric_part
+    return total_complexity
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

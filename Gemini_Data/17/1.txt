@@ -1,0 +1,54 @@
+def run_program(program, initial_registers):
+    registers = initial_registers.copy()
+    instruction_pointer = 0
+    output = []
+
+    while instruction_pointer < len(program):
+        opcode = program[instruction_pointer]
+        operand = program[instruction_pointer + 1]
+
+        if opcode == 0:  # adv
+            numerator = registers['A']
+            denominator = 2 ** operand
+            registers['A'] = numerator // denominator
+        elif opcode == 1:  # bxl
+            registers['B'] = registers['B'] ^ operand
+        elif opcode == 2:  # bst
+            registers['B'] = operand % 8
+        elif opcode == 3:  # jnz
+            if registers['A'] != 0:
+                instruction_pointer = operand
+                continue
+        elif opcode == 4:  # bxc
+            registers['B'] = registers['B'] ^ registers['C']
+        elif opcode == 5:  # out
+            output.append(operand % 8)
+        elif opcode == 6:  # bdv
+            numerator = registers['A']
+            denominator = 2 ** operand
+            registers['B'] = numerator // denominator
+        elif opcode == 7:  # cdv
+            numerator = registers['A']
+            denominator = 2 ** operand
+            registers['C'] = numerator // denominator
+
+        instruction_pointer += 2
+
+    return ','.join(map(str, output))
+
+
+if __name__ == "__main__":
+    # Example usage (replace with your input)
+    input_registers = """Register A: 729
+Register B: 0
+Register C: 0
+
+Program: 0,1,5,4,3,0"""
+    lines = input_registers.strip().split('\n')
+    register_data = lines[0].split(':')
+    registers = {'A': int(register_data[1].strip()), 'B': 0, 'C': 0}
+    program_string = lines[2].split(':')[1].strip()
+    program = [int(x) for x in program_string.split(',')]
+    
+    output = run_program(program, registers)
+    print(output)

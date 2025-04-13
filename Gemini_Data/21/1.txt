@@ -1,0 +1,52 @@
+def solve():
+    codes = [
+        "029A",
+        "980A",
+        "179A",
+        "456A",
+        "379A",
+    ]
+
+    keypad_mapping = {
+        "7": (0, 0),
+        "8": (0, 1),
+        "9": (0, 2),
+        "4": (1, 0),
+        "5": (1, 1),
+        "6": (1, 2),
+        "1": (2, 0),
+        "2": (2, 1),
+        "3": (2, 2),
+        "0": (3, 0),
+        "A": (3, 1),
+    }
+
+    def get_path(code):
+        curr_pos = (3, 1)  # Initial position on the numeric keypad
+        path = []
+        for digit in code[:-1]:
+            target_pos = keypad_mapping[digit]
+            dx = target_pos[0] - curr_pos[0]
+            dy = target_pos[1] - curr_pos[1]
+            if dx > 0:
+                path.extend(['^' for _ in range(dx)])
+            elif dx < 0:
+                path.extend(['v' for _ in range(-dx)])
+            if dy > 0:
+                path.extend(['>' for _ in range(dy)])
+            elif dy < 0:
+                path.extend(['<' for _ in range(-dy)])
+            path.append('A')
+            curr_pos = target_pos
+        return path
+
+    total_complexity = 0
+    for code in codes:
+        path = get_path(code)
+        path_length = len(path)
+        numeric_part = int(code[:-1])
+        complexity = path_length * numeric_part
+        total_complexity += complexity
+    return total_complexity
+
+print(solve())

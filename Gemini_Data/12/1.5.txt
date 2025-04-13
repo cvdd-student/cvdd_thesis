@@ -1,0 +1,50 @@
+from collections import deque
+
+def solve():
+    grid = [input() for _ in range(100)]
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    visited = set()
+    
+    def bfs(row, col, char, region_data):
+        q = deque([(row, col)])
+        visited.add((row, col))
+        region_data['area'] += 1
+        
+        while q:
+            r, c = q.popleft()
+            
+            for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                nr, nc = r + dr, c + dc
+                
+                if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == char and (nr, nc) not in visited:
+                    visited.add((nr, nc))
+                    q.append((nr, nc))
+                    region_data['area'] += 1
+                    
+    
+    total_price = 0
+    
+    for row in range(rows):
+        for col in range(cols):
+            if (row, col) not in visited:
+                char = grid[row][col]
+                region_data = {'area': 0, 'perimeter': 0}
+                bfs(row, col, char, region_data)
+                
+                
+                perimeter = 0
+                for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                  nr, nc = row + dr, col + dc
+                  if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] != char:
+                    perimeter += 1
+                
+                perimeter += region_data['area'] - (region_data['area']//1) 
+                region_data['perimeter'] = region_data['area'] * 4 - perimeter
+
+                total_price += region_data['area'] * region_data['perimeter']
+
+    return total_price
+  
+print(solve())

@@ -1,0 +1,59 @@
+import sys
+
+def solve():
+    lines = [line.strip() for line in sys.stdin]
+    grid = [list(line) for line in lines]
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    antennas = {}
+    for r in range(rows):
+        for c in range(cols):
+            char = grid[r][c]
+            if char.isalpha() or char.isdigit():
+                if char not in antennas:
+                    antennas[char] = []
+                antennas[char].append((r, c))
+    
+    antinodes = set()
+    for char in antennas:
+        for i in range(len(antennas[char])):
+            for j in range(i + 1, len(antennas[char])):
+                r1, c1 = antennas[char][i]
+                r2, c2 = antennas[char][j]
+                
+                dist = abs(r2-r1) if c1==c2 else abs(c2-c1)
+
+                # Check for valid distances for antenna twice as far away.
+                if dist==0 : continue
+                
+                d1 = dist if (dist >0) else 0
+
+                
+                if abs(r2 - r1) > 0 and abs(c2 - c1) > 0 :
+                    scale= 1
+
+                    
+                    
+                    if dist*scale==abs(r1 -r2): 
+                      xdiff= r2 - r1; ydiff= c2-c1 
+                      antpos = [(r1+i*xdiff//dist , c1+i*ydiff//dist) for i in (-1,1)]
+
+
+                      for row, col in antpos:
+                          if 0<=row < rows and 0 <= col < cols :
+                                antinodes.add((row, col))
+                
+
+
+                
+
+                    
+    
+
+                    if  dist *2 ==abs(r1-r2): continue
+                    
+    print(len(antinodes))
+
+
+solve()

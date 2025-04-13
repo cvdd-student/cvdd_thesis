@@ -1,0 +1,55 @@
+def count_xmas(grid):
+    """Counts the occurrences of 'XMAS' in a word search grid.
+
+    Args:
+        grid: A list of strings representing the word search grid.
+
+    Returns:
+        The number of times 'XMAS' appears in the grid.
+    """
+    rows = len(grid)
+    cols = len(grid[0])
+    count = 0
+
+    def check(r, c, dr, dc):
+        nonlocal count
+        for i in range(4):
+            if 0 <= r + i * dr < rows and 0 <= c + i * dc < cols and \
+               grid[r + i * dr][c + i * dc] == 'X' and \
+               grid[r + (i + 1) * dr][c + (i + 1) * dc] == 'M' and \
+               grid[r + (i + 2) * dr][c + (i + 2) * dc] == 'A' and \
+               grid[r + (i + 3) * dr][c + (i + 3) * dc] == 'S':
+                count += 1
+            else:
+                break
+    
+    for r in range(rows):
+        for c in range(cols):
+            # Check horizontal
+            check(r, c, 0, 1)
+            # Check vertical
+            check(r, c, 1, 0)
+            # Check diagonals (top-right, bottom-right)
+            check(r, c, 1, 1)
+            check(r, c, 1, -1)
+
+    return count
+
+
+if __name__ == "__main__":
+    # Example usage (replace with your input)
+    word_search_input = [
+        "MMMSXXMASM",
+        "MSAMXMSMSA",
+        "AMXSXMAAMM",
+        "MSAMASMSMX",
+        "XMASAMXAMM",
+        "XXAMMXXAMA",
+        "SMSMSASXSS",
+        "SAXAMASAAA",
+        "MAMMMXMMMM",
+        "MXMXAXMASX"
+    ]
+    
+    result = count_xmas(word_search_input)
+    print(result)

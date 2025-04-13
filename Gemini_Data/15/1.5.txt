@@ -1,0 +1,114 @@
+def solve():
+    warehouse = []
+    moves = ""
+
+    with open("input.txt", "r") as f:
+        for line in f:
+            line = line.strip()
+            if line == "":
+                continue
+            if "#" in line or "." in line or "O" in line or "@" in line:
+                warehouse.append(list(line))
+            elif line[0] != "#":  # Assuming moves start at an empty line
+                moves += line
+
+
+    def get_coords(warehouse):
+        boxes = []
+        robot = None
+        for r, row in enumerate(warehouse):
+            for c, cell in enumerate(row):
+                if cell == "O":
+                    boxes.append((r, c))
+                elif cell == "@":
+                    robot = (r, c)
+        return boxes, robot
+    
+    def move_robot(warehouse, move, boxes, robot):
+        
+        new_robot = (robot[0],robot[1])
+        
+        if move == '>':
+            new_robot = (robot[0], robot[1] + 1)
+        elif move == '<':
+            new_robot = (robot[0], robot[1] - 1)
+        elif move == '^':
+            new_robot = (robot[0] - 1, robot[1])
+        elif move == 'v':
+            new_robot = (robot[0] + 1, robot[1])
+            
+        if (new_robot[0] < 0 or new_robot[0] >= len(warehouse) or new_robot[1] < 0 or new_robot[1] >= len(warehouse[0]) or warehouse[new_robot[0]][new_robot[1]] == "#"):
+          return warehouse,boxes,robot
+
+        boxes_moved = []
+        for box in boxes:
+          if new_robot[0] == box[0] and new_robot[1] == box[1]:  
+              continue
+          
+          temp_box = list(warehouse)
+          if move == '>':
+              if temp_box[box[0]][box[1] + 1] == '#' or  temp_box[new_robot[0]][new_robot[1]] == "#": 
+                return warehouse, boxes, robot
+
+              if temp_box[new_robot[0]][new_robot[1]] != '.': return warehouse, boxes,robot
+
+              temp_box[box[0]][box[1]] = '.'
+              temp_box[new_robot[0]][new_robot[1]] = "@"
+              temp_box[box[0]][box[1]+1] = 'O'
+
+          elif move == '<':
+
+            if temp_box[box[0]][box[1]-1] == '#' or  temp_box[new_robot[0]][new_robot[1]] == "#": 
+              return warehouse, boxes, robot
+            
+            if temp_box[new_robot[0]][new_robot[1]] != '.': return warehouse, boxes,robot
+
+
+            temp_box[box[0]][box[1]] = '.'
+            temp_box[new_robot[0]][new_robot[1]] = "@"
+            temp_box[box[0]][box[1]-1] = 'O'
+
+
+          elif move == '^':
+
+            if temp_box[box[0]-1][box[1]] == '#' or  temp_box[new_robot[0]][new_robot[1]] == "#": 
+                return warehouse, boxes, robot
+            
+            if temp_box[new_robot[0]][new_robot[1]] != '.': return warehouse, boxes,robot
+
+            temp_box[box[0]][box[1]] = '.'
+            temp_box[new_robot[0]][new_robot[1]] = "@"
+            temp_box[box[0]-1][box[1]] = 'O'
+
+          elif move == 'v':
+
+            if temp_box[box[0]+1][box[1]] == '#' or  temp_box[new_robot[0]][new_robot[1]] == "#": 
+              return warehouse, boxes, robot
+            
+            if temp_box[new_robot[0]][new_robot[1]] != '.': return warehouse, boxes,robot
+
+            temp_box[box[0]][box[1]] = '.'
+            temp_box[new_robot[0]][new_robot[1]] = "@"
+            temp_box[box[0]+1][box[1]] = 'O'
+          return temp_box,[(b[0],b[1]) for b in boxes if b != box],(new_robot[0], new_robot[1])
+
+
+
+        warehouse[new_robot[0]][new_robot[1]] = "@"
+        return warehouse, boxes, (new_robot[0],new_robot[1])
+    
+    boxes, robot = get_coords(warehouse)
+    for move in moves:
+        warehouse, boxes, robot = move_robot(warehouse, move, boxes, robot)
+        
+
+
+    total_gps = 0
+    for box in boxes:
+        total_gps += (box[0] * 100 + box[1])
+
+    return total_gps
+
+
+
+print(solve())

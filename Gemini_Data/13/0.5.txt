@@ -1,0 +1,58 @@
+def solve():
+    def parse_input(lines):
+        machines = []
+        for i in range(0, len(lines), 4):
+            a_line = lines[i].strip()
+            b_line = lines[i + 1].strip()
+            prize_line = lines[i + 2].strip()
+            
+            a_parts = a_line.split(":")[1].split(",")
+            b_parts = b_line.split(":")[1].split(",")
+            prize_parts = prize_line.split("=")[1].split(",")
+            
+            ax = int(a_parts[0].split("+")[1])
+            ay = int(a_parts[1].split("+")[1])
+            bx = int(b_parts[0].split("+")[1])
+            by = int(b_parts[1].split("+")[1])
+            px = int(prize_parts[0])
+            py = int(prize_parts[1])
+            
+            machines.append((ax, ay, bx, by, px, py))
+        return machines
+
+    def find_solution(machine):
+        ax, ay, bx, by, px, py = machine
+        best_cost = float('inf')
+        
+        for a_count in range(101):
+            for b_count in range(101):
+                x_pos = a_count * ax + b_count * bx
+                y_pos = a_count * ay + b_count * by
+                if x_pos == px and y_pos == py:
+                    cost = a_count * 3 + b_count
+                    best_cost = min(best_cost, cost)
+        return best_cost
+
+    def solve_all_machines(machines):
+        total_cost = 0
+        solutions = []
+        for machine in machines:
+            cost = find_solution(machine)
+            if cost != float('inf'):
+                solutions.append(cost)
+        
+        if not solutions:
+          return float('inf')
+        
+        return sum(solutions)
+
+
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    machines = parse_input(lines)
+    result = solve_all_machines(machines)
+    print(result)
+
+
+solve()

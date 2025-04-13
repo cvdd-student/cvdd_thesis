@@ -1,0 +1,37 @@
+def solve():
+    patterns = input().split(",")
+    patterns = [pattern.strip() for pattern in patterns]
+
+    designs = []
+    while True:
+        try:
+            line = input()
+            designs.append(line.strip())
+        except EOFError:
+            break
+
+    possible_count = 0
+    for design in designs:
+        possible = False
+        
+        def find_combination(current_design, current_combination):
+            if len(current_design) == 0:
+                nonlocal possible
+                possible = True
+                return
+            
+            for pattern in patterns:
+                if current_design.startswith(pattern):
+                    new_design = current_design[len(pattern):]
+                    find_combination(new_design, current_combination + [pattern])
+                    
+        find_combination(design, [])
+        if possible:
+            possible_count += 1
+        else:
+            pass
+        possible = False  # Reset possible for the next design
+
+    print(possible_count)
+
+solve()

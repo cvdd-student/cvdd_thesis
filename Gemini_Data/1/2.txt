@@ -1,0 +1,42 @@
+def calculate_distance(left_list, right_list):
+    """Calculates the total distance between two lists of location IDs.
+
+    Args:
+        left_list: A list of location IDs.
+        right_list: A list of location IDs.
+
+    Returns:
+        The total distance between the two lists.
+    """
+    left_sorted = sorted(left_list)
+    right_sorted = sorted(right_list)
+    total_distance = 0
+    left_index = 0
+    right_index = 0
+
+    while left_index < len(left_sorted) and right_index < len(right_sorted):
+        distance = abs(left_sorted[left_index] - right_sorted[right_index])
+        total_distance += distance
+        left_index += 1
+        right_index += 1
+
+    return total_distance
+
+
+def main():
+    # Use list comprehensions for potentially faster processing
+    try:
+        left_list = [int(x) for x in input().split()]  # Correct use of input().split()
+        right_list = [int(x) for x in input().split()]
+
+    except ValueError:
+        print("Error: Invalid input. Input must be integers separated by whitespace.")
+        return
+
+
+    total_distance = calculate_distance(left_list, right_list)
+    print(total_distance)
+
+
+if __name__ == "__main__":
+    main()

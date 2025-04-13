@@ -1,0 +1,68 @@
+def solve():
+    def parse_input(lines):
+        machines = []
+        for i in range(0, len(lines), 3):
+            a_line = lines[i].strip()
+            b_line = lines[i + 1].strip()
+            prize_line = lines[i + 2].strip()
+            
+            a_parts = a_line.split(":")[1].split(",")
+            b_parts = b_line.split(":")[1].split(",")
+            prize_parts = prize_line.split("=")[1].split(",")
+            
+            ax = int(a_parts[0].split("+")[1])
+            ay = int(a_parts[1].split("+")[1])
+            bx = int(b_parts[0].split("+")[1])
+            by = int(b_parts[1].split("+")[1])
+            px = int(prize_parts[0])
+            py = int(prize_parts[1])
+            
+            machines.append(((ax, ay), (bx, by), (px, py)))
+        return machines
+
+    def find_solution(machine):
+        ax, ay, bx, by, px, py = machine[0][0], machine[0][1], machine[1][0], machine[1][1], machine[2][0], machine[2][1]
+        
+        best_cost = float('inf')
+        for a_count in range(101):
+            for b_count in range(101):
+                if a_count * ax + b_count * bx == px and a_count * ay + b_count * by == py:
+                    cost = a_count * 3 + b_count * 1
+                    best_cost = min(best_cost, cost)
+        return best_cost if best_cost != float('inf') else None
+
+    def solve_all_machines(machines):
+        solutions = []
+        for machine in machines:
+            solution = find_solution(machine)
+            if solution is not None:
+                solutions.append(solution)
+        return solutions
+
+    input_lines = """Button A: X+94, Y+34
+Button B: X+22, Y+67
+Prize: X=8400, Y=5400
+
+Button A: X+26, Y+66
+Button B: X+67, Y+21
+Prize: X=12748, Y=12176
+
+Button A: X+17, Y+86
+Button B: X+84, Y+37
+Prize: X=7870, Y=6450
+
+Button A: X+69, Y+23
+Button B: X+27, Y+71
+Prize: X=18641, Y=10279"""
+    
+    lines = input_lines.strip().split("\n")
+    machines = parse_input(lines)
+    
+    solutions = solve_all_machines(machines)
+    
+    if not solutions:
+        print(0)
+    else:
+        print(sum(solutions))
+
+solve()

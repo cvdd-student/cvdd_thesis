@@ -1,0 +1,50 @@
+import heapq
+
+def solve():
+    def dijkstra(grid, start, end):
+        rows = len(grid)
+        cols = len(grid[0])
+        dist = {(row, col): float('inf') for row in range(rows) for col in range(cols)}
+        dist[start] = 0
+        pq = [(0, start)]
+
+        while pq:
+            d, (row, col) = heapq.heappop(pq)
+            if d > dist[(row, col)]:
+                continue
+            if (row, col) == end:
+                return dist[(row, col)]
+            
+            for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                new_row, new_col = row + dr, col + dc
+                if 0 <= new_row < rows and 0 <= new_col < cols and grid[new_row][new_col] != '#' and dist[(new_row, new_col)] > dist[(row, col)] + 1:
+                    dist[(new_row, new_col)] = dist[(row, col)] + 1
+                    heapq.heappush(pq, (dist[(new_row, new_col)], (new_row, new_col)))
+        return float('inf')
+
+    grid_size = 70
+    grid = [['.' for _ in range(grid_size)] for _ in range(grid_size)]
+    
+    byte_positions = []
+    # Example input (replace with your input)
+    byte_positions = [
+        (5, 4), (4, 2), (4, 5), (3, 0), (2, 1), (6, 3), (2, 4), (1, 5), (0, 6),
+        (3, 3), (2, 6), (5, 1), (1, 2), (5, 5), (2, 5), (6, 5), (1, 4), (0, 4),
+        (6, 4), (1, 1), (6, 1), (1, 0), (0, 5), (1, 6), (2, 0)
+    ]
+
+    # Simulate first 1024 bytes falling
+    for i in range(1024):
+        if i < len(byte_positions):
+            x, y = byte_positions[i]
+            grid[y][x] = '#'
+        else:
+            break
+
+    start = (0, 0)
+    end = (grid_size - 1, grid_size - 1)
+    
+    result = dijkstra(grid, start, end)
+    return result
+
+print(solve())

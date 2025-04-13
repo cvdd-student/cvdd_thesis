@@ -1,0 +1,50 @@
+def solve():
+    rules_str = []
+    updates_str = []
+
+    while True:
+        try:
+            line = input()
+            if "|" in line:
+                rules_str.append(line)
+            else:
+                updates_str.append(line)
+        except EOFError:
+            break
+
+    rules = {}
+    for rule_str in rules_str:
+        a, b = rule_str.split("|")
+        rules.setdefault(int(a), []).append(int(b))
+
+    def is_valid_update(update, rules):
+        update_nums = [int(x) for x in update.split(",")]
+        for i in range(len(update_nums)):
+            for j in range(i + 1, len(update_nums)):
+                page1, page2 = update_nums[i], update_nums[j]
+                if page2 in rules.get(page1, []):
+                    if update_nums.index(page1) >= update_nums.index(page2):
+                        return False
+
+        return True
+    
+    total_middle_page = 0
+    for update_str in updates_str:
+        update = update_str.strip()
+        
+        if is_valid_update(update, rules):
+
+            update_nums = [int(x) for x in update.split(",")]
+
+            middle_index = len(update_nums) // 2
+            if len(update_nums) % 2 == 0:
+              middle_page = update_nums[middle_index - 1]
+            else:
+              middle_page = update_nums[middle_index]
+            
+            total_middle_page += middle_page
+
+    print(total_middle_page)
+
+
+solve()

@@ -1,0 +1,62 @@
+import collections
+
+def solve():
+    grid = []
+    start = None
+    end = None
+    with open("input.txt", "r") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if "S" in row:
+                start = (row.index("S"), y)
+            if "E" in row:
+                end = (row.index("E"), y)
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
+                neighbors.append((nr, nc))
+        return neighbors
+
+    def bfs(start, end, cheat_start=None, cheat_end=None):
+        queue = collections.deque([(start, 0, False)])
+        visited = set([start])
+        while queue:
+            (r, c), dist, cheated = queue.popleft()
+            if (r, c) == end:
+                return dist
+            
+            neighbors = get_neighbors(r, c)
+            for nr, nc in neighbors:
+                if (nr, nc) not in visited:
+                    if grid[nr][nc] != "#":
+                        queue.append(((nr, nc), dist + 1, cheated))
+                        visited.add((nr, nc))
+        return float('inf')
+
+    cheats = {}
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] != "#" and (r, c) != start and (r, c) != end:
+                for nr, nc in get_neighbors(r, c):
+                    if grid[nr][nc] != "#":
+                        cheat_dist = bfs((r, c), (nr, nc), (r, c), (nr, nc))
+                        if cheat_dist != float('inf'):
+                            time_to_end = bfs((r, c), end)
+                            if time_to_end != float('inf'):
+                                cheat_time = bfs((nr, nc), end)
+                                if cheat_time != float('inf'):
+                                    save = time_to_end - (cheat_dist + 2 + cheat_time)
+                                    if save > 0:
+                                        cheats.setdefault(save, []).append((r, c, nr, nc))
+
+    count = 0
+    for save_time, cheat_list in cheats.items():
+        if save_time >= 100:
+            count += len(cheat_list)
+    return count
+
+print(solve())

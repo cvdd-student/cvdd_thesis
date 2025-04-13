@@ -1,0 +1,47 @@
+def is_safe(report):
+    """Checks if a report is safe based on the given criteria."""
+    
+    if len(report) <= 1:
+        return True
+
+    is_increasing = True
+    is_decreasing = True
+
+    for i in range(len(report) - 1):
+        diff = abs(report[i] - report[i + 1])
+        if not (1 <= diff <= 3):
+            is_increasing = False
+            is_decreasing = False
+            break
+        if report[i] > report[i + 1]:
+            is_increasing = False
+        elif report[i] < report[i + 1]:
+            is_decreasing = False
+
+    if is_increasing or is_decreasing:
+        return True
+    else:
+        return False
+
+
+def solve():
+    """Reads input, processes reports, and counts safe reports."""
+    reports = []
+    try:
+        while True:
+            line = input()
+            levels = [int(x) for x in line.split()]
+            reports.append(levels)
+    except EOFError:
+        pass
+
+    safe_count = 0
+    for report in reports:
+        if is_safe(report):
+            safe_count += 1
+    return safe_count
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

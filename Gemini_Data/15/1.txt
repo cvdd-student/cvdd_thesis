@@ -1,0 +1,100 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+        for i in range(len(lines)):
+            if "#" in lines[i] and i > 0:
+                grid.append(list(lines[i].strip()))
+            elif i == 0:
+                grid.append(list(lines[i].strip()))
+
+        moves = "".join(lines[len(grid):]).strip()
+
+
+    robot_row, robot_col = 0, 0
+    box_coords = []
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == "@":
+                robot_row, robot_col = r, c
+            elif grid[r][c] == "O":
+                box_coords.append((r, c))
+    
+
+    for move in moves:
+        next_robot_row, next_robot_col = robot_row, robot_col
+        if move == ">":
+            next_robot_col += 1
+        elif move == "<":
+            next_robot_col -= 1
+        elif move == "^":
+            next_robot_row -= 1
+        elif move == "v":
+            next_robot_row += 1
+        
+        if next_robot_row < 0 or next_robot_row >= len(grid) or next_robot_col < 0 or next_robot_col >= len(grid[0]) or grid[next_robot_row][next_robot_col] == "#":
+            continue
+        
+        pushed = False
+        
+        if move == ">":
+            for b in box_coords:
+                if b[1] == next_robot_col - 1 and b[0] == robot_row:
+                    next_box_col = next_robot_col + 1
+                    if next_box_col < 0 or next_box_col >= len(grid[0]) or grid[b[0]][next_box_col] == "#":
+                        continue
+                    grid[b[0]][next_robot_col -1] = "."
+                    grid[b[0]][next_box_col] = "O"
+                    pushed = True
+                    robot_row, robot_col = next_robot_row, next_robot_col
+                    break
+
+
+        elif move == "<":
+             for b in box_coords:
+                if b[1] == next_robot_col + 1 and b[0] == robot_row:
+                    next_box_col = next_robot_col - 1
+                    if next_box_col < 0 or next_box_col >= len(grid[0]) or grid[b[0]][next_box_col] == "#":
+                        continue
+                    grid[b[0]][next_robot_col + 1] = "."
+                    grid[b[0]][next_box_col] = "O"
+                    pushed = True
+                    robot_row, robot_col = next_robot_row, next_robot_col
+                    break
+
+
+        elif move == "^":
+            for b in box_coords:
+                if b[0] == next_robot_row + 1 and b[1] == robot_col:
+                    next_box_row = next_robot_row - 1
+                    if next_box_row < 0 or next_box_row >= len(grid) or grid[next_box_row][b[1]] == "#":
+                        continue
+                    grid[next_robot_row + 1][b[1]] = "."
+                    grid[next_box_row][b[1]] = "O"
+                    pushed = True
+                    robot_row, robot_col = next_robot_row, next_robot_col
+                    break
+
+        elif move == "v":
+            for b in box_coords:
+                if b[0] == next_robot_row - 1 and b[1] == robot_col:
+                    next_box_row = next_robot_row + 1
+                    if next_box_row < 0 or next_box_row >= len(grid) or grid[next_box_row][b[1]] == "#":
+                        continue
+                    grid[next_robot_row - 1][b[1]] = "."
+                    grid[next_box_row][b[1]] = "O"
+                    pushed = True
+                    robot_row, robot_col = next_robot_row, next_robot_col
+                    break
+        
+        if not pushed:
+            robot_row, robot_col = next_robot_row, next_robot_col
+            
+
+    total_gps = 0
+    for r, c in box_coords:
+        total_gps += (r * 100 + c)
+
+    return total_gps
+
+print(solve())

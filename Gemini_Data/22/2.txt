@@ -1,0 +1,24 @@
+def calculate_next_secret(secret):
+    secret = (secret * 64) ^ secret
+    secret %= 16777216
+    secret = (secret // 32) ^ secret
+    secret %= 16777216
+    secret = (secret * 2048) ^ secret
+    secret %= 16777216
+    return secret
+
+def simulate_secret_sequence(initial_secret, num_secrets):
+    current_secret = initial_secret
+    for _ in range(num_secrets):
+        current_secret = calculate_next_secret(current_secret)
+    return current_secret
+
+
+initial_secrets = [int(x) for x in input().split()]
+num_secrets_to_generate = 2000
+total_sum = 0
+
+for initial_secret in initial_secrets:
+    total_sum += simulate_secret_sequence(initial_secret, num_secrets_to_generate)
+
+print(total_sum)

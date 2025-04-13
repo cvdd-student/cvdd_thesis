@@ -1,0 +1,69 @@
+import collections
+
+def solve():
+    grid = []
+    start = None
+    end = None
+    with open("input.txt", "r") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if 'S' in row:
+                start = (row.index('S'), y)
+            if 'E' in row:
+                end = (row.index('E'), y)
+
+    def bfs(start, end, cheat=False):
+        queue = collections.deque([(start, 0)])
+        visited = set([start])
+        
+        while queue:
+            (x, y), dist = queue.popleft()
+            
+            if (x, y) == end:
+                return dist
+            
+            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid):
+                    if grid[ny][nx] != '#' or cheat:
+                        if (nx, ny) not in visited:
+                            visited.add((nx, ny))
+                            queue.append(((nx, ny), dist + 1))
+        return float('inf')
+        
+    shortest_path = bfs(start, end)
+    cheats = []
+    for y in range(len(grid)):
+      for x in range(len(grid[0])):
+        if grid[y][x] != '#':
+          for ny in range(len(grid)):
+            for nx in range(len(grid[0])):
+              if grid[ny][nx] != '#':
+                cheats_2s = bfs((x, y), (nx, ny), cheat = True) + bfs((nx, ny), end)
+                cheats.append((cheats_2s, (x, y), (nx,ny)))
+
+
+    
+    
+    
+    
+    cheats_count = collections.defaultdict(int)
+    for saved_time, start_pos, end_pos in cheats:
+
+        # calculate saved_time
+        cheat_path_length = bfs(start_pos,end_pos, cheat=True) + bfs(end_pos, end) 
+        if cheat_path_length != float("inf"):
+            saved_time = shortest_path - cheat_path_length
+        
+            cheats_count[saved_time] +=1
+
+    
+    
+    count_greater_than_100 = sum(cheats_count[time] for time in cheats_count if time >= 100)
+
+    return count_greater_than_100
+
+
+
+print(solve())

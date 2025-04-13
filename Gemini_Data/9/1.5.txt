@@ -1,0 +1,53 @@
+def compact_disk(disk_map):
+    disk = [int(d) for d in disk_map]
+    n = len(disk)
+    file_map = []
+    i = 0
+    while i < n:
+        file_len = disk[i]
+        file_map.append((i, file_len))
+        i += 1
+        i += file_len
+
+    final_map = ["."] * n
+    file_id = 0
+    for idx, file_len in file_map:
+        for j in range(idx, idx + file_len):
+            final_map[j] = str(file_id)
+        file_id += 1
+
+
+    leftmost_free = -1
+    for i in range(len(final_map)):
+        if final_map[i] == ".":
+            if leftmost_free == -1:
+                leftmost_free = i
+            continue
+        elif leftmost_free != -1:
+            if leftmost_free < len(final_map) -1 :
+              temp = final_map[leftmost_free+1]
+              final_map[leftmost_free] = temp
+              final_map[leftmost_free + 1] = "."
+              
+            for j in range(len(final_map)):
+              if j > i and final_map[j] == ".":
+                leftmost_free = j
+                break
+
+
+            leftmost_free = -1
+
+
+    checksum = 0
+    for i in range(len(final_map)):
+        if final_map[i] != '.':
+            checksum += int(final_map[i]) * i
+
+
+    return checksum
+
+# Example usage (replace with your input)
+disk_map_input = "2333133121414131402"
+checksum = compact_disk(disk_map_input)
+
+print(checksum)

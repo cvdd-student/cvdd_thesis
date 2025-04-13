@@ -1,0 +1,71 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    visited = set()
+    
+    def dfs(row, col, char, region_data):
+        if (row, col) in visited or row < 0 or row >= rows or col < 0 or col >= cols or grid[row][col] != char:
+            return
+        
+        visited.add((row, col))
+        region_data[0] += 1
+        
+        # Explore neighbors
+        dfs(row + 1, col, char, region_data)
+        dfs(row - 1, col, char, region_data)
+        dfs(row, col + 1, char, region_data)
+        dfs(row, col - 1, char, region_data)
+
+    total_price = 0
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) not in visited:
+                char = grid[r][c]
+                region_data = [0, 0]  # [area, perimeter]
+                dfs(r, c, char, region_data)
+
+                perimeter = 0
+                perimeter_counter = 0
+                visited_perimeter = set()
+                
+                def explore_perimeter(row, col):
+                    nonlocal perimeter
+                    if (row, col) in visited_perimeter: return
+                    visited_perimeter.add((row, col))
+
+                    
+                    if row > 0 and grid[row - 1][col] != char and (row - 1, col) not in visited:
+                        perimeter_counter += 1
+                    if row < rows - 1 and grid[row + 1][col] != char and (row + 1, col) not in visited:
+                        perimeter_counter += 1
+                    if col > 0 and grid[row][col - 1] != char and (row, col-1) not in visited:
+                        perimeter_counter += 1
+                    if col < cols - 1 and grid[row][col + 1] != char and (row, col+1) not in visited:
+                        perimeter_counter += 1
+                    
+
+
+                    
+                for i in range(rows):
+                  for j in range(cols):
+                    if grid[i][j] == char and (i, j) in visited:
+                      explore_perimeter(i, j)
+
+
+                perimeter = perimeter_counter
+
+                
+                total_price += (region_data[0] * perimeter)
+
+
+
+    return total_price
+
+
+print(solve())

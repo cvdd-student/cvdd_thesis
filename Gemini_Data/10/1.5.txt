@@ -1,0 +1,62 @@
+from typing import List
+
+
+def solve():
+    topographic_map = []
+    with open("input.txt") as file:
+        for line in file:
+            topographic_map.append(line.strip())
+    
+    rows = len(topographic_map)
+    cols = len(topographic_map[0])
+
+    def get_neighbor_positions(row, col):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            new_row, new_col = row + dr, col + dc
+            if 0 <= new_row < rows and 0 <= new_col < cols:
+                neighbors.append((new_row, new_col))
+        return neighbors
+
+    def is_valid_trail(row, col, target_row, target_col, path):
+        if (row, col) in path:
+          return False
+        
+        if topographic_map[row][col] == '0' and row==0 and col==0:
+          path = [(row,col)]
+
+        current_height = int(topographic_map[row][col])
+        next_position = (row+1,col) if len(path)>0 and row+1 < len(topographic_map) else None
+        next_position2 = (row,col+1) if len(path)>0 and col+1 < len(topographic_map[row]) else None
+
+        if current_height == 9 and row== target_row and col==target_col and row != 0 or col != 0:
+          
+          return True
+
+
+        if next_position and next_position[0] < rows and  int(topographic_map[next_position[0]][next_position[1]]) - current_height ==1 :
+          new_path = [(row,col)]
+          return is_valid_trail(next_position[0],next_position[1], target_row, target_col, path+new_path)
+
+        if next_position2 and next_position2[1] < len(topographic_map[row]) and int(topographic_map[next_position2[0]][next_position2[1]]) - current_height == 1:
+            new_path = [(row,col)]
+            return is_valid_trail(next_position2[0],next_position2[1], target_row, target_col, path+new_path)
+        
+        return False
+
+
+    total_score = 0
+    for r in range(rows):
+        for c in range(cols):
+            if topographic_map[r][c] == '0':
+                score = 0
+                for i in range(rows):
+                    for j in range(cols):
+                        if topographic_map[i][j] == '9' and is_valid_trail(r, c, i, j, []):
+                            score += 1
+                total_score += score
+
+    return total_score
+
+
+print(solve())

@@ -1,0 +1,52 @@
+import heapq
+
+def solve():
+    maze = []
+    start_pos = None
+    end_pos = None
+    with open("input.txt") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            maze.append(row)
+            if "S" in row:
+                start_pos = (row.index("S"), y)
+            if "E" in row:
+                end_pos = (row.index("E"), y)
+
+    def get_neighbors(r, c, direction):
+        neighbors = []
+        dr = [0, 1, 0, -1]  # East, South, West, North
+        dc = [1, 0, -1, 0]
+
+        next_r, next_c = r + dr[direction], c + dc[direction]
+        
+        if 0 <= next_r < len(maze) and 0 <= next_c < len(maze[0]) and maze[next_r][next_c] != '#':
+            neighbors.append(((next_r, next_c), direction, 1))
+        
+        neighbors.append(((r, c), (direction + 1) % 4, 1000))  # Clockwise
+        neighbors.append(((r, c), (direction + 3) % 4, 1000))  # Counter-clockwise
+        return neighbors
+    
+    
+    import collections
+    
+    queue = [(0, start_pos, 0, 0)] # (cost, (r, c), direction, steps)
+    visited = set()
+
+    while queue:
+        cost, (r, c), direction, steps = heapq.heappop(queue)
+
+        if (r, c) == end_pos:
+            return cost
+        
+        if (r, c, direction) in visited:
+            continue
+        visited.add((r, c, direction))
+        
+        neighbors = get_neighbors(r, c, direction)
+        for (nr, nc), next_direction, next_cost in neighbors:
+            heapq.heappush(queue, (cost + next_cost, (nr, nc), next_direction, steps+1))
+            
+    return -1 #Should never happen
+result = solve()
+print(result)

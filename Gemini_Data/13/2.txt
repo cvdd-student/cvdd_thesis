@@ -1,0 +1,76 @@
+def solve():
+    def parse_input(lines):
+        machines = []
+        for i in range(0, len(lines), 4):
+            a_line = lines[i].split(": ")[1]
+            b_line = lines[i + 1].split(": ")[1]
+            prize_line = lines[i + 2].split(": ")[1]
+
+            a_parts = a_line.split(", ")
+            b_parts = b_line.split(", ")
+            prize_parts = prize_line.split("=")
+
+            a_x = int(a_parts[0].split("+")[1])
+            a_y = int(a_parts[1].split("+")[1])
+            b_x = int(b_parts[0].split("+")[1])
+            b_y = int(b_parts[1].split("+")[1])
+            prize_x = int(prize_parts[1])
+            prize_y = int(prize_parts[1].split(",")[1])
+
+            machines.append(((a_x, a_y), (b_x, b_y), (prize_x, prize_y)))
+        return machines
+    
+    def calculate_tokens(a_count, b_count, a_x, a_y, b_x, b_y, prize_x, prize_y):
+        if a_count * a_x + b_count * b_x == prize_x and a_count * a_y + b_count * b_y == prize_y:
+          return a_count * 3 + b_count * 1
+        else:
+          return float('inf') # Placeholder
+
+    def solve_machine(machine):
+        a_x, a_y = machine[0]
+        b_x, b_y = machine[1]
+        prize_x, prize_y = machine[2]
+
+        min_tokens = float('inf')
+        for a_count in range(101):
+          for b_count in range(101):
+            min_tokens = min(min_tokens, calculate_tokens(a_count, b_count, a_x, a_y, b_x, b_y, prize_x, prize_y))
+        
+        return min_tokens if min_tokens != float('inf') else -1
+
+    def win_all_machines(machines):
+        all_tokens_to_win = []
+        for machine in machines:
+          result = solve_machine(machine)
+          if result != -1:
+            all_tokens_to_win.append(result)
+
+        
+        if len(all_tokens_to_win) > 0:
+          return sum(all_tokens_to_win)
+        else:
+            return -1
+
+    lines = [
+        "Button A: X+94, Y+34",
+        "Button B: X+22, Y+67",
+        "Prize: X=8400, Y=5400",
+        "Button A: X+26, Y+66",
+        "Button B: X+67, Y+21",
+        "Prize: X=12748, Y=12176",
+        "Button A: X+17, Y+86",
+        "Button B: X+84, Y+37",
+        "Prize: X=7870, Y=6450",
+        "Button A: X+69, Y+23",
+        "Button B: X+27, Y+71",
+        "Prize: X=18641, Y=10279"
+    ]
+
+
+
+    machines = parse_input(lines)
+    result = win_all_machines(machines)
+    if result != -1:
+        print(result)
+
+solve()

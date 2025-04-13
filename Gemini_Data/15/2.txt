@@ -1,0 +1,95 @@
+def solve():
+    warehouse = []
+    with open("input.txt", "r") as file:  # Replace "input.txt" with actual input
+        for line in file:
+            line = line.strip()
+            if line == "":
+                break
+            warehouse.append(list(line))
+
+    moves = ""
+    for line in file:
+      moves += line.strip()
+
+
+    robot_row, robot_col = -1, -1
+    boxes = []
+    for r in range(len(warehouse)):
+        for c in range(len(warehouse[0])):
+            if warehouse[r][c] == '@':
+                robot_row, robot_col = r, c
+            elif warehouse[r][c] == 'O':
+                boxes.append((r, c))
+
+
+    for move in moves:
+        new_robot_row, new_robot_col = robot_row, robot_col
+        
+        if move == '^':
+            new_robot_row -= 1
+        elif move == 'v':
+            new_robot_row += 1
+        elif move == '<':
+            new_robot_col -= 1
+        elif move == '>':
+            new_robot_col += 1
+            
+        if 0 <= new_robot_row < len(warehouse) and 0 <= new_robot_col < len(warehouse[0]) and warehouse[new_robot_row][new_robot_col] != '#':
+
+            moved = False
+            box_moved = False
+
+            # Check if there is box to push
+
+            box_to_push_row = None
+            box_to_push_col = None
+            if move == '^': box_to_push_row = new_robot_row - 1
+            elif move == 'v': box_to_push_row = new_robot_row + 1
+            elif move == '<': box_to_push_col = new_robot_col - 1
+            elif move == '>': box_to_push_col = new_robot_col + 1
+
+            if 0 <= box_to_push_row < len(warehouse) and 0 <= box_to_push_col < len(warehouse[0]) and warehouse[box_to_push_row][box_to_push_col] == 'O':
+                box_moved = True
+                new_box_row = box_to_push_row
+                new_box_col = box_to_push_col
+                
+                
+                new_robot_row, new_robot_col = robot_row, robot_col  # Reset in case of collisions
+
+                if move == '^':  new_box_row -= 1
+                elif move == 'v': new_box_row += 1
+                elif move == '<': new_box_col -= 1
+                elif move == '>': new_box_col += 1
+
+
+                if 0 <= new_robot_row < len(warehouse) and 0 <= new_robot_col < len(warehouse[0]) and warehouse[new_robot_row][new_robot_col] != '#':
+                    robot_row = new_robot_row
+                    robot_col = new_robot_col
+                    
+
+                    if 0 <= new_box_row < len(warehouse) and 0 <= new_box_col < len(warehouse[0]) and warehouse[new_box_row][new_box_col] != '#':
+                       for b in range(len(boxes)):
+                         if boxes[b] == (box_to_push_row,box_to_push_col):
+                           boxes[b] = (new_box_row, new_box_col)
+                       moved = True
+
+        
+
+            if (0 <= new_robot_row < len(warehouse) and 0 <= new_robot_col < len(warehouse[0]) and warehouse[new_robot_row][new_robot_col] != '#' and not moved ):  
+              warehouse[robot_row][robot_col] = '.'
+              warehouse[new_robot_row][new_robot_col] = '@'
+              robot_row, robot_col = new_robot_row, new_robot_col
+
+              moved=True
+
+
+
+
+    total_gps = 0
+    for box_row, box_col in boxes:
+        total_gps += (box_row * 100 + box_col)
+    return total_gps
+
+
+
+print(solve())

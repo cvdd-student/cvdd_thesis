@@ -1,0 +1,62 @@
+import sys
+
+def solve():
+    lines = [line.strip() for line in sys.stdin]
+    
+    machines = []
+    i = 0
+    while i < len(lines):
+        parts = lines[i].split(": ")
+        button_a = parts[1].split(", ")
+        button_b = lines[i + 1].split(": ")
+        prize = lines[i + 2].split("=")
+        
+        a_x = int(button_a[0].split("+")[1])
+        a_y = int(button_a[1].split("+")[1])
+        b_x = int(button_b[1].split("+")[1])
+        b_y = int(button_b[1].split("+")[1])
+        prize_x = int(prize[1])
+        prize_y = int(prize[1].split(",")[1].split("=")[1])
+    
+        machines.append((a_x, a_y, b_x, b_y, prize_x, prize_y))
+
+        i += 3
+        
+    def check_prize(a_x, a_y, b_x, b_y, prize_x, prize_y):
+        for presses_a in range(101):
+            for presses_b in range(101):
+                cur_x = presses_a * a_x + presses_b * b_x
+                cur_y = presses_a * a_y + presses_b * b_y
+                if cur_x == prize_x and cur_y == prize_y:
+                    return presses_a * 3 + presses_b * 1
+        return float('inf')
+
+    costs = []
+    for machine in machines:
+        cost = check_prize(*machine)
+        if cost != float('inf'):
+            costs.append(cost)
+        else:
+            print("Impossible prize")
+
+
+    if not costs:
+        print("0")
+    else:
+        min_cost = float('inf')
+
+        for i in range(1 << len(costs)):
+          valid_combination = True
+          comb_costs = []
+          for j in range(len(costs)):
+              if (i >> j) & 1:
+                  comb_costs.append(costs[j])
+          if comb_costs:
+            min_cost = min(min_cost, sum(comb_costs))
+
+        if min_cost == float('inf'):
+          print("0")
+        else:
+            print(min_cost)
+
+solve()

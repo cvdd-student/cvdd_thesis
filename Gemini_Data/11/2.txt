@@ -1,0 +1,24 @@
+def solve():
+    stones = [int(x) for x in input().split()]
+
+    def blink(arr):
+        new_arr = []
+        for stone in arr:
+            if stone == 0:
+                new_arr.append(1)
+            elif len(str(stone)) % 2 == 0:
+                mid = len(str(stone)) // 2
+                left_half = int(str(stone)[:mid])
+                right_half = int(str(stone)[mid:])
+                new_arr.append(left_half)
+                new_arr.append(right_half)
+            else:
+                new_arr.append(stone * 2024)
+        return new_arr
+    
+    for _ in range(25):
+        stones = blink(stones)
+    
+    print(len(stones))
+
+solve()

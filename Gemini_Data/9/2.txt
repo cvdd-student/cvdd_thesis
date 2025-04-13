@@ -1,0 +1,56 @@
+def compact_disk(disk_map_str):
+    disk_map = [int(digit) for digit in disk_map_str]
+    file_blocks = []
+    i = 0
+    while i < len(disk_map):
+        file_length = disk_map[i]
+        file_blocks.append((file_length, i))
+        i += 1
+        i += file_length
+    
+    disk = ['.' for _ in range(sum(file_blocks))]
+    for id, start in file_blocks:
+      for j in range(start, start + id):
+        disk[j] = str(file_blocks.index((id, start)))
+      
+    file_index = len(file_blocks) - 1
+    while file_index > 0:
+        current_id = file_blocks[file_index][0]
+        current_pos = file_blocks[file_index][1]
+
+        for index in range(current_pos, sum(f[0] for f in file_blocks[0:file_index + 1])):
+          if(disk[index] == "."):
+             disk[index] = disk[file_blocks[file_index][1] + current_id - 1] 
+             disk[file_blocks[file_index][1] + current_id - 1] = "."
+             
+             
+        file_blocks[file_index] = (file_blocks[file_index][0], 0 if file_index > 0 else -1) 
+        if(file_index > 0): 
+          current_id2 = file_blocks[file_index-1][0]
+          current_pos2 = file_blocks[file_index-1][1]
+          
+          if(disk[sum(f[0] for f in file_blocks[0:file_index])-1] != "."): 
+             file_blocks[file_index-1] = (file_blocks[file_index-1][0],sum(f[0] for f in file_blocks[0:file_index])-1)
+            
+            
+        file_index-=1
+        
+
+
+    return disk
+
+def checksum(disk_arr):
+    checksum = 0
+    for i in range(len(disk_arr)):
+      try:
+          file_id = int(disk_arr[i])
+          checksum += i * file_id
+      except ValueError:
+          pass
+    return checksum
+
+#Example
+disk_map_str = "2333133121414131402"
+disk = compact_disk(disk_map_str)
+checksum_result = checksum(disk)
+print(checksum_result)

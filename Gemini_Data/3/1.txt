@@ -1,0 +1,20 @@
+import re
+
+def solve():
+    memory = input()
+    total = 0
+    
+    mul_pattern = r"mul\(\s*(\d+)\s*,\s*(\d+)\s*\)"
+    matches = re.findall(mul_pattern, memory)
+    
+    for match in matches:
+        try:
+            x = int(match[0])
+            y = int(match[1])
+            total += x * y
+        except ValueError:
+            pass  # Ignore invalid input
+
+    return total
+
+print(solve())

@@ -1,0 +1,49 @@
+def compact_disk(disk_map):
+    """Compacts the disk map according to the given rules."""
+    disk_list = list(disk_map)
+    n = len(disk_list)
+    file_lengths = [int(c) for c in disk_map]
+    
+    file_ids = []
+    current_file_id = 0
+    for length in file_lengths:
+        file_ids.append(current_file_id)
+        current_file_id += 1
+
+    disk_blocks = []
+    current_index = 0
+    for i in range(len(file_lengths)):
+        file_id = file_ids[i]
+        length = file_lengths[i]
+        disk_blocks.extend([str(file_id)] * length)
+    
+    
+    while True:
+        found_gap = False
+        for i in range(len(disk_blocks) - 1):
+            if disk_blocks[i] == '.' and disk_blocks[i + 1] != '.':
+                disk_blocks[i] = disk_blocks[i + 1]
+                disk_blocks[i + 1] = '.'
+                found_gap = True
+                break
+        if not found_gap:
+            break
+    
+    return disk_blocks
+
+def calculate_checksum(disk_blocks):
+    """Calculates the checksum of the compacted disk."""
+    checksum = 0
+    for i, block in enumerate(disk_blocks):
+        if block != '.':
+            checksum += i * int(block)
+    return checksum
+
+# Example usage (replace with your input)
+input_map = "2333133121414131402"
+#input_map = "12345"
+
+
+disk_blocks = compact_disk(input_map)
+checksum = calculate_checksum(disk_blocks)
+print(checksum)

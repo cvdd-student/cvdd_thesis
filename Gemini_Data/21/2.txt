@@ -1,0 +1,86 @@
+def solve():
+    codes = [
+        "029A",
+        "980A",
+        "179A",
+        "456A",
+        "379A",
+    ]
+
+    def keypad_to_coords(keypad_char):
+        if keypad_char == "7":
+            return (0, 0)
+        elif keypad_char == "8":
+            return (0, 1)
+        elif keypad_char == "9":
+            return (0, 2)
+        elif keypad_char == "4":
+            return (1, 0)
+        elif keypad_char == "5":
+            return (1, 1)
+        elif keypad_char == "6":
+            return (1, 2)
+        elif keypad_char == "1":
+            return (2, 0)
+        elif keypad_char == "2":
+            return (2, 1)
+        elif keypad_char == "3":
+            return (2, 2)
+        elif keypad_char == "0":
+            return (3, 0)
+        elif keypad_char == "A":
+            return (3, 1)
+        else:
+            return None  # Handle invalid input
+
+
+    def coords_to_keypad(coords):
+        for key, value in keypad_to_coords.items():
+           if keypad_to_coords[key] == coords:
+                return key
+        return None # Should never happen, but handle for safety.
+
+
+    def find_path(target_code, keypad):
+        current_pos = (3, 1)  # Initialize at the starting position A
+        path = ""
+        for char in target_code:
+            target_coords = keypad_to_coords(char)
+
+            if target_coords is None:  # Safety check
+              return ""
+
+            dx = target_coords[0] - current_pos[0]
+            dy = target_coords[1] - current_pos[1]
+
+            if dx < 0:
+                path += "<" * (-dx)
+            elif dx > 0:
+                path += ">" * dx
+            if dy < 0:
+                path += "^" * (-dy)
+            elif dy > 0:
+                path += "v" * dy
+            
+            path += "A"
+            current_pos = target_coords
+
+
+        return path
+
+    
+    total_complexity = 0
+    for code in codes:
+      shortest_path = find_path(code[:-1],keypad_to_coords)
+      if not shortest_path:
+        return "Error" #Should never happen, but handle
+      numeric_code = int(code[:-1])
+      complexity = len(shortest_path) * numeric_code
+
+      total_complexity += complexity
+
+    return total_complexity
+
+
+
+print(solve())

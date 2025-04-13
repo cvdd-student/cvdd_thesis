@@ -1,0 +1,59 @@
+def solve():
+    input_data = """Register A: 729
+Register B: 0
+Register C: 0
+
+Program: 0,1,5,4,3,0"""
+
+    lines = input_data.strip().split('\n')
+    registers = {}
+    program = []
+
+    for line in lines:
+        if "Register" in line:
+            parts = line.split(":")
+            reg = parts[0].split()[1]
+            registers[reg] = int(parts[1].strip())
+        elif "Program" in line:
+            parts = line.split(":")
+            program_str = parts[1].strip()
+            program = [int(x) for x in program_str.split(',')]
+
+    ip = 0
+    output = []
+
+    while ip < len(program):
+        opcode = program[ip]
+        operand = program[ip + 1]
+        
+        if opcode == 0:  # adv
+            numerator = registers['A']
+            denominator = 2**operand
+            registers['A'] = numerator // denominator
+        elif opcode == 1:  # bxl
+            registers['B'] = registers['B'] ^ operand
+        elif opcode == 2:  # bst
+            registers['B'] = operand % 8
+        elif opcode == 3:  # jnz
+            if registers['A'] != 0:
+                ip = operand
+                continue
+        elif opcode == 4:  # bxc
+            registers['B'] = registers['B'] ^ registers['C']
+        elif opcode == 5:  # out
+            output.append(operand % 8)
+        elif opcode == 6:  # bdv
+            numerator = registers['A']
+            denominator = 2**operand
+            registers['B'] = numerator // denominator
+        elif opcode == 7:  # cdv
+            numerator = registers['A']
+            denominator = 2**operand
+            registers['C'] = numerator // denominator
+        
+        ip += 2
+    
+    return ",".join(map(str, output))
+
+
+print(solve())

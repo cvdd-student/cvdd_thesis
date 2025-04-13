@@ -1,0 +1,21 @@
+def generate_secret_number(secret):
+    for _ in range(2000):
+        secret = (secret * 64) ^ secret
+        secret %= 16777216
+        secret = (secret // 32) ^ secret
+        secret %= 16777216
+        secret = (secret * 2048) ^ secret
+        secret %= 16777216
+    return secret
+
+def main():
+    initial_secrets = [int(line.strip()) for line in input().split()]
+    
+    final_secrets = []
+    for secret in initial_secrets:
+        final_secrets.append(generate_secret_number(secret))
+    
+    print(sum(final_secrets))
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,130 @@
+def parse_schematic(schematic):
+    lines = schematic.splitlines()
+    rows = len(lines)
+    cols = len(lines[0])
+    
+    lock_pins = []
+    key_heights = []
+    
+    for j in range(cols):
+        pin_height = 0
+        key_height = 0
+        for i in range(rows):
+            if lines[i][j] == '#':
+                pin_height += 1
+            elif i == rows-1: #avoid index out of bounds error on the last row, which is all '.'
+                pass
+        lock_pins.append(pin_height)
+        
+    for j in range(cols):
+        key_height = 0
+        for i in range(rows-1, -1, -1):
+            if lines[i][j] == '#':
+                key_height +=1
+            
+        key_heights.append(key_height)
+    
+    return lock_pins, key_heights
+
+def check_fit(lock_pins, key_heights):
+    for i in range(len(lock_pins)):
+        if lock_pins[i] + key_heights[i] > 5:
+            return False
+    return True
+    
+
+def solve():
+  lock_schematics = ["""
+#####
+.####
+.####
+.####
+.#.#.
+.#...
+.....""","""
+#####
+##.##
+.#.##
+...##
+...#.
+...#.
+.....""","""
+.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####""","""
+.....
+.....
+#.#..
+###..
+###.#
+###.#
+#####""","""
+.....
+.....
+.....
+#....
+#.#..
+#.#.#
+#####"""]
+
+  key_schematics = ["""
+.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####""","""
+.....
+##.##
+#.##.
+...##
+...#.
+...#.
+.....""","""
+.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####""","""
+.....
+.....
+#.#..
+###..
+###.#
+###.#
+#####""","""
+.....
+.....
+.....
+#....
+#.#..
+#.#.#
+#####"""]
+
+
+  locks = []
+  keys = []
+  for schematic in lock_schematics:
+      pins, _ = parse_schematic(schematic)
+      locks.append(pins)
+  for schematic in key_schematics:
+      _, heights = parse_schematic(schematic)
+      keys.append(heights)
+
+  count = 0
+  for i in range(len(locks)):
+      for j in range(len(keys)):
+          if check_fit(locks[i], keys[j]):
+              count += 1
+
+  return count
+  
+
+print(solve())

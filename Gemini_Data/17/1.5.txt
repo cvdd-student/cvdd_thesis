@@ -1,0 +1,51 @@
+def solve():
+    input_str = """Register A: 729
+Register B: 0
+Register C: 0
+
+Program: 0,1,5,4,3,0"""
+    lines = input_str.strip().split('\n')
+    
+    reg_a = int(lines[0].split(':')[1])
+    reg_b = int(lines[1].split(':')[1])
+    reg_c = int(lines[2].split(':')[1])
+    
+    program_str = lines[3].split(':')[1]
+    program = [int(x) for x in program_str.split(',')]
+    
+    instruction_pointer = 0
+    output = []
+    
+    while instruction_pointer < len(program):
+        opcode = program[instruction_pointer]
+        operand = program[instruction_pointer + 1]
+        
+        if opcode == 0:
+            divisor = 2 ** operand
+            reg_a = reg_a // divisor
+        elif opcode == 1:
+            reg_b ^= operand
+        elif opcode == 2:
+            reg_b = operand % 8
+        elif opcode == 3:
+            if reg_a != 0:
+                instruction_pointer = operand
+            else:
+                instruction_pointer += 2
+        elif opcode == 4:
+            reg_b ^= reg_c
+        elif opcode == 5:
+            output.append(operand % 8)
+        elif opcode == 6:
+            divisor = 2 ** operand
+            reg_b = reg_a // divisor
+        elif opcode == 7:
+            divisor = 2 ** operand
+            reg_c = reg_a // divisor
+
+        instruction_pointer += 2
+        
+    return ','.join(map(str, output))
+
+
+print(solve())

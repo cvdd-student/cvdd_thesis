@@ -1,0 +1,26 @@
+def evolve_stones(stones, num_blinks):
+    for _ in range(num_blinks):
+        new_stones = []
+        for stone in stones:
+            stone_str = str(stone)
+            if stone == 0:
+                new_stones.append(1)
+            elif len(stone_str) % 2 == 0:
+                midpoint = len(stone_str) // 2
+                left_half = int(stone_str[:midpoint])
+                right_half = int(stone_str[midpoint:])
+                new_stones.append(left_half)
+                new_stones.append(right_half)
+            else:
+                new_stones.append(stone * 2024)
+        stones = new_stones
+    return len(stones)
+
+# Example Usage (uncomment for testing):
+
+# Initial arrangement (replace with your input)
+# stones = [125, 17]  
+stones = [0, 1, 10, 99, 999]
+num_blinks = 25
+result = evolve_stones(stones, num_blinks)
+print(result)

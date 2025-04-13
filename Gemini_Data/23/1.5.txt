@@ -1,0 +1,38 @@
+def solve():
+    connections = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            connections.append(line.strip().split("-"))
+
+    computers = set()
+    for connection in connections:
+        computers.add(connection[0])
+        computers.add(connection[1])
+    
+    valid_sets = []
+    for a in computers:
+        for b in computers:
+            for c in computers:
+                if a == b or a == c or b == c:
+                    continue
+                
+                connected_ab = any(
+                    (a + "-" + b) in (s1 + "-" + s2 for s1, s2 in connections)
+                    or (b + "-" + a) in (s1 + "-" + s2 for s1, s2 in connections)
+                )
+                connected_bc = any(
+                    (b + "-" + c) in (s1 + "-" + s2 for s1, s2 in connections)
+                    or (c + "-" + b) in (s1 + "-" + s2 for s1, s2 in connections)
+                )
+                connected_ac = any(
+                    (a + "-" + c) in (s1 + "-" + s2 for s1, s2 in connections)
+                    or (c + "-" + a) in (s1 + "-" + s2 for s1, s2 in connections)
+                )
+                
+                if connected_ab and connected_bc and connected_ac:
+                    if any(comp.startswith("t") for comp in [a, b, c]):
+                       valid_sets.append((a,b,c))
+                        
+    print(len(valid_sets))
+
+solve()

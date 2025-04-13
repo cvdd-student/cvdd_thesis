@@ -1,0 +1,16 @@
+import re
+
+def solve():
+    memory = input()
+    mul_instructions = re.findall(r"mul\((\d+),\s*(\d+)\)", memory)
+    total = 0
+    for instruction in mul_instructions:
+        try:
+            x = int(instruction[0])
+            y = int(instruction[1])
+            total += x * y
+        except ValueError:
+            pass  # Ignore invalid instructions
+    return total
+
+print(solve())

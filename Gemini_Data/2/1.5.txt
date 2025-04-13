@@ -1,0 +1,34 @@
+def is_safe(report):
+    """Checks if a report is safe."""
+    report_len = len(report)
+    if report_len <= 1:
+        return True
+
+    increasing = all(report[i] < report[i + 1] for i in range(report_len - 1))
+    decreasing = all(report[i] > report[i + 1] for i in range(report_len - 1))
+
+    if not increasing and not decreasing:
+        return False
+
+    for i in range(report_len - 1):
+        diff = abs(report[i] - report[i + 1])
+        if not (1 <= diff <= 3):
+            return False
+    return True
+
+
+def main():
+    """Reads input, checks safe reports, and prints the count."""
+    try:
+        safe_count = 0
+        for line in iter(lambda: input(), ''):
+            levels = [int(x) for x in line.split()]
+            if is_safe(levels):
+                safe_count += 1
+        print(safe_count)
+    except EOFError:
+        pass
+
+
+if __name__ == "__main__":
+    main()

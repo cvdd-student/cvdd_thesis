@@ -1,0 +1,42 @@
+def solve():
+    patterns = input().split(",")
+    patterns = [p.strip() for p in patterns]
+    
+    input()  # Consume the blank line
+
+    designs = []
+    while True:
+        try:
+            designs.append(input())
+        except EOFError:
+            break
+            
+    def can_make(design, patterns):
+        n = len(design)
+        if n == 0: return True
+
+        def check(design, i, patterns):
+            if i == n: return True
+            
+            for p in patterns:
+                if len(p) == 0:
+                    continue
+
+                if design[i:i+len(p)] == p:
+                    if check(design, i+len(p), patterns): return True
+
+            return False
+        
+        return check(design, 0, patterns)
+
+
+
+    count = 0
+    for design in designs:
+        if can_make(design, patterns):
+            count += 1
+
+    print(count)
+
+
+solve()

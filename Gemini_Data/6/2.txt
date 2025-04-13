@@ -1,0 +1,55 @@
+def solve():
+    grid = []
+    start_pos = None
+    with open("input.txt", "r") as f:
+        for i, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if "^" in row:
+                start_pos = (row.index("^"), i)
+
+    visited = set()
+    current_pos = start_pos
+    visited.add(current_pos)
+    direction = "up"  # Possible directions are up, down, left, right
+    while True:
+        next_pos = None
+        if direction == "up":
+            next_pos = (current_pos[0], current_pos[1] - 1)
+        elif direction == "down":
+            next_pos = (current_pos[0], current_pos[1] + 1)
+        elif direction == "left":
+            next_pos = (current_pos[0] - 1, current_pos[1])
+        elif direction == "right":
+            next_pos = (current_pos[0] + 1, current_pos[1])
+        
+        if 0 <= next_pos[0] < len(grid[0]) and 0 <= next_pos[1] < len(grid):
+            if grid[next_pos[1]][next_pos[0]] == "#":
+                if direction == "up":
+                    direction = "right"
+                elif direction == "down":
+                    direction = "right"
+                elif direction == "left":
+                    direction = "down"
+                elif direction == "right":
+                    direction = "down"
+                
+
+            else:
+                current_pos = next_pos
+                
+        else:
+            break
+
+
+        visited.add(current_pos)
+
+    # Update the grid to mark the visited positions.
+    for x, y in visited:
+      grid[y][x] = "X"
+
+
+    print(len(visited))
+
+
+solve()

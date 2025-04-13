@@ -1,0 +1,39 @@
+import collections
+
+def solve():
+    positions = []
+    for _ in range(1024):
+        x, y = map(int, input().split(','))
+        positions.append((x, y))
+
+    grid_size = 70
+    grid = [['.' for _ in range(grid_size)] for _ in range(grid_size)]
+
+    for x, y in positions[:1024]:
+        grid[y][x] = '#'
+
+    def bfs(start, end, grid):
+        queue = collections.deque([(start, 0)])
+        visited = {start}
+
+        while queue:
+            (x, y), dist = queue.popleft()
+            if (x, y) == end:
+                return dist
+
+            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < grid_size and 0 <= ny < grid_size and grid[ny][nx] == '.' and (nx, ny) not in visited:
+                    queue.append(((nx, ny), dist + 1))
+                    visited.add((nx, ny))
+
+        return float('inf')  # Path not found
+
+    start = (0, 0)
+    end = (grid_size - 1, grid_size - 1)
+    shortest_path = bfs(start, end, grid)
+
+    print(shortest_path)
+
+
+solve()

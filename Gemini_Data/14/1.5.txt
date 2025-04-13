@@ -1,0 +1,63 @@
+import re
+
+def parse_input(input_str):
+    robots = []
+    for line in input_str.splitlines():
+        match = re.match(r"p=(\d+),(\d+) v=(\d+),(\d+)", line)
+        if match:
+            x, y, vx, vy = map(int, match.groups())
+            robots.append((x, y, vx, vy))
+    return robots
+
+def simulate_robots(robots, seconds):
+    positions = {}
+    for x, y, vx, vy in robots:
+        for t in range(seconds):
+            x += vx
+            y += vy
+            x %= 101
+            y %= 103
+            
+            if (x,y) not in positions:
+                positions[(x,y)] = 0
+            positions[(x,y)] +=1
+            
+    return positions
+
+def calculate_safety_factor(positions):
+    quadrant_counts = {1: 0, 2: 0, 3: 0, 4: 0}
+    for (x, y), count in positions.items():
+        if x < 50 and y < 51.5 :
+            quadrant_counts[1] += count
+        elif x < 50 and y >= 51.5:
+            quadrant_counts[2] += count
+        elif x >= 50 and y < 51.5:
+            quadrant_counts[3] += count
+        elif x >= 50 and y >= 51.5:
+            quadrant_counts[4] += count
+            
+    safety_factor = 1
+    for count in quadrant_counts.values():
+        safety_factor *= count
+    return safety_factor
+
+
+if __name__ == "__main__":
+    input_data = """
+p=0,4 v=3,-3
+p=6,3 v=-1,-3
+p=10,3 v=-1,2
+p=2,0 v=2,-1
+p=0,0 v=1,3
+p=3,0 v=-2,-2
+p=7,6 v=-1,-3
+p=3,0 v=-1,-2
+p=9,3 v=2,3
+p=7,3 v=-1,2
+p=2,4 v=2,-3
+p=9,5 v=-3,-3
+"""
+    robots = parse_input(input_data)
+    positions = simulate_robots(robots, 100)
+    safety_factor = calculate_safety_factor(positions)
+    print(safety_factor)

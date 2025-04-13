@@ -1,0 +1,130 @@
+def parse_schematic(schematic):
+    """Parses a schematic (lock or key) and returns a list of pin heights."""
+    lines = schematic.splitlines()
+    width = len(lines[0])
+    heights = []
+    for i in range(width):
+        height = 0
+        for j in range(len(lines)):
+            if lines[j][i] == '#':
+                height += 1
+        heights.append(height)
+    return heights
+
+def check_fit(lock_heights, key_heights):
+    """Checks if a key fits a lock."""
+    for i in range(len(lock_heights)):
+        if lock_heights[i] + key_heights[i] > 5:  #5 is the max possible height of the 'lock' and 'key'.
+            return False
+    return True
+  
+
+
+def main():
+    lock_schematics = [
+    
+    
+       """#####
+.####
+.####
+.####
+.#.#.
+.#...
+.....""",
+
+       """#####
+##.##
+.#.##
+...##
+...#.
+...#.
+....."""
+       
+       , """.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####""",""".....
+.....
+#.#..
+###..
+###.#
+###.#
+#####""",""".....
+.....
+.....
+#....
+#.#..
+#.#.#
+#####"""
+
+     ]
+
+
+
+    key_schematics = [
+
+      """.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####""",
+
+      """.....
+##..#
+#.#.#
+###..
+....#
+....#
+.....""",
+
+""".....
+#..##
+#.#.#
+#..##
+#...#
+#.###
+#####"""
+  , """.....
+.....
+..#.#
+...##
+...##
+...##
+#####"""
+,""".....
+.....
+.....
+#....
+#.#..
+#.#.#
+#####"""
+
+]
+
+    # Parse the schematic
+    locks = []
+    for schematic in lock_schematics:
+        locks.append(parse_schematic(schematic))
+
+    keys = []
+    for schematic in key_schematics:
+        keys.append(parse_schematic(schematic))
+
+
+
+    count = 0
+    for lock_heights in locks:
+        for key_heights in keys:
+            if check_fit(lock_heights, key_heights):
+                count += 1
+
+    print(count)
+
+
+if __name__ == "__main__":
+    main()

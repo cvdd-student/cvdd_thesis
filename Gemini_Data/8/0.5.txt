@@ -1,0 +1,53 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    antennas = {}
+    for r in range(rows):
+        for c in range(cols):
+            char = grid[r][c]
+            if char.isalpha() or char.isdigit():
+                if char not in antennas:
+                    antennas[char] = []
+                antennas[char].append((r, c))
+
+    antinodes = set()
+    for freq, coords in antennas.items():
+        for i in range(len(coords)):
+            for j in range(i + 1, len(coords)):
+                r1, c1 = coords[i]
+                r2, c2 = coords[j]
+                
+                dist = ((r2 - r1)**2 + (c2 - c1)**2)**0.5
+                
+                if dist > 0 and dist * 2 == round(dist * 2):
+                    
+                    
+                    ratio = 2
+                    
+                    
+                    r_mid = int((r1 + r2) / 2)
+                    c_mid = int((c1 + c2) / 2)
+                    
+                    
+                    
+                    r_other = int(r1 + (r2 - r1) * ratio)
+                    c_other = int(c1 + (c2 - c1) * ratio)
+                    
+                    
+                    
+                    if 0 <= r_mid < rows and 0 <= c_mid < cols:
+                        antinodes.add((r_mid, c_mid))
+                        
+                    if 0 <= r_other < rows and 0 <= c_other < cols:
+                        antinodes.add((r_other, c_other))
+                        
+                        
+    print(len(antinodes))
+
+solve()

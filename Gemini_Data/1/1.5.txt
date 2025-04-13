@@ -1,0 +1,55 @@
+def calculate_total_distance(left_list, right_list):
+    """
+    Calculates the total distance between two lists of location IDs.
+
+    Args:
+        left_list: A list of integers representing location IDs.
+        right_list: A list of integers representing location IDs.
+
+    Returns:
+        The total distance between the lists.  Returns 0 if either list is empty.
+    """
+    if not left_list or not right_list:
+        return 0
+
+    left_list.sort()
+    right_list.sort()
+
+    total_distance = 0
+    min_index_left = 0
+    min_index_right = 0
+
+    while min_index_left < len(left_list) and min_index_right < len(right_list):
+        total_distance += abs(left_list[min_index_left] - right_list[min_index_right])
+        min_index_left += 1
+        min_index_right += 1
+    return total_distance
+
+def main():
+    # Read the input file, assuming each line has two numbers separated by a space
+    try:
+      with open("input.txt") as f:  # Replace "input.txt" with the actual input file name
+        lines = f.readlines()
+    except FileNotFoundError:
+        print("Error: Input file not found.")
+        return
+
+    left_list = []
+    right_list = []
+
+    for line in lines:
+        try:
+            left, right = line.strip().split()  #Important whitespace handling
+            left_list.append(int(left))
+            right_list.append(int(right))
+        except ValueError:
+            print("Error: Invalid input format in line:", line)
+            return
+    
+    total_distance = calculate_total_distance(left_list, right_list)
+    print(total_distance)
+
+
+
+if __name__ == "__main__":
+    main()

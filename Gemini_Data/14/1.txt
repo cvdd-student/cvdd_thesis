@@ -1,0 +1,44 @@
+def solve():
+    robots = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split("=")
+            pos_parts = parts[1].split(",")
+            vel_parts = parts[3].split(",")
+            pos_x = int(pos_parts[0].strip())
+            pos_y = int(pos_parts[1].strip().split()[0])
+            vel_x = int(vel_parts[0].strip())
+            vel_y = int(vel_parts[1].strip().split()[0])
+            robots.append((pos_x, pos_y, vel_x, vel_y))
+
+    grid = {}
+    for t in range(100):
+        for i, (pos_x, pos_y, vel_x, vel_y) in enumerate(robots):
+            pos_x = (pos_x + vel_x) % 101
+            pos_y = (pos_y + vel_y) % 103
+            
+            if (pos_x, pos_y) in grid:
+                grid[(pos_x, pos_y)] += 1
+            else:
+                grid[(pos_x, pos_y)] = 1
+
+    quadrant_counts = [0, 0, 0, 0]
+    for (x, y), count in grid.items():
+        if x < 50 and y < 51:
+            quadrant_counts[0] += count
+        elif x < 50 and y >= 51:
+            quadrant_counts[1] += count
+        elif x >= 50 and y < 51:
+            quadrant_counts[2] += count
+        elif x >= 50 and y >= 51:
+            quadrant_counts[3] += count
+
+
+    safety_factor = 1
+    for count in quadrant_counts:
+        safety_factor *= count
+    return safety_factor
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

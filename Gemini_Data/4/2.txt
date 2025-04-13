@@ -1,0 +1,59 @@
+def count_xmas(word_search):
+    """
+    Counts the occurrences of the word "XMAS" in a word search grid.
+
+    Args:
+        word_search: A list of strings representing the word search grid.
+
+    Returns:
+        The total number of occurrences of "XMAS".
+    """
+    rows = len(word_search)
+    cols = len(word_search[0])
+    count = 0
+
+    def check_occurrence(row, col):
+        # Check horizontal
+        if col + 3 < cols and word_search[row][col:col + 4] == "XMAS":
+            return True
+        # Check vertical
+        if row + 3 < rows and "".join(word_search[r][col] for r in range(row, row + 4)) == "XMAS":
+            return True
+        # Check diagonal (top-left to bottom-right)
+        if row + 3 < rows and col + 3 < cols and "".join(word_search[r][c] for r, c in zip(range(row, row + 4), range(col, col + 4))) == "XMAS":
+            return True
+        # Check diagonal (top-right to bottom-left)
+        if row + 3 < rows and col - 3 >= 0 and "".join(word_search[r][c] for r, c in zip(range(row, row + 4), range(col, col - 4, -1))) == "XMAS":
+            return True
+
+        # Check reversed horizontal
+        if col + 3 < cols and word_search[row][col:col+4][::-1] == "SAMX":
+            return True
+        # Check reversed vertical
+
+        # Don't need check reversed diagonal because that would overlap original conditions
+
+        return False
+
+    for row in range(rows):
+        for col in range(cols):
+            if check_occurrence(row, col):
+                count += 1
+    return count
+
+
+# Example usage (replace with your input):
+word_search = [
+    "MMMSXXMASM",
+    "MSAMXMSMSA",
+    "AMXSXMAAMM",
+    "MSAMASMSMX",
+    "XMASAMXAMM",
+    "XXAMMXXAMA",
+    "SMSMSASXSS",
+    "SAXAMASAAA",
+    "MAMMMXMMMM",
+    "MXMXAXMASX"
+]
+count = count_xmas(word_search)
+print(count)

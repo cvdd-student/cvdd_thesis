@@ -1,0 +1,40 @@
+def is_safe(report):
+    """Checks if a report is safe."""
+    levels = [int(x) for x in report.split()]
+    
+    n = len(levels)
+    if n <= 1:
+        return True
+    
+    is_increasing = all(levels[i] < levels[i + 1] for i in range(n - 1))
+    is_decreasing = all(levels[i] > levels[i + 1] for i in range(n - 1))
+    
+    if not (is_increasing or is_decreasing):
+        return False
+    
+    for i in range(n - 1):
+        diff = abs(levels[i] - levels[i + 1])
+        if not (1 <= diff <= 3):
+            return False
+            
+    return True
+
+def count_safe_reports(data):
+  """Counts the number of safe reports."""
+  safe_count = 0
+  for report in data:
+    if is_safe(report):
+      safe_count += 1
+  return safe_count
+
+
+if __name__ == "__main__":
+    data = []
+    while True:
+        try:
+            line = input()
+            data.append(line)
+        except EOFError:
+            break
+    safe_reports = count_safe_reports(data)
+    print(safe_reports)

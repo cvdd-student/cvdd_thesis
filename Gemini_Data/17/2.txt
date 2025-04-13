@@ -1,0 +1,48 @@
+def solve():
+    lines = input().splitlines()
+    registers = {}
+    program = []
+    
+    for line in lines:
+        if "Register" in line:
+            key, value = line.split(":")
+            registers[key.strip()] = int(value.strip())
+        elif "Program" in line:
+            program_str = line.split(":")[1].strip()
+            program = [int(x) for x in program_str.split(",")]
+    
+    instruction_pointer = 0
+    output = []
+    
+    while instruction_pointer < len(program):
+        opcode = program[instruction_pointer]
+        operand = program[instruction_pointer + 1]
+        
+        if opcode == 0:
+            divisor = 2**operand
+            registers["A"] = registers["A"] // divisor if divisor else 0
+        elif opcode == 1:
+            registers["B"] = registers["B"] ^ operand
+        elif opcode == 2:
+            registers["B"] = operand % 8
+        elif opcode == 3:
+            if registers["A"] != 0:
+                instruction_pointer = operand
+            else:
+                instruction_pointer += 2
+        elif opcode == 4:
+            registers["B"] = registers["B"] ^ registers["C"]
+        elif opcode == 5:
+            output.append(operand % 8)
+        elif opcode == 6:
+            divisor = 2**operand
+            registers["B"] = registers["A"] // divisor if divisor else 0
+        elif opcode == 7:
+            divisor = 2**operand
+            registers["C"] = registers["A"] // divisor if divisor else 0
+
+        instruction_pointer += 2
+    
+    print(",".join(map(str, output)))
+
+solve()

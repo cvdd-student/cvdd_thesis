@@ -1,0 +1,68 @@
+import heapq
+
+def solve():
+    maze = []
+    start_pos = None
+    end_pos = None
+    
+    with open("input.txt", "r") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            maze.append(row)
+            if "S" in row:
+                start_pos = (row.index("S"), y)
+            if "E" in row:
+                end_pos = (row.index("E"), y)
+
+    def get_neighbors(pos, direction):
+        neighbors = []
+        x, y = pos
+        if direction == 0:  # East
+            if x + 1 < len(maze[0]) and maze[y][x + 1] != "#":
+                neighbors.append(((x + 1, y), 1))
+        elif direction == 1:  # North
+            if y - 1 >= 0 and maze[y - 1][x] != "#":
+                neighbors.append(((x, y - 1), 1))
+        elif direction == 2:  # West
+            if x - 1 >= 0 and maze[y][x - 1] != "#":
+                neighbors.append(((x - 1, y), 1))
+        elif direction == 3:  # South
+            if y + 1 < len(maze) and maze[y + 1][x] != "#":
+                neighbors.append(((x, y + 1), 1))
+        return neighbors
+
+    def heuristic(pos):
+        return abs(pos[0] - end_pos[0]) + abs(pos[1] - end_pos[1])
+
+    queue = [(0, 0, start_pos, 0)]  # (score, priority, position, direction)
+    visited = set()
+    
+    while queue:
+        score, priority, current_pos, direction = heapq.heappop(queue)
+        
+        if current_pos == end_pos:
+            return score
+        
+        if current_pos in visited:
+            continue
+        visited.add(current_pos)
+        
+        neighbors = get_neighbors(current_pos, direction)
+        for neighbor_pos, step_cost in neighbors:
+            new_score = score + step_cost
+            new_priority = new_score + heuristic(neighbor_pos)
+            heapq.heappush(queue, (new_score, new_priority, neighbor_pos, direction))
+            
+        new_score_turn_cw = score + 1000
+        new_priority_turn_cw = new_score_turn_cw + heuristic(current_pos)
+        heapq.heappush(queue, (new_score_turn_cw, new_priority_turn_cw, current_pos, (direction + 1) % 4))
+        
+        new_score_turn_ccw = score + 1000
+        new_priority_turn_ccw = new_score_turn_ccw + heuristic(current_pos)
+        heapq.heappush(queue, (new_score_turn_ccw, new_priority_turn_ccw, current_pos, (direction - 1) % 4))
+
+    return float('inf')
+
+
+result = solve()
+print(result)

@@ -1,0 +1,35 @@
+def is_safe(report):
+    """Checks if a report is safe based on the given criteria."""
+    levels = [int(x) for x in report.split()]
+    n = len(levels)
+
+    # Check if all levels are increasing or decreasing
+    increasing = all(levels[i] < levels[i + 1] for i in range(n - 1))
+    decreasing = all(levels[i] > levels[i + 1] for i in range(n - 1))
+
+    if not increasing and not decreasing:
+        return False
+
+    # Check if adjacent levels differ by at least 1 and at most 3
+    for i in range(n - 1):
+        diff = abs(levels[i] - levels[i + 1])
+        if not (1 <= diff <= 3):
+            return False
+
+    return True
+
+
+def main():
+    """Reads input, counts safe reports, and prints the result."""
+    safe_count = 0
+    try:
+        while True:
+            report = input()
+            if is_safe(report):
+                safe_count += 1
+    except EOFError:
+        print(safe_count)
+
+
+if __name__ == "__main__":
+    main()

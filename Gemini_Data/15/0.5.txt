@@ -1,0 +1,68 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for _ in range(10):
+            grid.append(list(f.readline().strip()))
+        moves = f.read().strip()
+
+    robot_row, robot_col = -1, -1
+    boxes = []
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == '@':
+                robot_row, robot_col = r, c
+            elif grid[r][c] == 'O':
+                boxes.append((r, c))
+
+    def get_new_pos(row, col, move):
+        if move == '^':
+            return row - 1, col
+        elif move == 'v':
+            return row + 1, col
+        elif move == '<':
+            return row, col - 1
+        elif move == '>':
+            return row, col + 1
+        return row, col
+
+    for move in moves:
+        new_robot_row, new_robot_col = get_new_pos(robot_row, robot_col, move)
+        
+        if grid[new_robot_row][new_robot_col] == '#':
+            continue
+        
+        
+        pushed_box = None
+        if grid[new_robot_row][new_robot_col] == 'O':
+            pushed_box = (new_robot_row, new_robot_col)
+            new_robot_row, new_robot_col = get_new_pos(robot_row, robot_col, move)
+
+            
+        if grid[new_robot_row][new_robot_col] != '#' and (new_robot_row, new_robot_col) != (robot_row, robot_col):
+            
+            grid[robot_row][robot_col] = '.'
+            grid[new_robot_row][new_robot_col] = '@'
+            robot_row = new_robot_row
+            robot_col = new_robot_col
+
+            if pushed_box is not None:
+                new_box_row, new_box_col = get_new_pos(pushed_box[0], pushed_box[1], move)
+                if grid[new_box_row][new_box_col] == '#':
+                    grid[pushed_box[0]][pushed_box[1]] = 'O'
+                else:
+                    grid[pushed_box[0]][pushed_box[1]] = '.'
+                    grid[new_box_row][new_box_col] = 'O'
+                    
+                    
+        elif grid[new_robot_row][new_robot_col] == '.':
+            grid[robot_row][robot_col] = '.'
+            grid[new_robot_row][new_robot_col] = '@'
+            robot_row = new_robot_row
+            robot_col = new_robot_col
+
+    total_gps = 0
+    for r, c in boxes:
+        total_gps += (r * 100 + c)
+    return total_gps
+
+print(solve())

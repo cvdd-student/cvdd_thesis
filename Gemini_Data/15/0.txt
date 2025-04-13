@@ -1,0 +1,71 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+    
+    moves = ""
+    for line in f:
+        moves += line.strip()
+        if line.strip() == "":
+            break
+
+    robot_row, robot_col = 0, 0
+    boxes = []
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == "@":
+                robot_row, robot_col = r, c
+            elif grid[r][c] == "O":
+                boxes.append((r, c))
+
+    for move in moves:
+        new_robot_row, new_robot_col = robot_row, robot_col
+        if move == ">":
+            new_robot_col += 1
+        elif move == "<":
+            new_robot_col -= 1
+        elif move == "^":
+            new_robot_row -= 1
+        elif move == "v":
+            new_robot_row += 1
+
+        if (0 <= new_robot_row < len(grid) and
+            0 <= new_robot_col < len(grid[0]) and
+            grid[new_robot_row][new_robot_col] != "#"):
+            
+            robot_moved = True
+            
+            for box_row, box_col in boxes:
+                if (move == ">" and box_col == new_robot_col - 1 and box_row == new_robot_row) or \
+                   (move == "<" and box_col == new_robot_col + 1 and box_row == new_robot_row) or \
+                   (move == "^" and box_row == new_robot_row + 1 and box_col == new_robot_col) or \
+                   (move == "v" and box_row == new_robot_row - 1 and box_col == new_robot_col):
+                    new_box_row, new_box_col = box_row, box_col
+                    if move == ">":
+                        new_box_col += 1
+                    elif move == "<":
+                        new_box_col -= 1
+                    elif move == "^":
+                        new_box_row -= 1
+                    elif move == "v":
+                        new_box_row += 1
+                    
+                    if (0 <= new_box_row < len(grid) and
+                        0 <= new_box_col < len(grid[0]) and
+                        grid[new_box_row][new_box_col] != "#"):
+                        grid[box_row] = grid[box_row][:box_col] + "." + grid[box_row][box_col+1:]
+                        grid[new_box_row] = grid[new_box_row][:new_box_col] + "O" + grid[new_box_row][new_box_col+1:]
+                        boxes.remove((box_row, box_col))
+                        boxes.append((new_box_row, new_box_col))
+            
+            grid[robot_row] = grid[robot_row][:robot_col] + "." + grid[robot_row][robot_col+1:]
+            grid[new_robot_row] = grid[new_robot_row][:new_robot_col] + "@" + grid[new_robot_row][new_robot_col+1:]
+            robot_row, robot_col = new_robot_row, new_robot_col
+    
+    total_gps = 0
+    for r, c in boxes:
+        total_gps += (r * 100 + c)
+    return total_gps
+
+print(solve())
