@@ -5,6 +5,11 @@ from sklearn import svm
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
+from transformers import AutoTokenizer, AutoModel
+import torch
+
+from sklearn.linear_model import LogisticRegression
+
 def get_data(folder_name, label):
     list_data = []
     for data in os.walk(folder_name):
@@ -42,6 +47,57 @@ def convert_to_feats(train_data, test_data):
     return train_feats, test_feats
 
 
+def convert_to_feats_codeBERT(train_data, test_data):
+    tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
+    train_feats = tokenizer.tokenize(train_data[0])
+    test_feats = tokenizer.tokenize(test_data[0])
+    
+    train_encoded = []
+    for item in train_data:
+        item_tokenized = " ".join(tokenizer.tokenize(item))
+        train_encoded.append(item_tokenized)
+        
+    test_encoded = []
+    for item in test_data:
+        item_tokenized = " ".join(tokenizer.tokenize(item))
+        test_encoded.append(item_tokenized)
+    
+    vec_count = CountVectorizer()
+    vec_count.fit(train_encoded)
+    train_count_vec = vec_count.transform(train_encoded)
+    test_count_vec = vec_count.transform(test_encoded)
+    
+    vec_tfidf = TfidfTransformer()
+    vec_tfidf.fit(train_count_vec)
+    train_feats = vec_tfidf.transform(train_count_vec)
+    test_feats = vec_tfidf.transform(test_count_vec)
+    
+    return train_feats, test_feats
+
+
+def clean_data(data):
+    data_out = []
+    
+    for item, label in data:
+        item_new = []
+        for line in item.split("\n"):
+            flag_skip_line = False
+            line_clean = line.replace("    ", "")
+            if line_clean[:3] == '"""':
+                flag_skip_line = True
+            if line_clean[:3] == "'''":
+                flag_skip_line = True
+            if line_clean[:1] == "#":
+                flag_skip_line = True
+            
+            if flag_skip_line is not True:
+                item_new.append(line)
+        item_new = "\n".join(item_new)
+        data_out.append([item_new, label])
+    
+    return data_out
+
+
 def process_data(list_data):
     random.shuffle(list_data)
 
@@ -52,9 +108,15 @@ def process_data(list_data):
     tr_items, tr_labels = separate_items_labels(training_data)
     te_items, te_labels = separate_items_labels(test_data)
     
-    tr_feats, te_feats = convert_to_feats(tr_items, te_items)
+    return tr_items, tr_labels, te_items, te_labels
+
+
+def train_clf(train_feats, train_labels):
+    print("Training model...")
+    clf = LogisticRegression(random_state=0).fit(train_feats, train_labels)
+    print("OK")
     
-    return tr_feats, tr_labels, te_feats, te_labels
+    return clf
 
 
 def train_cls(train_feats, train_labels):
@@ -75,10 +137,24 @@ def main():
     gemini_data = get_data("Gemini_Data", "gemini")
     human_data = get_data("Human_Data", "human")
     full_data = gemini_data + human_data
+    full_data = clean_data(full_data)
     tr_items, tr_labels, te_items, te_labels = process_data(full_data)
     
-    cls = train_cls(tr_items, tr_labels)
-    predict = cls.predict(te_items)
+    tr_feats, te_feats = convert_to_feats(tr_items, te_items)
+    
+    clf = train_clf(tr_feats, tr_labels)
+    predict = clf.predict_proba(te_feats)
+    
+    for prediction, true in zip(predict, te_labels):
+        print(prediction[0], true)
+    exit()
+    
+    accum = 0
+    for real, pred in zip(te_labels, predict):
+        if real != pred:
+            print(te_items[accum])
+            print(real)
+        accum += 1
     
     eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=predict)
     print(eval_matrix)
