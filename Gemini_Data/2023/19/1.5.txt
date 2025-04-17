@@ -1,0 +1,85 @@
+def solve():
+    workflows = {}
+    parts = []
+    
+    line = input()
+    while line != "":
+        parts_list = line.replace("{","").replace("}","").split(",")
+        workflow_name = parts_list[0].split(" ")[0]
+        rules = []
+        for rule_str in parts_list:
+            rule_parts = rule_str.strip().split(":")
+            if len(rule_parts) == 2:
+              condition = rule_parts[0]
+              destination = rule_parts[1].strip()
+              rules.append((condition,destination))
+            else:
+              rules.append(("","A")) # Default is accepted
+        workflows[workflow_name] = rules
+        line = input()
+    
+    input() # consume empty line
+    
+    while True:
+        try:
+            line = input()
+            part_ratings = {}
+            values = line.replace("{","").replace("}","").split(",")
+            for value in values:
+              kv = value.strip().split("=")
+              part_ratings[kv[0]] = int(kv[1])
+
+            parts.append(part_ratings)
+        except EOFError:
+            break
+    
+    total_accepted_sum = 0
+    
+    for part_ratings in parts:
+        current_workflow = "in"
+        while True:
+            rules = workflows[current_workflow]
+            matched = False
+            for condition, destination in rules:
+                if condition == "":
+                    matched = True
+                    if destination == "A":
+                        total_accepted_sum += sum(part_ratings.values())
+                        break
+                    elif destination == "R":
+                        break
+                    else:
+                      current_workflow = destination
+                      break
+                else:
+                    cond_parts = condition.split(">")
+                    if len(cond_parts) == 2:
+                      if part_ratings.get(cond_parts[0]) > int(cond_parts[1]):
+                          matched = True
+                          if destination == "A":
+                            total_accepted_sum += sum(part_ratings.values())
+                            break
+                          elif destination == "R":
+                            break
+                          else:
+                            current_workflow = destination
+                            break
+                    else:
+                        cond_parts = condition.split("<")
+                        if part_ratings.get(cond_parts[0]) < int(cond_parts[1]):
+                          matched = True
+                          if destination == "A":
+                            total_accepted_sum += sum(part_ratings.values())
+                            break
+                          elif destination == "R":
+                            break
+                          else:
+                            current_workflow = destination
+                            break
+            if not matched:
+                break
+
+    return total_accepted_sum
+
+
+print(solve())

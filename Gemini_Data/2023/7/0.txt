@@ -1,0 +1,67 @@
+def card_value(card):
+    if card == 'A':
+        return 14
+    elif card == 'K':
+        return 13
+    elif card == 'Q':
+        return 12
+    elif card == 'J':
+        return 11
+    elif card == 'T':
+        return 10
+    else:
+        return int(card)
+
+def hand_strength(hand):
+    counts = {}
+    for card in hand:
+        counts[card] = counts.get(card, 0) + 1
+    
+    sorted_counts = sorted(counts.values(), reverse=True)
+    
+    if len(set(sorted_counts)) == 1:
+        return "Five of a kind"
+    elif sorted_counts[0] == 4:
+        return "Four of a kind"
+    elif sorted_counts[0] == 3 and sorted_counts[1] == 2:
+        return "Full house"
+    elif sorted_counts[0] == 3:
+        return "Three of a kind"
+    elif sorted_counts.count(2) == 2:
+        return "Two pair"
+    elif sorted_counts.count(2) == 1:
+        return "One pair"
+    else:
+        return "High card"
+
+def compare_hands(hand1, hand2):
+    strength1 = hand_strength(hand1)
+    strength2 = hand_strength(hand2)
+    
+    if strength1 != strength2:
+        return strength1 > strength2
+    
+    for i in range(5):
+        val1 = card_value(hand1[i])
+        val2 = card_value(hand2[i])
+        if val1 > val2:
+            return True
+        elif val1 < val2:
+            return False
+    return False
+
+def solve():
+    hands_data = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            hand_str, bid_str = line.strip().split()
+            hands_data.append((hand_str, int(bid_str)))
+    
+    sorted_hands = sorted(hands_data, key=lambda x: x[0], cmp=lambda x, y: compare_hands(x[0], y[0]))
+    
+    total_winnings = 0
+    for i in range(len(sorted_hands)):
+        total_winnings += sorted_hands[i][1] * (i + 1)
+    return total_winnings
+
+print(solve())

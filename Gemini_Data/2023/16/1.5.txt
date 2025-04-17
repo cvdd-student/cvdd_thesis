@@ -1,0 +1,104 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            grid.append(list(line.strip()))
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def get_char(row, col):
+        if 0 <= row < rows and 0 <= col < cols:
+            return grid[row][col]
+        return None
+
+    def update_grid(row, col, char, direction):
+        if get_char(row, col) == None or (char != '|' and char != '-'):
+          grid[row][col] = char if char else grid[row][col]
+          return
+        if get_char(row, col) == '.' and char:
+          grid[row][col] = char
+        elif char == '|':
+          if get_char(row,col) != '|':
+              grid[row][col] = str(int(get_char(row,col)) +1) if get_char(row, col).isdigit() else '+'
+        else:
+          if get_char(row,col) != '|':
+              grid[row][col] = str(int(get_char(row,col)) + 1) if get_char(row, col).isdigit() else '+'
+              
+            
+
+    row = 0
+    col = 0
+    direction = "right"  # Initialize direction
+
+    while row >= 0 and row < rows and col >= 0 and col < cols:
+
+      if get_char(row, col) == None:
+        break
+      if direction == "right":
+        update_grid(row, col, "v", "right")
+        col += 1
+      elif direction == "left":
+        update_grid(row, col, "<", "left")
+        col -= 1
+      elif direction == "up":
+        update_grid(row, col, "^", "up")
+        row -= 1
+      elif direction == "down":
+        update_grid(row, col, "v", "down")
+        row += 1
+
+      if get_char(row, col) == '/':
+        if direction == "right":
+            direction = "up"
+        elif direction == "left":
+            direction = "down"
+        elif direction == "up":
+            direction = "right"
+        else:
+            direction = "left"
+        update_grid(row,col,"/",direction)
+
+      elif get_char(row, col) == '\\':
+        if direction == "right":
+            direction = "down"
+        elif direction == "left":
+            direction = "up"
+        elif direction == "up":
+            direction = "left"
+        else:
+            direction = "right"
+        update_grid(row,col,"\\",direction)
+      elif get_char(row, col) == '|':
+          update_grid(row,col,"+",direction)
+          if direction == "right":
+            row -= 1
+            direction = "up"
+          elif direction == "left":
+            row += 1
+            direction = "down"
+          
+
+      elif get_char(row, col) == '-':
+        update_grid(row,col,"+",direction)
+        if direction == "right":
+            row -= 1
+            direction = "up"
+        elif direction == "left":
+            row += 1
+            direction = "down"
+
+
+
+
+    count = 0
+    for row in grid:
+        for char in row:
+            if char == '#':
+                count += 1
+
+
+    print(count)
+
+
+solve()

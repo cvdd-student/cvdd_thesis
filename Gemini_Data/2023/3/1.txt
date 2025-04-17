@@ -1,0 +1,44 @@
+import re
+
+def solve():
+    schematic = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            schematic.append(line.strip())
+
+    symbol_pattern = r"[^0-9.]"
+    part_numbers = []
+
+    for row_index, row in enumerate(schematic):
+        matches = re.finditer(r"\d+", row)
+        for match in matches:
+            num_str = match.group(0)
+            num = int(num_str)
+            
+            start_col = match.start()
+            end_col = match.end()
+            
+            is_part_number = False
+            for col in range(start_col - 1, end_col + 1):
+                if col < 0 or col >= len(row):
+                    continue
+                if re.search(symbol_pattern, schematic[row_index][col]):
+                    is_part_number = True
+                    break
+                
+                for r_offset in [-1, 0, 1]:
+                    if row_index + r_offset < 0 or row_index + r_offset >= len(schematic):
+                        continue
+                    if re.search(symbol_pattern, schematic[row_index + r_offset][col]):
+                        is_part_number = True
+                        break
+
+                if is_part_number:
+                    break
+            
+            if is_part_number:
+                part_numbers.append(num)
+    
+    print(sum(part_numbers))
+
+solve()

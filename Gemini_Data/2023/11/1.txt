@@ -1,0 +1,92 @@
+import collections
+
+def expand_universe(universe):
+    """Expands the universe by doubling rows/cols with no galaxies."""
+    rows = []
+    for row in universe:
+        rows.append(list(row))
+    
+    rows_to_double = []
+    cols_to_double = []
+    for i in range(len(rows)):
+        if all(c == '.' for c in rows[i]):
+            rows_to_double.append(i)
+    
+    for j in range(len(rows[0])):
+        if all(rows[i][j] == '.' for i in range(len(rows))):
+            cols_to_double.append(j)
+            
+    expanded_universe = []
+    for i in range(len(rows)):
+        if i in rows_to_double:
+            expanded_universe.append(rows[i] * 2)
+        else:
+            expanded_universe.append(rows[i])
+            
+    new_rows = []
+    for row in expanded_universe:
+        new_row = []
+        for j in range(len(row)):
+            if j in cols_to_double:
+                new_row.append(row[j])
+                new_row.append(row[j])
+            else:
+                new_row.append(row[j])
+        new_rows.append("".join(new_row))
+
+    return new_rows
+
+def find_shortest_path(expanded_universe, galaxy1, galaxy2):
+    """Finds the shortest path between two galaxies."""
+    rows = len(expanded_universe)
+    cols = len(expanded_universe[0])
+    
+    q = collections.deque([(galaxy1, 0)])
+    visited = set()
+    
+    while q:
+        (r1, c1), dist = q.popleft()
+        if (r1, c1) == (galaxy2, ):
+            return dist
+
+        visited.add((r1, c1))
+        
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r1 + dr, c1 + dc
+            if 0 <= nr < rows and 0 <= nc < cols and expanded_universe[nr][nc] != '.' and (nr, nc) not in visited:
+                q.append(((nr, nc), dist + 1))
+                
+    return float('inf')
+
+def solve():
+    universe = [
+        "...#......",
+        .......#..",
+        "#.........",
+        "..........",
+        "......#...",
+        ".#........",
+        ".........#",
+        "..........",
+        ".......#..",
+        "#...#....."
+    ]
+    
+    expanded_universe = expand_universe(universe)
+    
+    galaxies = []
+    for r in range(len(expanded_universe)):
+      for c in range(len(expanded_universe[0])):
+        if expanded_universe[r][c] == '#':
+          galaxies.append((r, c))
+          
+    total_shortest_path = 0
+    for i in range(len(galaxies)):
+      for j in range(i + 1, len(galaxies)):
+        path_len = find_shortest_path(expanded_universe, galaxies[i], galaxies[j])
+        total_shortest_path += path_len
+
+    return total_shortest_path
+
+result = solve()
+print(result)

@@ -1,0 +1,67 @@
+def solve():
+    workflows = {}
+    parts = []
+    
+    line = input()
+    while line and line != "":
+        parts_name = line.split("{")[0]
+        rules_str = line.split("{")[1].split("}")[0]
+        rules = []
+        for rule_str in rules_str.split(","):
+            rule_str = rule_str.strip()
+            if ":" in rule_str:
+                condition, destination = rule_str.split(":", 1)
+                rules.append((condition.strip(), destination.strip()))
+            else:
+                rules.append((None, rule_str.strip()))
+        workflows[parts_name] = rules
+        line = input()
+    
+    input()
+    while True:
+        try:
+            line = input()
+            part_data = {}
+            for item in line.split(","):
+                k, v = item.split("=")
+                part_data[k.strip()] = int(v.strip())
+            parts.append(part_data)
+        except EOFError:
+            break
+    
+    total_accepted_sum = 0
+    for part in parts:
+        current_workflow = "in"
+        while current_workflow != "A" and current_workflow != "R":
+            rules = workflows[current_workflow]
+            matched = False
+            for condition, destination in rules:
+                if condition is None:
+                    current_workflow = destination
+                    matched = True
+                    break
+                try:
+                    condition_parts = condition.split(">") if ">" in condition else condition.split("<")
+                    value = part[condition_parts[0].strip()]
+                    if ">" in condition:
+                        if value > int(condition_parts[1].strip()):
+                            current_workflow = destination
+                            matched = True
+                            break
+                    elif "<" in condition:
+                        if value < int(condition_parts[1].strip()):
+                            current_workflow = destination
+                            matched = True
+                            break
+                except (KeyError, ValueError):
+                    pass  # Ignore invalid conditions
+            if not matched:
+                current_workflow = "A"  # Default to acceptance if no rule matched
+
+        if current_workflow == "A":
+            total_accepted_sum += sum(part.values())
+    
+    print(total_accepted_sum)
+
+
+solve()

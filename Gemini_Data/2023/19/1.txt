@@ -1,0 +1,59 @@
+def solve():
+    workflows = {}
+    parts = []
+    
+    line = input()
+    while line != "":
+        workflow_name = line.split("{")[0].strip()
+        rules_str = line[line.index("{") + 1:line.index("}")]
+        rules = []
+        for rule in rules_str.split(","):
+            rule = rule.strip()
+            if rule == "A" or rule == "R":
+                rules.append(rule)
+            else:
+                condition, dest = rule.split(":")
+                rules.append((condition, dest))
+        workflows[workflow_name] = rules
+        line = input()
+    
+    line = input()
+    while line != "":
+        part = {}
+        for item in line[line.index("{") + 1:line.index("}")].split(","):
+            k, v = item.split("=")
+            part[k.strip()] = int(v.strip())
+        parts.append(part)
+        line = input()
+
+    total_accepted_sum = 0
+    for part in parts:
+        current_workflow = "in"
+        while current_workflow != "A" and current_workflow != "R":
+            rules = workflows[current_workflow]
+            for condition, dest in rules:
+                if condition == "A":
+                    current_workflow = "A"
+                    break
+                
+                if condition == "R":
+                    current_workflow = "R"
+                    break
+                
+                try:
+                    if eval(condition.replace("x", "part['x']").replace("m", "part['m']").replace("a", "part['a']").replace("s", "part['s']")):
+                        current_workflow = dest
+                        break
+                except (NameError, SyntaxError):
+                    print(f"Invalid condition: {condition}")
+                    return 0  # Or handle error in a more robust way
+
+            if current_workflow == "A" or current_workflow == "R":
+                break
+        if current_workflow == "A":
+            total_accepted_sum += sum(part.values())
+    
+    print(total_accepted_sum)
+
+
+solve()

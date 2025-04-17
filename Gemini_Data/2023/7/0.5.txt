@@ -1,0 +1,78 @@
+def card_value(card):
+    if card == 'A':
+        return 14
+    elif card == 'K':
+        return 13
+    elif card == 'Q':
+        return 12
+    elif card == 'J':
+        return 11
+    elif card == 'T':
+        return 10
+    else:
+        return int(card)
+
+def hand_type(hand):
+    counts = {}
+    for card in hand:
+        counts[card] = counts.get(card, 0) + 1
+    
+    values = sorted([card_value(card) for card in hand], reverse=True)
+    
+    if len(counts) == 1:
+        return "Five of a kind"
+    elif len(counts) == 2:
+        if 4 in counts.values():
+            return "Four of a kind"
+        else:
+            return "Full house"
+    elif 3 in counts.values():
+        return "Three of a kind"
+    elif list(counts.values()).count(2) == 2:
+        return "Two pair"
+    elif 2 in counts.values():
+        return "One pair"
+    else:
+        return "High card"
+
+def compare_hands(hand1, hand2):
+    type1 = hand_type(hand1)
+    type2 = hand_type(hand2)
+    
+    if type1 != type2:
+        return type1 > type2
+    
+    values1 = sorted([card_value(card) for card in hand1], reverse=True)
+    values2 = sorted([card_value(card) for card in hand2], reverse=True)
+    
+    for i in range(5):
+        if values1[i] > values2[i]:
+            return True
+        elif values1[i] < values2[i]:
+            return False
+    return False
+
+def solve():
+    hands_with_bids = []
+    with open("input.txt") as f:
+        for line in f:
+            parts = line.strip().split()
+            hand = parts[0]
+            bid = int(parts[1])
+            hands_with_bids.append((hand, bid))
+
+    sorted_hands = sorted(hands_with_bids, key=lambda x: hand_type(x[0]), reverse=True)
+    sorted_hands_with_indices = []
+
+    for i in range(len(sorted_hands)):
+        sorted_hands_with_indices.append((sorted_hands[i][0], sorted_hands[i][1], i + 1))
+    
+    total_winnings = 0
+    for hand, bid, rank in sorted_hands_with_indices:
+        total_winnings += bid * rank
+    return total_winnings
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

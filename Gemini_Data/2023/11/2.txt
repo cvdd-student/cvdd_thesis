@@ -1,0 +1,71 @@
+from collections import deque
+
+def expand_universe(universe):
+    rows_to_double = []
+    cols_to_double = []
+    for r in range(len(universe)):
+        if "#" not in universe[r]:
+            rows_to_double.append(r)
+    for c in range(len(universe[0])):
+        if "#" not in [row[c] for row in universe]:
+            cols_to_double.append(c)
+
+    expanded_universe = [row[:] for row in universe]
+    for r in rows_to_double:
+        expanded_universe.insert(r, ["." for _ in range(len(expanded_universe[0]))])
+        expanded_universe.insert(r, ["." for _ in range(len(expanded_universe[0]))])
+
+    for c in cols_to_double:
+        for i in range(len(expanded_universe)):
+            expanded_universe[i].insert(c, ".")
+            expanded_universe[i].insert(c, ".")
+
+    return expanded_universe
+
+def bfs(universe, start_galaxy, end_galaxy):
+    queue = deque([(start_galaxy, 0)])
+    visited = {start_galaxy}
+    
+    while queue:
+        (r, c), dist = queue.popleft()
+        if (r, c) == end_galaxy:
+            return dist
+        
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(universe) and 0 <= nc < len(universe[0]) and universe[nr][nc] != '#' and (nr, nc) not in visited:
+                queue.append(((nr, nc), dist + 1))
+                visited.add((nr, nc))
+                
+    return float('inf')
+
+
+def solve():
+    universe = []
+    while True:
+        try:
+            line = input()
+            universe.append(line)
+        except EOFError:
+            break
+
+    expanded_universe = expand_universe(universe)
+
+    galaxies = {}
+    galaxy_count = 0
+    for r in range(len(expanded_universe)):
+        for c in range(len(expanded_universe[0])):
+            if expanded_universe[r][c] == "#":
+                galaxies[(r, c)] = galaxy_count
+                galaxy_count += 1
+
+    total_distance = 0
+    for galaxy1 in galaxies:
+        for galaxy2 in galaxies:
+            if galaxy1 != galaxy2:
+              dist = bfs(expanded_universe, galaxy1, galaxy2)
+              total_distance += dist
+
+    print(total_distance // 2)
+  
+solve()

@@ -1,0 +1,62 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    def get_neighbors(r, c):
+        neighbors = []
+        if r > 0 and grid[r - 1][c] != '.':
+            neighbors.append((r - 1, c))
+        if r < len(grid) - 1 and grid[r + 1][c] != '.':
+            neighbors.append((r + 1, c))
+        if c > 0 and grid[r][c - 1] != '.':
+            neighbors.append((r, c - 1))
+        if c < len(grid[0]) - 1 and grid[r][c + 1] != '.':
+            neighbors.append((r, c + 1))
+        return neighbors
+
+    def find_loop(start_r, start_c):
+        visited = set()
+        queue = [(start_r, start_c, 0)]
+        loop_nodes = []
+        while queue:
+            r, c, steps = queue.pop(0)
+            if (r, c) in visited:
+                continue
+            visited.add((r, c))
+            loop_nodes.append((r, c))
+            neighbors = get_neighbors(r, c)
+            for nr, nc in neighbors:
+                queue.append((nr, nc, steps + 1))
+        return loop_nodes
+
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == 'S':
+                loop_nodes = find_loop(r, c)
+                break
+        else:
+            continue
+        break
+
+    distances = {}
+    for r, c in loop_nodes:
+        distances[(r, c)] = 0
+
+    queue = [(r, c, 0)]
+    while queue:
+        curr_r, curr_c, curr_dist = queue.pop(0)
+        distances[(curr_r, curr_c)] = curr_dist
+        neighbors = get_neighbors(curr_r, curr_c)
+        for nr, nc in neighbors:
+            if (nr, nc) in loop_nodes and distances[(nr, nc)] == 0:
+                queue.append((nr, nc, curr_dist + 1))
+
+    max_dist = 0
+    for dist in distances.values():
+        max_dist = max(max_dist, dist)
+
+    return max_dist
+
+print(solve())

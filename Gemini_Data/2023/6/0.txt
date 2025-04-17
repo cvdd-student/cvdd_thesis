@@ -1,0 +1,28 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+    
+    times = []
+    distances = []
+    for line in lines:
+        parts = line.strip().split()
+        times.append(int(parts[0].split(":")[1]))
+        distances.append(int(parts[1].split(":")[1]))
+    
+    total_ways = 1
+    for i in range(len(times)):
+        time = times[i]
+        distance = distances[i]
+        ways = 0
+        for hold_time in range(time + 1):
+            travel_time = time - hold_time
+            if travel_time > 0:
+                speed = hold_time
+                travel_distance = speed * travel_time
+                if travel_distance > distance:
+                    ways += 1
+        total_ways *= ways
+    
+    print(total_ways)
+
+solve()

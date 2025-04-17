@@ -1,0 +1,69 @@
+def solve():
+    grid = []
+    with open("input.txt") as f:
+        for line in f:
+            grid.append(list(line.strip()))
+    
+    def get_neighbors(r, c):
+        neighbors = []
+        if r > 0 and grid[r - 1][c] != '.':
+            neighbors.append((r - 1, c))
+        if r < len(grid) - 1 and grid[r + 1][c] != '.':
+            neighbors.append((r + 1, c))
+        if c > 0 and grid[r][c - 1] != '.':
+            neighbors.append((r, c - 1))
+        if c < len(grid[0]) - 1 and grid[r][c + 1] != '.':
+            neighbors.append((r, c + 1))
+        return neighbors
+
+    def find_loop(start_r, start_c):
+        visited = set()
+        loop = [(start_r, start_c)]
+        current_r, current_c = start_r, start_c
+        
+        while True:
+          
+          neighbors = get_neighbors(current_r, current_c)
+          
+          for nr, nc in neighbors:
+            if (nr, nc) not in visited:
+                
+                loop.append((nr, nc))
+                visited.add((nr, nc))
+                current_r, current_c = nr, nc
+                break
+            elif len(neighbors)==1:
+              if (current_r, current_c) == (start_r, start_c):
+                return loop  
+
+    def distance_from_start(loop, start_node):
+        distances = {}
+        for i, node in enumerate(loop):
+           distances[node] = float('inf')
+        distances[start_node] = 0
+       
+        queue = [start_node]
+        while queue:
+            current_node = queue.pop(0)
+            current_dist = distances[current_node]
+            neighbors = get_neighbors(current_node[0],current_node[1])
+            for neighbor in neighbors:
+              if neighbor in distances and distances[neighbor] > current_dist + 1:
+                    distances[neighbor] = current_dist + 1
+                    queue.append(neighbor)
+        return distances
+
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == 'S':
+                loop = find_loop(r, c)
+                distances = distance_from_start(loop, (r, c))
+
+                max_distance = 0
+                for node in distances:
+                  max_distance = max(max_distance,distances[node])
+
+                return max_distance
+
+result = solve()
+print(result)

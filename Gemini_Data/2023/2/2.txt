@@ -1,0 +1,31 @@
+def solve():
+    game_data = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            game_data.append(line.strip())
+
+    max_cubes = {"red": 12, "green": 13, "blue": 14}
+
+    total_possible_games = 0
+    for line in game_data:
+        game_id, subsets = line.split(":")
+        game_id = int(game_id.split()[1])
+        is_possible = True
+        for subset in subsets.split(";"):
+            cubes = {}
+            for cube_str in subset.split(","):
+                count, color = cube_str.strip().split()
+                cubes[color] = int(count)
+            for color, count in cubes.items():
+                if count > max_cubes[color]:
+                    is_possible = False
+                    break
+            if not is_possible:
+                break
+        if is_possible:
+            total_possible_games += game_id
+    return total_possible_games
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

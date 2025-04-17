@@ -1,0 +1,75 @@
+import collections
+
+def expand_universe(universe):
+    rows = len(universe)
+    cols = len(universe[0])
+    
+    galaxy_rows = [i for i, row in enumerate(universe) if '#' in row]
+    galaxy_cols = [j for j in range(cols) if any('#' in row[j] for row in universe)]
+    
+    expanded_universe = [['.' for _ in range(cols * 2)] for _ in range(rows * 2)]
+    
+    for i in range(rows):
+        for j in range(cols):
+            if j in galaxy_cols and i in galaxy_rows:
+                expanded_universe[i * 2][j * 2] = '#'
+            elif j in galaxy_cols:
+                expanded_universe[i * 2][j * 2] = '.'
+            elif i in galaxy_rows:
+                expanded_universe[i * 2][j * 2] = '.'
+            else:
+                expanded_universe[i * 2][j * 2] = '.'
+    
+    for i in range(rows):
+        for j in range(cols):
+            if j not in galaxy_cols:
+                expanded_universe[i * 2][j * 2 + 1] = '.'
+                expanded_universe[i * 2][j * 2 - 1] = '.'
+            if i not in galaxy_rows:
+                expanded_universe[i * 2 + 1][j * 2] = '.'
+                expanded_universe[i * 2 - 1][j * 2] = '.'
+    
+    return expanded_universe
+
+def shortest_path(universe, start, end):
+    rows = len(universe)
+    cols = len(universe[0])
+    
+    queue = collections.deque([(start, 0)])
+    visited = {start}
+    
+    while queue:
+        (row, col), dist = queue.popleft()
+        if (row, col) == end:
+            return dist
+        
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            new_row, new_col = row + dr, col + dc
+            if 0 <= new_row < rows and 0 <= new_col < cols and universe[new_row][new_col] != '.' and (new_row, new_col) not in visited:
+                queue.append(((new_row, new_col), dist + 1))
+                visited.add((new_row, new_col))
+    return float('inf')
+
+def solve():
+    universe = [list(input()) for _ in range(100)]
+    expanded_universe = expand_universe(universe)
+    
+    galaxies = []
+    galaxy_coords = {}
+    galaxy_count = 0
+    for r in range(len(expanded_universe)):
+        for c in range(len(expanded_universe[0])):
+            if expanded_universe[r][c] == '#':
+                galaxy_count += 1
+                galaxies.append((r, c))
+                galaxy_coords[(r, c)] = galaxy_count
+    
+    total_path_length = 0
+    for i in range(len(galaxies)):
+        for j in range(i + 1, len(galaxies)):
+            path_length = shortest_path(expanded_universe, galaxies[i], galaxies[j])
+            total_path_length += path_length
+    
+    return total_path_length
+
+print(solve())

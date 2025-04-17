@@ -1,0 +1,84 @@
+import collections
+
+def expand_universe(universe):
+    rows = len(universe)
+    cols = len(universe[0])
+    
+    galaxies_in_rows = [i for i, row in enumerate(universe) if '#' in row]
+    galaxies_in_cols = [j for j in range(cols) if any('#' in row[j] for row in universe)]
+    
+    expanded_universe = [['.' for _ in range(2 * cols - len(galaxies_in_cols) if len(galaxies_in_cols) > 0 else cols)] for _ in range(2 * rows - len(galaxies_in_rows) if len(galaxies_in_rows) > 0 else rows)]
+    galaxy_map = {}
+    galaxy_index = 1
+
+    for i, row in enumerate(universe):
+        for j, char in enumerate(row):
+          if char == '#':
+            if i in galaxies_in_rows and j in galaxies_in_cols :
+                expanded_universe[2*i - len(galaxies_in_rows) if len(galaxies_in_rows) > 0 else i][2*j-len(galaxies_in_cols) if len(galaxies_in_cols) > 0 else j] = str(galaxy_index)
+                galaxy_map[str(galaxy_index)] = (2*i - len(galaxies_in_rows) if len(galaxies_in_rows) > 0 else i , 2*j -len(galaxies_in_cols) if len(galaxies_in_cols) > 0 else j)
+                galaxy_index += 1
+
+
+    #Expand columns where there's no galaxy
+    for j in range(cols):
+        if j not in galaxies_in_cols :
+          for i, row in enumerate(expanded_universe):
+            row.insert(2 * j, '.')
+
+
+    for i in range(rows):
+        if i not in galaxies_in_rows:
+          expanded_universe.insert(2 * i, [ '.' for _ in range(len(expanded_universe[0]))])
+
+
+    return expanded_universe, galaxy_map
+
+
+def bfs(universe, start_galaxy, end_galaxy):
+    q = collections.deque([(start_galaxy, 0)])
+    visited = {start_galaxy}
+
+    while q:
+        (r, c), dist = q.popleft()
+        if (r,c) == end_galaxy : return dist
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(universe) and 0 <= nc < len(universe[0]) and universe[nr][nc] != '.' and (nr, nc) not in visited :
+                q.append(((nr, nc), dist + 1))
+                visited.add((nr, nc))
+    return float('inf')
+
+
+
+def calculate_total_shortest_path(universe):
+    
+    expanded_universe, galaxy_map = expand_universe(universe)
+    total_length = 0
+    galaxies = [int(cell) for row in expanded_universe for cell in row if cell.isdigit()]
+    
+    for i in range(len(galaxies)):
+      for j in range(i+1,len(galaxies)):
+        galaxy1_coordinates = galaxy_map[str(galaxies[i])]
+        galaxy2_coordinates = galaxy_map[str(galaxies[j])]
+        shortest_path = bfs(expanded_universe,galaxy1_coordinates, galaxy2_coordinates)
+        total_length += shortest_path
+
+
+    return total_length
+    
+# Example usage (replace with your input)
+universe = [
+    "...#......",
+    ".......#..",
+    "#.........",
+    "..........",
+    "......#...",
+    ".#........",
+    ".........#",
+    "..........",
+    ".......#..",
+    "#...#....."
+]
+result = calculate_total_shortest_path(universe)
+print(result)

@@ -1,0 +1,26 @@
+def hash_algorithm(input_string):
+    current_value = 0
+    for char in input_string:
+        ascii_code = ord(char)
+        current_value += ascii_code
+        current_value *= 17
+        current_value %= 256
+    return current_value
+
+def main():
+    initialization_sequence = input()
+    steps = initialization_sequence.split(",")
+    
+    total_hash_sum = 0
+    for step in steps:
+        #remove newline characters
+        step = step.replace("\n", "")
+        
+        # Handle potential empty steps
+        if step:
+            total_hash_sum += hash_algorithm(step)
+            
+    print(total_hash_sum)
+
+if __name__ == "__main__":
+    main()

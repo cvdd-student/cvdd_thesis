@@ -1,0 +1,86 @@
+def solve():
+    grid = [list(map(int, list(line))) for line in open('input.txt')]
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def get_heat_loss(r, c):
+        return grid[r][c]
+
+    def is_valid(r, c):
+        return 0 <= r < rows and 0 <= c < cols
+
+    def calculate_heat_loss(path):
+        total_heat_loss = 0
+        current_r, current_c = 0, 0
+        for move in path:
+            dr, dc = 0, 0
+            if move == '>':
+                dc = 1
+            elif move == '<':
+                dc = -1
+            elif move == '^':
+                dr = -1
+            elif move == 'v':
+                dr = 1
+            
+            new_r, new_c = current_r + dr, current_c + dc
+            
+            if is_valid(new_r, new_c):
+                total_heat_loss += get_heat_loss(new_r, new_c)
+                current_r, current_c = new_r, new_c
+
+        return total_heat_loss
+
+
+    def find_min_heat_loss(current_path, current_r, current_c, moves_in_direction):
+        if current_r == rows - 1 and current_c == cols - 1:
+            return calculate_heat_loss(current_path)
+        
+        possible_moves = []
+        
+        if moves_in_direction < 3:
+            if is_valid(current_r, current_c + 1):
+                possible_moves.append('>')
+            if is_valid(current_r - 1, current_c):
+                possible_moves.append('^')
+            if is_valid(current_r + 1, current_c):
+                possible_moves.append('v')
+            if is_valid(current_r, current_c - 1):
+                possible_moves.append('<')
+            
+        
+        min_heat_loss = float('inf')
+        for move in possible_moves:
+            
+            new_r, new_c = current_r, current_c
+            
+            dr, dc = 0, 0
+            if move == '>':
+                dc = 1
+            elif move == '<':
+                dc = -1
+            elif move == '^':
+                dr = -1
+            elif move == 'v':
+                dr = 1
+            
+            new_r += dr
+            new_c += dc
+            
+            new_moves_in_direction = 1 if move == current_path[-1] or not current_path else moves_in_direction +1
+            
+            heat_loss = find_min_heat_loss(current_path + move, new_r, new_c, new_moves_in_direction)
+            
+            if heat_loss != None:
+              
+                min_heat_loss = min(min_heat_loss, heat_loss)
+          
+        
+        return min_heat_loss if min_heat_loss != float('inf') else None
+
+
+
+    min_heat_loss = find_min_heat_loss("", 0, 0,0)
+    print(min_heat_loss)
+
+solve()

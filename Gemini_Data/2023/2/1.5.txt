@@ -1,0 +1,35 @@
+def solve():
+    data = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split(":")
+            game_id = int(parts[0].split()[1])
+            subsets = parts[1].split(";")
+            game_subsets = []
+            for subset in subsets:
+                cubes = subset.split(",")
+                subset_cubes = {}
+                for cube in cubes:
+                    count, color = cube.strip().split()
+                    subset_cubes[color] = int(count)
+                game_subsets.append(subset_cubes)
+            data.append((game_id, game_subsets))
+
+    possible_games = []
+    for game_id, game_subsets in data:
+        possible = True
+        for subset in game_subsets:
+            if "red" in subset and subset.get("red", 0) > 12:
+                possible = False
+                break
+            if "green" in subset and subset.get("green", 0) > 13:
+                possible = False
+                break
+            if "blue" in subset and subset.get("blue", 0) > 14:
+                possible = False
+                break
+        if possible:
+            possible_games.append(game_id)
+    print(sum(possible_games))
+
+solve()

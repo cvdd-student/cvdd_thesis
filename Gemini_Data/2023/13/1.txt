@@ -1,0 +1,44 @@
+def solve():
+    with open("input.txt", "r") as f:
+        patterns = f.read().strip().split("\n\n")
+
+    total_sum = 0
+    for pattern in patterns:
+        rows = pattern.split("\n")
+        num_rows = len(rows)
+        num_cols = len(rows[0])
+
+        # Check for vertical reflections
+        for col_index in range(num_cols):
+            reflection_sum = 0
+            for i in range(num_rows):
+                if col_index < num_cols - 1 - i:
+                    if rows[i][col_index] != rows[i][num_cols - 1 - i]:
+                        break
+                elif col_index == num_cols - 1 - i:
+                    reflection_sum += col_index
+                    break
+
+            if col_index < num_cols - 1 and reflection_sum > 0:
+                total_sum += col_index * 100
+                total_sum += reflection_sum
+
+
+
+        # Check for horizontal reflections
+        for row_index in range(num_rows):
+            reflection_sum = 0
+            for j in range(num_cols):
+                if row_index < num_rows - 1 - j:
+                    if rows[row_index][j] != rows[num_rows - 1 - row_index][j]:
+                        break
+                elif row_index == num_rows - 1 - j:
+                    reflection_sum += row_index * 100
+                    break
+
+            if row_index < num_rows - 1 and reflection_sum > 0:
+                total_sum += reflection_sum
+
+    print(total_sum)
+
+solve()

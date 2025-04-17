@@ -1,0 +1,38 @@
+def solve():
+    instructions = input()
+    nodes = {}
+    while True:
+        line = input()
+        if not line:
+            break
+        parts = line.split(" = ")
+        node_name = parts[0]
+        connections = parts[1].strip("()").split(", ")
+        nodes[node_name] = tuple(connections)
+
+    current_node = "AAA"
+    step_count = 0
+    instruction_index = 0
+
+    while current_node != "ZZZ":
+        instruction = instructions[instruction_index % len(instructions)]
+        
+        try:
+            connections = nodes[current_node]
+            if instruction == "R":
+                current_node = connections[1]
+            elif instruction == "L":
+                current_node = connections[0]
+            else:
+                raise ValueError(f"Invalid instruction: {instruction}")
+            step_count += 1
+            instruction_index += 1
+        except (IndexError, KeyError):
+            print("Error: Invalid node or instruction sequence.")
+            return -1  # Indicate an error
+
+    return step_count
+
+result = solve()
+if result != -1:
+    print(result)

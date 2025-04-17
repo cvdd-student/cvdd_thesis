@@ -1,0 +1,70 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            grid.append(list(map(int, list(line.strip()))))
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def calculate_heat_loss(path):
+        total_heat = 0
+        row, col = 0, 0
+        for move in path:
+            dr, dc = 0, 0
+            if move == '>':
+                dc = 1
+            elif move == '<':
+                dc = -1
+            elif move == '^':
+                dr = -1
+            elif move == 'v':
+                dr = 1
+
+            for _ in range(1):
+                nr, nc = row + dr, col + dc
+                if 0 <= nr < rows and 0 <= nc < cols:
+                    total_heat += grid[nr][nc]
+                    row, col = nr, nc
+                    break
+                else:
+                    return float('inf')  # Invalid move
+
+        return total_heat
+
+
+    def find_shortest_path(row, col, path, max_straight):
+      if row == rows - 1 and col == cols - 1:
+        return calculate_heat_loss(path)
+
+      moves = ['>', '<', '^', 'v']
+      min_heat = float('inf')
+
+      for move in moves:
+          dr, dc = 0, 0
+          if move == '>':
+              dc = 1
+          elif move == '<':
+              dc = -1
+          elif move == '^':
+              dr = -1
+          elif move == 'v':
+              dr = 1
+
+          nr, nc = row + dr, col + dc
+
+          if 0 <= nr < rows and 0 <= nc < cols:
+              new_path = path + move
+              heat = find_shortest_path(nr, nc, new_path, 1)
+              
+              if heat != float('inf') :
+                  min_heat = min(min_heat,heat)
+
+      return min_heat
+
+
+    initial_path = ""
+    result = find_shortest_path(0, 0, initial_path, 3)
+
+    print(result)
+solve()

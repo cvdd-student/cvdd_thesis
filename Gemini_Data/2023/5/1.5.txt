@@ -1,0 +1,63 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    seeds_line = lines[0].strip().split(": ")[1].split()
+    seeds = [int(s) for s in seeds_line]
+
+    maps = {}
+    current_map_type = ""
+    for i in range(2, len(lines)):
+        line = lines[i].strip()
+        if line == "":
+            continue
+        if "map:" in line:
+            parts = line.split(" ")
+            current_map_type = parts[0].split("-")[0] + "-" + parts[0].split("-")[1].split(":")[0]
+            maps[current_map_type] = []
+        else:
+            parts = line.split()
+            map_line = [int(p) for p in parts]
+            maps[current_map_type].append(map_line)
+
+    def apply_map(source_val, map_data):
+        for dest_start, source_start, length in map_data:
+            if source_val >= source_start and source_val < source_start + length:
+                return dest_start + (source_val - source_start)
+        return source_val
+  
+    locations = []
+    for seed in seeds:
+        soil = seed
+        for map_type, map_data in maps.items():
+            soil = apply_map(soil, map_data)
+        
+        fertilizer = soil
+        for map_type, map_data in maps.items():
+            fertilizer = apply_map(fertilizer, map_data)
+
+        water = fertilizer
+        for map_type, map_data in maps.items():
+            water = apply_map(water, map_data)
+
+        light = water
+        for map_type, map_data in maps.items():
+            light = apply_map(light, map_data)
+
+        temperature = light
+        for map_type, map_data in maps.items():
+            temperature = apply_map(temperature, map_data)
+            
+        humidity = temperature
+        for map_type, map_data in maps.items():
+            humidity = apply_map(humidity, map_data)
+            
+        location = humidity
+        for map_type, map_data in maps.items():
+            location = apply_map(location, map_data)
+        
+        locations.append(location)
+
+    print(min(locations))
+
+solve()

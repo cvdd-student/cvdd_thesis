@@ -1,0 +1,23 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+    
+    time_distances = []
+    for i in range(0, len(lines), 2):
+        time_distances.append((int(lines[i]), int(lines[i+1])))
+
+    total_wins = 1
+    for time, distance in time_distances:
+        wins = 0
+        for hold_time in range(time + 1):
+            travel_time = time - hold_time
+            distance_traveled = hold_time * travel_time
+            if distance_traveled > distance:
+                wins += 1
+        total_wins *= wins
+    
+    print(total_wins)
+
+solve()

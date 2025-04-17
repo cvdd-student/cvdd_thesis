@@ -1,0 +1,22 @@
+def hash_algorithm(input_string):
+    current_value = 0
+    for char in input_string:
+        ascii_code = ord(char)
+        current_value += ascii_code
+        current_value *= 17
+        current_value %= 256
+    return current_value
+
+
+if __name__ == "__main__":
+    initialization_sequence = input()
+    steps = initialization_sequence.split(",")
+    
+    total_sum = 0
+    for step in steps:
+        cleaned_step = step.strip()
+        if cleaned_step: # skip empty strings
+           result = hash_algorithm(cleaned_step)
+           total_sum += result
+
+    print(total_sum)

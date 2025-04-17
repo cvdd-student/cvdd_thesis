@@ -1,0 +1,34 @@
+import re
+
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+    
+    def is_adjacent(r, c, symbol_row, symbol_col):
+        return abs(r - symbol_row) <= 1 and abs(c - symbol_col) <= 1
+
+    total_sum = 0
+    for r, line in enumerate(lines):
+        matches = re.finditer(r"\d+", line)
+        for match in matches:
+            num_str = match.group(0)
+            num = int(num_str)
+            start_col = match.start()
+            end_col = match.end()
+            
+            is_part_number = False
+            for symbol_row in range(max(0, r - 1), min(len(lines), r + 2)):
+                for symbol_col in range(max(0, start_col - 1), min(len(line), end_col + 1)):
+                    if symbol_row == r and start_col <= symbol_col < end_col:
+                        continue
+                    if lines[symbol_row][symbol_col] not in ".":
+                        is_part_number = True
+                        break
+                if is_part_number:
+                    break
+            if is_part_number:
+                total_sum += num
+    
+    return total_sum
+
+print(solve())

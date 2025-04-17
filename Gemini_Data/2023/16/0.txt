@@ -1,0 +1,81 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    energized = [[False for _ in range(cols)] for _ in range(rows)]
+
+    row = 0
+    col = 0
+    dir = 1  # 1: right, 2: down, 3: left, 4: up
+
+    while row >= 0 and row < rows and col >= 0 and col < cols:
+        if grid[row][col] == '.':
+            col += dir
+        elif grid[row][col] == '/':
+            if dir == 1:
+                dir = 4
+            elif dir == 2:
+                dir = 1
+            elif dir == 3:
+                dir = 2
+            elif dir == 4:
+                dir = 3
+            col += dir
+        elif grid[row][col] == '\\':
+            if dir == 1:
+                dir = 2
+            elif dir == 2:
+                dir = 3
+            elif dir == 3:
+                dir = 4
+            elif dir == 4:
+                dir = 1
+            col += dir
+        elif grid[row][col] == '|':
+            if dir == 1:
+                dir = 4
+                col += dir
+            elif dir == 3:
+                dir = 2
+                col += dir
+            else:
+                col += dir
+        elif grid[row][col] == '-':
+            if dir == 2:
+                dir = 1
+                col += dir
+            elif dir == 4:
+                dir = 3
+                col += dir
+            else:
+                col += dir
+        
+        energized[row][col] = True
+        
+        if dir == 1 and col >= cols:
+            break
+        if dir == 3 and col < 0:
+            break
+        if dir == 2 and row >= rows:
+            break
+        if dir == 4 and row < 0:
+            break
+        
+        if dir == 1:
+            row += 0
+        elif dir == 2:
+            row += 1
+        elif dir == 3:
+            row += 0
+        elif dir == 4:
+            row -= 1
+
+    count = sum(sum(row) for row in energized)
+    print(count)
+
+solve()

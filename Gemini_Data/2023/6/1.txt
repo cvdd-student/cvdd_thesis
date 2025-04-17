@@ -1,0 +1,22 @@
+def solve():
+    time_distance_pairs = []
+    with open("input.txt", "r") as f:  # Replace "input.txt" with your input file
+        for line in f:
+            time, distance = line.strip().split(": ")
+            time_distance_pairs.append((int(time), int(distance)))
+    
+    total_winning_ways = 1
+    for time, distance in time_distance_pairs:
+        winning_ways = 0
+        for hold_time in range(time + 1):
+            travel_time = time - hold_time
+            speed = hold_time
+            travel_distance = speed * travel_time
+            if travel_distance > distance:
+                winning_ways += 1
+        total_winning_ways *= winning_ways
+    print(total_winning_ways)
+
+
+if __name__ == "__main__":
+    solve()

@@ -1,0 +1,40 @@
+def solve():
+    def apply_map(source_val, map_data):
+        for dest_start, source_start, length in map_data:
+            if source_val >= source_start and source_val < source_start + length:
+                return dest_start + (source_val - source_start)
+        return source_val
+
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    seeds_line = lines[0].strip().split(":")[1].strip().split()
+    seeds = [int(s) for s in seeds_line]
+
+    maps = []
+    current_map = []
+    for i in range(2, len(lines)):
+        line = lines[i].strip()
+        if not line:
+            maps.append(current_map)
+            current_map = []
+        else:
+            parts = line.split()
+            current_map.append([int(p) for p in parts])
+    maps.append(current_map)  # Add the last map
+
+    locations = []
+    for seed in seeds:
+        soil = apply_map(seed, maps[0])
+        fertilizer = apply_map(soil, maps[1])
+        water = apply_map(fertilizer, maps[2])
+        light = apply_map(water, maps[3])
+        temperature = apply_map(light, maps[4])
+        humidity = apply_map(temperature, maps[5])
+        location = apply_map(humidity, maps[6])
+        locations.append(location)
+    
+    return min(locations)
+
+
+print(solve())

@@ -1,0 +1,80 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    energized = [[False for _ in range(cols)] for _ in range(rows)]
+
+    def reflect(row, col, direction):
+        if grid[row][col] == '/':
+            return (row - 1, col + 1, 'u') if direction == 'r' else (row + 1, col - 1, 'd')
+        elif grid[row][col] == '\\':
+            return (row + 1, col + 1, 'd') if direction == 'r' else (row - 1, col - 1, 'u')
+        return None
+
+    def split(row, col, direction):
+        if grid[row][col] == '|':
+            return [('u', row - 1, col), ('d', row + 1, col)]
+        elif grid[row][col] == '-':
+            return [('l', row, col - 1), ('r', row, col + 1)]
+        return None
+
+    row, col = 0, 0
+    direction = 'r'
+    while row >= 0 and row < rows and col >= 0 and col < cols:
+        energized[row][col] = True
+        if grid[row][col] in ('/', '\\', '|', '-'):
+            if reflect(row, col, direction):
+                r, c, d = reflect(row, col, direction)
+                direction = d
+                row, col = r, c
+            elif split(row, col, direction):
+                for d, r, c in split(row, col, direction):
+                    if d == 'u':
+                        direction = 'u'
+                    elif d == 'd':
+                        direction = 'd'
+                    elif d == 'l':
+                        direction = 'l'
+                    elif d == 'r':
+                        direction = 'r'
+                    row, col = r, c
+                    while row >= 0 and row < rows and col >= 0 and col < cols:
+                        energized[row][col] = True
+                        if grid[row][col] in ('/', '\\', '|', '-'):
+                            if reflect(row, col, direction):
+                                r, c, d = reflect(row, col, direction)
+                                direction = d
+                                row, col = r, c
+                            elif split(row, col, direction):
+                                for d, r, c in split(row, col, direction):
+                                    if d == 'u':
+                                        direction = 'u'
+                                    elif d == 'd':
+                                        direction = 'd'
+                                    elif d == 'l':
+                                        direction = 'l'
+                                    elif d == 'r':
+                                        direction = 'r'
+                                    row, col = r, c
+                        else:
+                            row, col = (row + 1, col) if direction == 'd' else \
+                                       (row - 1, col) if direction == 'u' else \
+                                       (row, col + 1) if direction == 'r' else \
+                                       (row, col - 1) if direction == 'l' else (row, col)
+                        
+        else:
+            row, col = (row + 1, col) if direction == 'd' else \
+                       (row - 1, col) if direction == 'u' else \
+                       (row, col + 1) if direction == 'r' else \
+                       (row, col - 1) if direction == 'l' else (row, col)
+
+    count = sum(sum(row) for row in energized)
+    return count
+    
+
+print(solve())

@@ -1,0 +1,50 @@
+def calculate_load(platform):
+    rows = len(platform)
+    cols = len(platform[0])
+    total_load = 0
+    for r in range(rows):
+        for c in range(cols):
+            if platform[r][c] == 'O':
+                total_load += rows - r
+    return total_load
+
+def tilt_platform(platform):
+    rows = len(platform)
+    cols = len(platform[0])
+    new_platform = [['.' for _ in range(cols)] for _ in range(rows)]
+    for r in range(rows):
+        for c in range(cols):
+            if platform[r][c] == 'O':
+                new_r = r
+                while new_r > 0 and platform[new_r - 1][c] == '.':
+                    new_r -= 1
+                new_platform[new_r][c] = 'O'
+            else:
+                new_platform[r][c] = platform[r][c]
+    return new_platform
+
+def main():
+    platform_input = """O....#....
+O.OO#....#
+.....##...
+OO.#O....O
+.O.....O#.
+O.#..O.#.#
+..O..#O..O
+.......O..
+#....###..
+#OO..#...."""
+    platform = [list(row) for row in platform_input.splitlines()]
+
+    # Simulate tilting the platform north
+    tilted_platform = tilt_platform(platform)
+
+    # Calculate the load on the north support beams
+    load = calculate_load(tilted_platform)
+    
+    print(load)
+    
+
+
+if __name__ == "__main__":
+  main()

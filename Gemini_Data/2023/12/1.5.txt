@@ -1,0 +1,62 @@
+def solve():
+    lines = []
+    while True:
+        try:
+            line = input()
+            lines.append(line)
+        except EOFError:
+            break
+
+    total_arrangements = 0
+    for i in range(len(lines)):
+        row = lines[i]
+        parts = row.split()
+        springs = parts[0]
+        lengths = [int(x) for x in parts[1].split(",")]
+        
+        def count_arrangements(spring_str, lengths):
+            n_unknown = spring_str.count("?")
+            
+            def backtrack(idx, current_arrangement, current_lengths):
+                if idx == len(spring_str):
+                    if current_lengths == lengths:
+                        return 1
+                    else:
+                        return 0
+
+                if spring_str[idx] == "?":
+                    count = 0
+                    for char in ["#", "."]:
+                        new_arrangement = current_arrangement + char
+                        new_lengths = current_lengths
+                        if len(current_lengths) > 0 and char == "#" and current_arrangement[-1] == "#":
+                            new_lengths[-1] += 1
+                        elif len(current_lengths) > 0 and char == "#" and current_arrangement[-1] == ".":
+                            new_lengths.append(1)
+                        elif char == "." and current_arrangement[-1] == "#":
+                            pass
+                        
+                        count += backtrack(idx + 1, new_arrangement, new_lengths)
+                    return count
+                else:
+                    new_arrangement = current_arrangement + spring_str[idx]
+                    new_lengths = current_lengths
+                    if len(current_lengths) > 0 and spring_str[idx] == "#" and current_arrangement[-1] == "#":
+                        new_lengths[-1] += 1
+                    elif len(current_lengths) > 0 and spring_str[idx] == "#" and current_arrangement[-1] == ".":
+                        new_lengths.append(1)
+                    elif spring_str[idx] == "." and current_arrangement[-1] == "#":
+                        pass
+
+                    return backtrack(idx + 1, new_arrangement, new_lengths)
+                
+
+            return backtrack(0, "", [])
+
+        arrangements = count_arrangements(springs, lengths)
+        total_arrangements += arrangements
+
+
+    print(total_arrangements)
+
+solve()

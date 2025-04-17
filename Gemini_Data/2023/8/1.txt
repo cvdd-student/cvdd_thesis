@@ -1,0 +1,37 @@
+def solve():
+    lines = []
+    while True:
+        try:
+            line = input()
+            lines.append(line)
+        except EOFError:
+            break
+
+    instructions = lines[0]
+    nodes = {}
+    for line in lines[1:]:
+        parts = line.split(" = ")
+        node_name = parts[0]
+        connections = parts[1].strip("()").split(", ")
+        nodes[node_name] = tuple(connections)
+
+    current_node = "AAA"
+    steps = 0
+    instruction_index = 0
+
+    while current_node != "ZZZ":
+        instruction = instructions[instruction_index % len(instructions)]
+        
+        if instruction == "R":
+            current_node = nodes[current_node][1]
+        elif instruction == "L":
+            current_node = nodes[current_node][0]
+        else:
+            raise ValueError(f"Invalid instruction: {instruction}")
+        
+        steps += 1
+        instruction_index += 1
+    
+    print(steps)
+
+solve()

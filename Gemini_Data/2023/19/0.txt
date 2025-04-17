@@ -1,0 +1,65 @@
+def solve():
+    workflows = {}
+    parts = []
+    
+    line = input()
+    while line != "":
+        parts_start = line.find("{")
+        parts_end = line.find("}")
+        workflow_name = line[:parts_start].strip()
+        rules_str = line[parts_start + 1:parts_end].strip()
+        rules = []
+        for rule in rules_str.split(","):
+            rule = rule.strip()
+            if rule == "A" or rule == "R":
+                rules.append(rule)
+            else:
+                condition, destination = rule.split(":")
+                rules.append((condition, destination))
+        workflows[workflow_name] = rules
+        line = input()
+    
+    line = input()
+    while line != "":
+        part_data = line.strip().replace("{","").replace("}","").split(",")
+        part = {}
+        for item in part_data:
+            key, value = item.split("=")
+            part[key] = int(value)
+        parts.append(part)
+        line = input()
+    
+    accepted_parts_sum = 0
+    for part in parts:
+        current_workflow = "in"
+        while current_workflow != "A" and current_workflow != "R":
+            rules = workflows[current_workflow]
+            matched = False
+            for rule in rules:
+                if rule == "A" or rule == "R":
+                    current_workflow = rule
+                    matched = True
+                    break
+                else:
+                    condition, destination = rule
+                    condition_parts = condition.split(">")
+                    if len(condition_parts) == 2:
+                        if eval(f"part['{condition_parts[0].strip()}'] {condition_parts[1].strip()}"):
+                            current_workflow = destination
+                            matched = True
+                            break
+                    else:
+                        condition_parts = condition.split("<")
+                        if len(condition_parts) == 2:
+                            if eval(f"part['{condition_parts[0].strip()}'] {condition_parts[1].strip()}"):
+                                current_workflow = destination
+                                matched = True
+                                break
+            if not matched:
+                current_workflow = "A"
+        if current_workflow == "A":
+            accepted_parts_sum += sum(part.values())
+    
+    print(accepted_parts_sum)
+
+solve()

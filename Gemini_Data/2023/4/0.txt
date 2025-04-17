@@ -1,0 +1,25 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    total_points = 0
+    for i, line in enumerate(lines):
+        card_data = line.strip().split(":")
+        card_num = int(card_data[0].split()[1])
+        winning_numbers_str, your_numbers_str = card_data[1].split("|")
+        winning_numbers = set(map(int, winning_numbers_str.strip().split()))
+        your_numbers = set(map(int, your_numbers_str.strip().split()))
+        
+        matching_numbers = len(winning_numbers.intersection(your_numbers))
+        
+        if matching_numbers > 0:
+            points = 1
+            for j in range(1, matching_numbers):
+                points *= 2
+            total_points += points
+    
+    return total_points
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

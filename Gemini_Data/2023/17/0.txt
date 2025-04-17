@@ -1,0 +1,54 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(list(map(int, list(line.strip()))))
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def get_heat_loss(row, col):
+        return grid[row][col]
+
+    def is_valid(row, col):
+        return 0 <= row < rows and 0 <= col < cols
+
+    def find_min_heat_loss(row, col, path, direction):
+        if row == rows - 1 and col == cols - 1:
+            return get_heat_loss(row, col), path
+
+        min_heat_loss = float('inf')
+        best_path = ""
+
+        for turn in range(3):
+            new_row, new_col = row, col
+            new_direction = direction
+
+            for _ in range(turn + 1):
+                if new_direction == 0:  # Down
+                    new_row += 1
+                elif new_direction == 1:  # Right
+                    new_col += 1
+                elif new_direction == 2:  # Up
+                    new_row -= 1
+                elif new_direction == 3:  # Left
+                    new_col -= 1
+
+                if not is_valid(new_row, new_col):
+                    break
+
+                new_direction = (new_direction + 1) % 4
+
+            if is_valid(new_row, new_col):
+                heat_loss, current_path = find_min_heat_loss(new_row, new_col, path + str(turn), new_direction)
+                heat_loss += get_heat_loss(new_row, new_col)
+                if heat_loss < min_heat_loss:
+                    min_heat_loss = heat_loss
+                    best_path = current_path
+
+        return min_heat_loss, best_path
+
+    heat_loss, path = find_min_heat_loss(0, 0, "", 0)
+    print(heat_loss)
+
+solve()

@@ -1,0 +1,41 @@
+def solve():
+    def apply_map(maps, value):
+        for dest_start, source_start, length in maps:
+            if source_start <= value < source_start + length:
+                return dest_start + (value - source_start)
+        return value
+    
+    with open("input.txt", "r") as file:
+        lines = file.readlines()
+    
+    seeds = [int(x) for x in lines[0].split()[1:]]
+
+    maps = {}
+    current_type = None
+    
+    for i, line in enumerate(lines[2:]):
+      line = line.strip()
+      if line:
+        if line.endswith("map:"):
+            current_type = line.split()[0] + "-to-" + line.split()[1].split('-')[0]
+            maps[current_type] = []
+        else:
+          dest, src, len = map(int, line.split())
+          maps[current_type].append((dest, src, len))
+    
+
+    lowest_location = float('inf')
+    
+    for seed in seeds:
+        soil = apply_map(maps["seed-to-soil"], seed)
+        fertilizer = apply_map(maps["soil-to-fertilizer"], soil)
+        water = apply_map(maps["fertilizer-to-water"], fertilizer)
+        light = apply_map(maps["water-to-light"], water)
+        temp = apply_map(maps["light-to-temperature"], light)
+        humidity = apply_map(maps["temperature-to-humidity"], temp)
+        location = apply_map(maps["humidity-to-location"], humidity)
+        lowest_location = min(lowest_location, location)
+    
+    print(lowest_location)
+
+solve()

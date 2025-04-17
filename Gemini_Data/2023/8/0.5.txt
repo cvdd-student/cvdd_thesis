@@ -1,0 +1,41 @@
+      
+def solve():
+    lines = []
+    instructions = ""
+    nodes = {}
+    
+    with open("input.txt", "r") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                if line[0].isalpha():
+                    parts = line.split("=")
+                    node = parts[0].strip()
+                    neighbors = parts[1].strip().strip("()").split(", ")
+                    nodes[node] = tuple(neighbors)
+                elif line[0].isalpha():
+                    instructions = line
+                else:
+                    lines.append(line)
+
+
+    current_node = "AAA"
+    instruction_index = 0
+    steps = 0
+    
+    while True:
+        if instruction_index >= len(instructions):
+            instruction_index = 0
+        
+        instruction = instructions[instruction_index]
+        
+        if instruction == "R":
+            current_node = nodes[current_node][1]
+        elif instruction == "L":
+            current_node = nodes[current_node][0]
+        
+        if current_node == "ZZZ":
+            return steps
+        
+        instruction_index += 1
+        steps += 1

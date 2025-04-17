@@ -1,0 +1,36 @@
+def solve():
+    max_red = 12
+    max_green = 13
+    max_blue = 14
+
+    total_possible_games = 0
+    with open("input.txt", "r") as file:
+        for line in file:
+            game_data = line.strip().split(":")
+            game_id = int(game_data[0].split()[1])
+            subsets = game_data[1].split(";")
+            possible = True
+            for subset in subsets:
+                counts = {}
+                for count_str in subset.split(","):
+                    count_str = count_str.strip()
+                    count, color = count_str.split()
+                    counts[color] = int(count)
+                
+                if "red" in counts and counts["red"] > max_red:
+                    possible = False
+                    break
+                if "green" in counts and counts["green"] > max_green:
+                    possible = False
+                    break
+                if "blue" in counts and counts["blue"] > max_blue:
+                    possible = False
+                    break
+            if possible:
+                total_possible_games += game_id
+
+    return total_possible_games
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

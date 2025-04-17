@@ -1,0 +1,53 @@
+def solve():
+    directions = []
+    colors = []
+    with open("input.txt") as f:
+        for line in f:
+            parts = line.strip().split()
+            directions.append(parts[0])
+            colors.append(parts[1])
+
+    x, y = 0, 0
+    visited = {(0, 0): colors[0]}
+    
+    for i in range(len(directions)):
+        direction = directions[i]
+        color = colors[i]
+        
+        if direction == "U":
+            for j in range(int(directions[i][1:])):
+                y -= 1
+                if (x, y) not in visited:
+                    visited[(x, y)] = color
+        elif direction == "D":
+            for j in range(int(directions[i][1:])):
+                y += 1
+                if (x, y) not in visited:
+                    visited[(x, y)] = color
+        elif direction == "L":
+            for j in range(int(directions[i][1:])):
+                x -= 1
+                if (x, y) not in visited:
+                    visited[(x, y)] = color
+        elif direction == "R":
+            for j in range(int(directions[i][1:])):
+                x += 1
+                if (x, y) not in visited:
+                    visited[(x, y)] = color
+    
+    max_x = max(x for x, y in visited)
+    min_x = min(x for x, y in visited)
+    max_y = max(y for x, y in visited)
+    min_y = min(y for x, y in visited)
+    
+    volume = 0
+    for y in range(min_y, max_y + 1):
+        for x in range(min_x, max_x + 1):
+            if (x, y) in visited:
+                volume += 1
+    
+    return volume
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

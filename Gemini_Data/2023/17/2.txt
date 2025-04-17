@@ -1,0 +1,74 @@
+def solve():
+    grid = []
+    with open("input.txt") as f:
+        for line in f:
+            grid.append([int(x) for x in line.strip()])
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def get_heat(row, col):
+        if 0 <= row < rows and 0 <= col < cols:
+            return grid[row][col]
+        return float('inf')  # Effectively treat out-of-bounds as very high heat
+
+    def calculate_heat_loss(path):
+        heat_loss = 0
+        for i in range(len(path) - 1):
+          row, col = path[i]
+          next_row, next_col = path[i + 1]
+
+          if next_row == row and next_col > col:
+            heat_loss += get_heat(row,col+1)  # Going Right, next block.
+          elif next_row == row and next_col < col:
+              heat_loss += get_heat(row, col - 1)  #Going left.
+
+          elif next_col == col and next_row > row:
+              heat_loss += get_heat(row+1,col)  # Going down
+
+          elif next_col == col and next_row < row:
+            heat_loss += get_heat(row-1, col)   #Going up
+
+
+        heat_loss += get_heat(path[-1][0], path[-1][1]) #Adding final destination heat.
+        return heat_loss
+
+
+    def find_best_path(row, col, path, max_straight):
+        path.append((row, col))
+
+        if row == rows - 1 and col == cols - 1:
+           return calculate_heat_loss(path)
+
+
+        best_heat_loss = float('inf')
+
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)] #Right, Down, Left, Up.
+
+        current_straight = 0
+        for dr, dc in directions:
+            nr = row + dr
+            nc = col + dc
+
+            next_straight = current_straight + 1
+            if next_straight <= max_straight:
+              next_path = calculate_heat_loss(path)
+
+              if next_path != float("inf") :
+                  best_heat_loss = min(best_heat_loss,find_best_path(nr, nc, path.copy(),max_straight))
+
+
+
+        path.pop()
+
+        return best_heat_loss
+
+
+
+
+    starting_row, starting_col = 0, 0
+    heat = find_best_path(starting_row, starting_col, [], 3)
+    return heat
+
+
+print(solve())

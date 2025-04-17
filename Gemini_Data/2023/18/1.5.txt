@@ -1,0 +1,47 @@
+import re
+
+def solve():
+    directions = []
+    colors = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            match = re.match(r"([UDLR]) (\d+) \(#(.*)\)", line)
+            if match:
+                directions.append(match.group(1))
+                colors.append(match.group(3))
+
+    x, y = 0, 0
+    visited = {(0, 0): "#"}
+    for i, direction in enumerate(directions):
+        amount = int(directions[i - 1]) if i> 0 and re.match(r"[UDLR] \d+", directions[i-1]) else 0
+
+        if direction == "U":
+            y -= int(amount) if amount else 0
+        elif direction == "D":
+            y += int(amount) if amount else 0
+        elif direction == "L":
+            x -= int(amount) if amount else 0
+        elif direction == "R":
+            x += int(amount) if amount else 0
+
+        visited[(x,y)] = colors[i - 1] if i > 0 else "#"  
+        
+
+    max_x = max(x for x, y in visited)
+    min_x = min(x for x, y in visited)
+    max_y = max(y for x, y in visited)
+    min_y = min(y for x, y in visited)
+
+
+    # Calculating the volume (lava)
+    volume = 0
+    for y in range(min_y, max_y + 1):
+        for x in range(min_x, max_x + 1):
+          if (x, y) in visited:
+            volume+= 1
+
+
+    print(volume)
+
+
+solve()

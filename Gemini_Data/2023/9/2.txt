@@ -1,0 +1,53 @@
+def extrapolate_next_value(history):
+    """Extrapolates the next value in a history using differences."""
+    diffs = []
+    curr_diffs = []
+    history_len = len(history)
+    
+    curr_diffs = []
+    for i in range(history_len - 1):
+      curr_diffs.append(history[i+1] - history[i])
+    
+    
+    while len(curr_diffs)>0 and any(curr_diffs):
+      next_diffs = []
+      for i in range(len(curr_diffs)-1):
+          next_diffs.append(curr_diffs[i+1] - curr_diffs[i])
+
+      
+      diffs.append(curr_diffs)
+      curr_diffs = next_diffs
+
+    diffs.append(curr_diffs)
+
+    
+    extrapolated_value = history[-1]
+    extrap_history_len = len(history)
+    extrap_list = diffs
+
+    for d in reversed(range(len(extrap_list)-1,-1,-1)):
+
+        
+        curr_seq_len = len(extrap_list[d])
+        if curr_seq_len > 0:
+
+            extrapolated_value += extrap_list[d][-1] if d<len(extrap_list)-1 else 0
+
+
+    return int(extrapolated_value)
+
+
+def solve():
+    """Analyzes the Oasis report and calculates the sum of extrapolated values."""
+    with open('input.txt', 'r') as file:
+        histories = [list(map(int, line.strip().split())) for line in file]
+
+    
+    sum_extrapolated = 0
+    for history in histories:
+        next_value = extrapolate_next_value(history)
+        sum_extrapolated += next_value
+    return sum_extrapolated
+
+result = solve()
+print(result)

@@ -1,0 +1,54 @@
+def extrapolate_next_value(history):
+    """Extrapolates the next value in a history sequence."""
+
+    differences = []
+    current_differences = []
+    
+    # Calculate initial differences
+    for i in range(len(history) - 1):
+        current_differences.append(history[i + 1] - history[i])
+    differences.append(current_differences)
+
+    while True:
+        next_differences = []
+        all_zero = True
+        for i in range(len(current_differences)):
+            next_differences.append(current_differences[i + 1] - current_differences[i] if i + 1 < len(current_differences) else 0)
+            if next_differences[-1] != 0:
+                all_zero = False
+        
+        if all_zero:
+            break
+        differences.append(next_differences)
+        current_differences = next_differences
+
+    # Extrapolate the next value
+    next_value = history[-1]
+    for i in range(len(differences) - 1, -1, -1):
+        if i == len(differences) - 1:
+            next_value += differences[i][len(differences[i]) - 1] if len(differences[i]) > 0 else 0
+        else:
+            next_value += differences[i][len(differences[i]) - 1] if len(differences[i]) > 0 else 0
+            
+    return next_value
+
+
+def main():
+    """Reads input, calculates next values, and sums them."""
+    
+    histories = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            history = [int(x) for x in line.strip().split()]
+            histories.append(history)
+
+    total_next_values = 0
+    for history in histories:
+        next_value = extrapolate_next_value(history)
+        total_next_values += next_value
+
+    print(total_next_values)
+
+
+if __name__ == "__main__":
+    main()

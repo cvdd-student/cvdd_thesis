@@ -1,0 +1,64 @@
+def card_value(card):
+    if card in "AKQJT98765432":
+        if card == "A": return 14
+        if card == "K": return 13
+        if card == "Q": return 12
+        if card == "J": return 11
+        if card == "T": return 10
+        return int(card)
+    else:
+        return None
+
+def hand_type(hand):
+    counts = {}
+    for card in hand:
+        counts[card] = counts.get(card, 0) + 1
+    
+    counts_values = sorted(counts.values(), reverse=True)
+    
+    if len(counts_values) == 1: return "Five of a kind"
+    elif len(counts_values) == 2 and counts_values[0] == 4: return "Four of a kind"
+    elif len(counts_values) == 2 and counts_values[0] == 3 and counts_values[1] == 2: return "Full house"
+    elif len(counts_values) == 2 and counts_values[0] == 3: return "Three of a kind"
+    elif len(counts_values) == 3 and counts_values[0] == 2 and counts_values[1] == 2 and counts_values[2] == 1: return "Two pair"
+    elif len(counts_values) == 2 and counts_values[0] == 2: return "One pair"
+    else: return "High card"
+
+
+def compare_hands(hand1, hand2):
+    type1 = hand_type(hand1)
+    type2 = hand_type(hand2)
+    if type1 != type2:
+        return type1 > type2
+    
+    for i in range(5):
+        val1 = card_value(hand1[i])
+        val2 = card_value(hand2[i])
+        if val1 > val2:
+            return True
+        elif val1 < val2:
+            return False
+    return False  # Hands are equal
+
+
+def solve():
+    lines = []
+    with open("input.txt", "r") as file:
+        for line in file:
+          lines.append(line.strip())
+
+    hands = []
+    bids = []
+    for line in lines:
+        parts = line.split()
+        hands.append(parts[0])
+        bids.append(int(parts[1]))
+
+    sorted_hands = sorted(range(len(hands)), key=lambda k: compare_hands(hands[k], hands[0]) )
+
+    total_winnings = 0
+    for i, rank in enumerate(sorted_hands):
+        total_winnings += bids[rank] * (len(hands) - i)
+    return total_winnings
+
+print(solve())

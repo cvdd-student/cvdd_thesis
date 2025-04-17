@@ -1,0 +1,46 @@
+def calculate_load(platform):
+    """Calculates the total load on the north support beams."""
+    rows = len(platform)
+    cols = len(platform[0])
+    total_load = 0
+    for r in range(rows):
+        for c in range(cols):
+            if platform[r][c] == 'O':
+                total_load += rows - r
+    return total_load
+
+
+def tilt_north(platform):
+    """Tilts the platform so rocks roll north."""
+    rows = len(platform)
+    cols = len(platform[0])
+    new_platform = [['.' for _ in range(cols)] for _ in range(rows)]
+    for r in range(rows):
+        for c in range(cols):
+            if platform[r][c] == 'O':
+                new_r = r
+                while new_r > 0 and platform[new_r - 1][c] == '.':
+                    new_r -= 1
+                new_platform[new_r][c] = 'O'
+            else:
+                new_platform[r][c] = platform[r][c]
+    return new_platform
+
+
+def main():
+    """Reads input, tilts the platform, and calculates the load."""
+    platform = []
+    while True:
+        try:
+            line = input()
+            platform.append(line)
+        except EOFError:
+            break
+    
+    tilted_platform = tilt_north(platform)
+    load = calculate_load(tilted_platform)
+    print(load)
+
+
+if __name__ == "__main__":
+    main()

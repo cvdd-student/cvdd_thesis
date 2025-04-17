@@ -1,0 +1,36 @@
+def solve():
+    try:
+        with open("input.txt", "r") as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        print("Error: input.txt not found.")
+        return
+    
+    time_distances = []
+    for i in range(0, len(lines), 2):
+        time_line = lines[i].strip().split()
+        distance_line = lines[i+1].strip().split()
+        
+        time_values = list(map(int, time_line))
+        distance_values = list(map(int, distance_line))
+
+        if len(time_values) != len(distance_values):
+            print("Error: time and distance lines do not have same length.")
+            return
+
+        time_distances.append((time_values, distance_values))
+
+    total_winning_ways = 1
+    for time_list, distance_list in time_distances:
+        winning_ways = 0
+        for time in time_list:
+            for hold_time in range(0, time):
+                distance_traveled = hold_time * (time - hold_time)
+                if distance_traveled > distance_list[time_list.index(time)]:
+                    winning_ways += 1
+
+        total_winning_ways *= winning_ways
+        
+    print(total_winning_ways)
+
+solve()

@@ -1,0 +1,36 @@
+import re
+
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    total_sum = 0
+    for i, line in enumerate(lines):
+        matches = re.finditer(r"\d+", line)
+        for match in matches:
+            num_str = match.group(0)
+            num = int(num_str)
+            
+            start_row = max(0, i - 1)
+            end_row = min(len(lines), i + 2)
+            start_col = max(0, match.start() - 1)
+            end_col = min(len(line), match.end() + 1)
+            
+            is_part_number = False
+            for r in range(start_row, end_row):
+                for c in range(start_col, end_col):
+                    if r == i and c == match.start():
+                        continue
+                    if not lines[r][c].isdigit() and lines[r][c] != '.':
+                        is_part_number = True
+                        break
+                if is_part_number:
+                    break
+            if is_part_number:
+                total_sum += num
+    
+    return total_sum
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

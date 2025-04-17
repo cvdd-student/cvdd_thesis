@@ -1,0 +1,14 @@
+def solve():
+    calibration_values = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            digits = [char for char in line if char.isdigit()]
+            if digits:
+                calibration_value = int(digits[0] + digits[-1])
+                calibration_values.append(calibration_value)
+    
+    total_calibration_value = sum(calibration_values)
+    print(total_calibration_value)
+
+
+solve()

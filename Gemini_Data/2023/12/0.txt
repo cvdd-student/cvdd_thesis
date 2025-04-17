@@ -1,0 +1,52 @@
+def solve():
+    lines = []
+    while True:
+        try:
+            line = input()
+            lines.append(line)
+        except EOFError:
+            break
+
+    total_arrangements = 0
+    for i in range(len(lines)):
+        row = lines[i]
+        parts = row.split()
+        springs = parts[0]
+        groups = [int(x) for x in parts[1].split(',')]
+
+        def count_arrangements(current_springs, group_index):
+            if group_index == len(groups):
+                return 1
+            
+            count = 0
+            current_group_size = groups[group_index]
+            
+            for j in range(len(current_springs)):
+                if current_springs[j] == '?':
+                    for spring_type in ['#', '.']:
+                        new_springs = current_springs[:j] + [spring_type] + current_springs[j+1:]
+                        
+                        valid = True
+                        
+                        if j > 0 and new_springs[j] == '#' and new_springs[j-1] == '#':
+                            valid = False
+                        
+                        if j > 0 and new_springs[j] == '#' and new_springs[j-1] == '.':
+                            if group_index > 0 and groups[group_index-1] == 0:
+                                valid = False
+                        
+                        if valid:
+                            
+                            if j + current_group_size < len(new_springs) and new_springs[j+current_group_size] == '.':
+                                count += count_arrangements(new_springs, group_index + 1)
+                            elif j + current_group_size == len(new_springs) and new_springs[j+current_group_size-1] == '#':
+                                count += count_arrangements(new_springs, group_index + 1)
+                            elif j + current_group_size == len(new_springs) and new_springs[j+current_group_size-1] == '.':
+                                count += 0
+                            
+            return count
+        
+        total_arrangements += count_arrangements(list(springs), 0)
+    print(total_arrangements)
+
+solve()

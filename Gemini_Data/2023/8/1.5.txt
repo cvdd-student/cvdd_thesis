@@ -1,0 +1,35 @@
+def solve():
+    instructions = input()
+    lines = []
+    while True:
+        line = input()
+        if not line:
+            break
+        lines.append(line)
+    
+    graph = {}
+    for line in lines:
+        parts = line.split(" = ")
+        node = parts[0]
+        neighbors = parts[1].strip("()").split(", ")
+        graph[node] = tuple(neighbors)
+    
+    current_node = "AAA"
+    step_count = 0
+    instruction_index = 0
+
+    while True:
+        if current_node == "ZZZ":
+            print(step_count)
+            return
+        
+        instruction = instructions[instruction_index % len(instructions)]
+        
+        if instruction == 'R':
+            current_node = graph[current_node][1]
+        else:
+            current_node = graph[current_node][0]
+        
+        step_count += 1
+        instruction_index += 1
+solve()

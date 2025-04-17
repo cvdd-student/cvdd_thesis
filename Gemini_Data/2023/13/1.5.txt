@@ -1,0 +1,48 @@
+def solve():
+    patterns = []
+    with open("input.txt", "r") as f:  # Replace "input.txt" with your input file
+        current_pattern = []
+        for line in f:
+            line = line.strip()
+            if line:
+                current_pattern.append(line)
+            else:
+                patterns.append(current_pattern)
+                current_pattern = []
+        patterns.append(current_pattern)  # Append the last pattern
+
+    total_sum = 0
+    for pattern in patterns:
+        for v_index in range(len(pattern[0])):
+            is_vertical_reflection = True
+            for row in range(len(pattern)):
+                try:
+                    if pattern[row][v_index] != pattern[row][len(pattern[0])-1-v_index]:
+                        is_vertical_reflection = False
+                        break
+                except IndexError:
+                    is_vertical_reflection = False
+                    break
+            if is_vertical_reflection:
+                cols_left = sum(len(pattern[0][:i]) for i in range(v_index))
+                total_sum += cols_left
+                break
+
+        for h_index in range(len(pattern)):
+            is_horizontal_reflection = True
+            for col in range(len(pattern[0])):
+                try:
+                    if pattern[h_index][col] != pattern[len(pattern)-1-h_index][col]:
+                        is_horizontal_reflection = False
+                        break
+                except IndexError:
+                  is_horizontal_reflection = False
+                  break
+            if is_horizontal_reflection:
+                rows_above = sum(1 for row_num in range(h_index))
+                total_sum += 100 * rows_above
+                break
+
+    print(total_sum)
+
+solve()

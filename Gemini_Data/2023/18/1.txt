@@ -1,0 +1,92 @@
+def solve():
+    import re
+
+    def parse_input(input_str):
+        lines = input_str.strip().split('\n')
+        instructions = []
+        for line in lines:
+            match = re.match(r"([UDLR]) (\d+) \(#([0-9a-f]+)\)", line)
+            if match:
+                instructions.append((match.group(1), int(match.group(2)), match.group(3)))
+        return instructions
+
+    def dig_lagoon(instructions):
+        grid = {(0, 0): '.'}  # Start at (0, 0)
+        colors = {}
+        
+        x, y = 0, 0
+        for direction, steps, color in instructions:
+            for _ in range(steps):
+                if direction == 'U':
+                    y -= 1
+                elif direction == 'D':
+                    y += 1
+                elif direction == 'L':
+                    x -= 1
+                elif direction == 'R':
+                    x += 1
+                
+                if (x,y) not in grid:
+                    grid[(x,y)] = '#'
+                if (x,y) in grid and grid[(x,y)] == '.':
+                    grid[(x,y)] = '#'
+                    
+                colors[(x, y)] = color
+        
+        
+        max_x = max(x for x, y in grid)
+        min_x = min(x for x, y in grid)
+        max_y = max(y for x, y in grid)
+        min_y = min(y for x, y in grid)
+        
+        for y in range(min_y, max_y + 1):
+            for x in range(min_x, max_x + 1):
+                if (x, y) not in grid:
+                    grid[(x, y)] = '.'
+
+        return grid, colors
+
+    def calculate_lava_volume(grid):
+        volume = 0
+        for (x, y), char in grid.items():
+            if char == '#':
+                volume += 1
+        return volume
+
+    def paint_lagoon(grid, colors):
+        new_grid = {}
+
+        for (x, y), char in grid.items():
+            new_grid[(x, y)] = char
+        
+        for (x, y), char in grid.items():
+          if char == '#':
+                new_grid[(x,y)] = '#'
+
+
+        return new_grid
+    
+    instructions = parse_input(input())
+    grid, colors = dig_lagoon(instructions)
+    #print(grid)
+    grid = paint_lagoon(grid, colors)
+    volume = calculate_lava_volume(grid)
+    return volume
+
+input_str = """R 6 (#70c710)
+D 5 (#0dc571)
+L 2 (#5713f0)
+D 2 (#d2c081)
+R 2 (#59c680)
+D 2 (#411b91)
+L 5 (#8ceee2)
+U 2 (#caa173)
+L 1 (#1b58a2)
+U 2 (#caa171)
+R 2 (#7807d2)
+U 3 (#a77fa3)
+L 2 (#015232)
+U 2 (#7a21e3)"""
+
+result = solve()
+print(result)

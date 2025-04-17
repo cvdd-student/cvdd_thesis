@@ -1,0 +1,40 @@
+def solve():
+    patterns = []
+    while True:
+        try:
+            line = input()
+            patterns.append(line)
+        except EOFError:
+            break
+
+    total_sum = 0
+    for pattern in patterns:
+        rows = [list(row) for row in pattern.split('\n')]
+        rows_len = len(rows)
+        cols_len = len(rows[0])
+        
+        # Check for vertical reflections
+        for i in range(1, cols_len):
+            is_vertical_reflection = True
+            for r in range(rows_len):
+                if r < rows_len - r - 1 and rows[r][i] != rows[rows_len - r - 1][cols_len - i - 1]:
+                    is_vertical_reflection = False
+                    break
+            if is_vertical_reflection:
+                total_sum += sum(range(i))
+                break
+                
+        # Check for horizontal reflections
+        for i in range(1, rows_len):
+            is_horizontal_reflection = True
+            for c in range(cols_len):
+                if i < rows_len - i - 1 and rows[i][c] != rows[rows_len - i - 1][c]:
+                    is_horizontal_reflection = False
+                    break
+            if is_horizontal_reflection:
+                total_sum += 100 * sum(range(i))
+                break
+    
+    print(total_sum)
+
+solve()

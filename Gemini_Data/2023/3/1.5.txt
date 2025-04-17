@@ -1,0 +1,34 @@
+import re
+
+def solve():
+    schematic = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            schematic.append(line.strip())
+
+    part_numbers = []
+    for i, line in enumerate(schematic):
+        matches = re.finditer(r'\d+', line)
+        for match in matches:
+            num_str = match.group(0)
+            num = int(num_str)
+            is_part_number = False
+            for dx in [-1, 0, 1]:
+                for dy in [-1, 0, 1]:
+                    if dx == 0 and dy == 0:
+                        continue  # Don't check the number itself
+                    row = i + dy
+                    col = match.start() + dx
+                    if 0 <= row < len(schematic) and 0 <= col < len(line) and not schematic[row][col].isdigit() and schematic[row][col] != '.':
+                        is_part_number = True
+                        break
+                if is_part_number:
+                    break
+            if is_part_number:
+                part_numbers.append(num)
+
+    return sum(part_numbers)
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

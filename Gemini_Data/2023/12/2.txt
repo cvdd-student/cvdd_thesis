@@ -1,0 +1,56 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        while True:
+            line = f.readline().strip()
+            if not line:
+                break
+            lines.append(line)
+
+    total_arrangements = 0
+    for line in lines:
+        parts = line.split()
+        springs = parts[0]
+        lengths = list(map(int, parts[1].split(',')))
+        
+        possible_arrangements = 0
+
+        def backtrack(index, current_arrangement):
+            nonlocal possible_arrangements
+            
+            if index == len(springs):
+                
+                group_sizes = []
+                i = 0
+                while i < len(current_arrangement):
+                    j = i
+                    while j < len(current_arrangement) and current_arrangement[j] == "#":
+                        j+=1
+                    
+                    group_sizes.append(j-i)
+                    i = j
+                
+                if group_sizes == lengths:
+                    possible_arrangements += 1
+                return
+                
+            if springs[index] == "?":
+                current_arrangement[index] = "#"
+                backtrack(index + 1, current_arrangement)
+                current_arrangement[index] = "."
+                backtrack(index + 1, current_arrangement)
+            else:
+                current_arrangement[index] = springs[index]
+                backtrack(index+1, current_arrangement)
+            
+
+        backtrack(0, [c for c in springs])
+        
+        total_arrangements += possible_arrangements
+    
+    return total_arrangements
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

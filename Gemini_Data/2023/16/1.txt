@@ -1,0 +1,78 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    energized = [[False] * cols for _ in range(rows)]
+
+    row = 0
+    col = 0
+    dir = 1  # 1 for right, -1 for left
+
+    while 0 <= row < rows and 0 <= col < cols:
+        energized[row][col] = True
+
+        char = grid[row][col]
+        if char == '.':
+            col += dir
+        elif char == '/':
+            if dir == 1:
+                dir = -1
+                row -= 1
+            else:
+                dir = 1
+                row += 1
+        elif char == '\\':
+            if dir == 1:
+                dir = 1
+                row += 1
+            else:
+                dir = -1
+                row -= 1
+        elif char == '|':
+            if dir == 1:
+                dir = 0
+                row += 1
+                if row >= rows or row < 0 or col >=cols or col<0:
+                    break
+                energized[row][col] = True
+
+                
+            elif dir == -1:
+                dir = 0
+                row -= 1
+                if row >= rows or row < 0 or col >=cols or col<0:
+                    break
+                energized[row][col] = True
+
+        elif char == '-':
+           if dir == 1:
+               dir = 0
+               col += 1
+               if row >= rows or row < 0 or col >=cols or col<0:
+                    break
+               energized[row][col] = True
+           elif dir == -1:
+               dir = 0
+               col -= 1
+               if row >= rows or row < 0 or col >=cols or col<0:
+                    break
+               energized[row][col] = True
+
+        
+        if row >= rows or row < 0 or col >= cols or col < 0:
+            break
+        if dir != 0:
+            col += dir
+
+    count = sum(sum(row) for row in energized)
+    return count
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

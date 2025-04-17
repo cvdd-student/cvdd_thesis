@@ -1,0 +1,58 @@
+def calculate_load(platform):
+    """Calculates the total load on the north support beams."""
+    rows = len(platform)
+    cols = len(platform[0])
+    total_load = 0
+
+    for row in range(rows):
+        for col in range(cols):
+            if platform[row][col] == 'O':
+                total_load += rows - row
+
+    return total_load
+
+
+def tilt_platform(platform):
+    """Tilts the platform to move rounded rocks north."""
+    rows = len(platform)
+    cols = len(platform[0])
+    new_platform = [list(row) for row in platform]
+    
+    for col in range(cols):
+        last_rock = -1  
+        for row in range(rows):
+            if new_platform[row][col] == 'O':
+                last_rock = row
+        
+        while last_rock > 0 and new_platform[last_rock - 1][col] == '.':
+            new_platform[last_rock][col], new_platform[last_rock-1][col] = new_platform[last_rock -1][col],new_platform[last_rock][col]
+            last_rock -= 1
+            
+    return new_platform
+    
+
+
+
+# Example usage (replace with your input)
+platform_input = [
+    "O....#....",
+    "O.OO#....#",
+    ".....##...",
+    "OO.#O....O",
+    ".O.....O#.",
+    "O.#..O.#.#",
+    "..O..#O..O",
+    ".......O..",
+    "#....###..",
+    "#OO..#...."
+]
+
+# Convert string list to a list of lists for easier access
+platform = [list(row) for row in platform_input]
+
+# Tilt the platform
+tilted_platform = tilt_platform(platform)
+
+# Calculate and print the total load
+total_load = calculate_load(tilted_platform)
+print(total_load)

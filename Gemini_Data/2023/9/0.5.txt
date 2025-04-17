@@ -1,0 +1,51 @@
+def extrapolate_next_value(history):
+    """Extrapolates the next value in a history sequence."""
+
+    differences = []
+    current_differences = []
+    while True:
+        current_differences = []
+        if len(history) <= 1:
+            return 0  # Handle empty or single-element histories
+
+        for i in range(len(history) - 1):
+            current_differences.append(history[i + 1] - history[i])
+
+        if all(diff == 0 for diff in current_differences):
+            break
+
+        history = current_differences
+
+    next_value = 0
+    
+    # Pad with zeros for extrapolation
+    current_differences.append(0)
+    
+    for i in range(len(current_differences) - 1, -1, -1):
+        if i == len(current_differences) - 1:
+            next_value = current_differences[i] + history[i]
+        else:
+            next_value = current_differences[i] + history[i]
+
+    return next_value
+
+
+def solve():
+    """Solves the oasis prediction problem."""
+
+    histories = []
+    with open("input.txt") as f:
+        for line in f:
+            histories.append(list(map(int, line.strip().split())))
+
+    total_extrapolated_values = 0
+    for history in histories:
+        next_value = extrapolate_next_value(history)
+        total_extrapolated_values += next_value
+
+    return total_extrapolated_values
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)
