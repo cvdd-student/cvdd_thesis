@@ -75,6 +75,30 @@ def convert_to_feats_codeBERT(train_data, test_data):
     return train_feats, test_feats
 
 
+def remove_docstrings(data):
+    temp_print_item = False
+    for item, label in data:
+        item_new = ""
+        token_index = 0
+        flag_copy_token = True
+        token_index = 0
+        for token in item:
+            if token == "'":
+                if item[token_index:token_index+3] == "'''" and flag_copy_token is True:
+                    flag_copy_token = False
+                elif item[token_index-3:token_index] == "'''" and flag_copy_token is False:
+                    flag_copy_token = True
+                    temp_print_item = True
+            if flag_copy_token is True:
+                item_new += token
+            token_index += 1
+        if temp_print_item is True:
+            print(item)
+            print(item_new)
+            exit()
+    exit()
+
+
 def clean_data(data):
     data_out = []
     
@@ -137,27 +161,35 @@ def main():
     gemini_data = get_data("Gemini_Data", "gemini")
     human_data = get_data("Human_Data", "human")
     full_data = gemini_data + human_data
+    # full_data = remove_docstrings(full_data)
     full_data = clean_data(full_data)
     tr_items, tr_labels, te_items, te_labels = process_data(full_data)
     
     tr_feats, te_feats = convert_to_feats(tr_items, te_items)
     
     clf = train_clf(tr_feats, tr_labels)
-    predict = clf.predict_proba(te_feats)
+    clf_predictions = clf.predict_proba(te_feats)
     
-    for prediction, true in zip(predict, te_labels):
-        print(prediction[0], true)
-    exit()
+    list_gemini_prob = []
+    pre_labels = []
+    for prediction in clf_predictions:
+        list_gemini_prob.append(prediction[0])
+        if prediction[0] > 0.5:
+            pre_labels.append("gemini")
+        else:
+            pre_labels.append("human")
     
     accum = 0
-    for real, pred in zip(te_labels, predict):
+    for real, pred in zip(te_labels, pre_labels):
         if real != pred:
             print(te_items[accum])
             print(real)
         accum += 1
     
-    eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=predict)
+    eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=pre_labels)
     print(eval_matrix)
+    
+    print(list_gemini_prob)
     
 
 if __name__ == "__main__":
