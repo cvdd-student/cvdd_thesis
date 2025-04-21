@@ -1,0 +1,65 @@
+def solve():
+    modules = {}
+    lines = []
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+    
+    for line in lines:
+        parts = line.strip().split("->")
+        name = parts[0].strip()
+        destinations = parts[1].strip().split(",")
+        modules[name] = [d.strip() for d in destinations]
+
+    def get_module_type(name):
+        if name.startswith("%"):
+            return "flip-flop"
+        elif name.startswith("&"):
+            return "conjunction"
+        elif name == "broadcaster":
+            return "broadcaster"
+        else:
+            return None
+
+    flip_flops = {name: False for name, type in [(n, get_module_type(n)) for n in modules] if type == "flip-flop"}
+    conjunction_modules = {name: {"inputs": {dest: False for dest in modules[name]} if get_module_type(name) == "conjunction" else None} for name, type in [(n, get_module_type(n)) for n in modules] if type == "conjunction"}
+    
+    def process_pulse(module_name, pulse_type):
+        module_type = get_module_type(module_name)
+        if module_type == "flip-flop":
+            if pulse_type == "low":
+                flip_flops[module_name] = not flip_flops[module_name]
+                return "high" if flip_flops[module_name] else "low"
+            else:
+                return None
+        elif module_type == "conjunction":
+            conjunction_modules[module_name]["inputs"][module_name] = pulse_type
+            all_high = all(conjunction_modules[module_name]["inputs"].values())
+            return "low" if all_high else "high"
+        elif module_type == "broadcaster":
+            for dest in modules[module_name]:
+                yield dest, pulse_type
+        else:
+            return None
+
+    low_count = 0
+    high_count = 0
+    for _ in range(1000):
+        pulse_queue = [("broadcaster", "low")]
+        processed_modules = set()
+        while pulse_queue:
+            module_name, pulse_type = pulse_queue.pop(0)
+            if module_name in processed_modules:
+                continue
+            processed_modules.add(module_name)
+            
+            for dest, pulse_type in process_pulse(module_name, pulse_type):
+                if pulse_type:
+                    pulse_queue.append((dest, pulse_type))
+                    if pulse_type == "low":
+                        low_count += 1
+                    else:
+                        high_count += 1
+    
+    print(low_count * high_count)
+
+solve()

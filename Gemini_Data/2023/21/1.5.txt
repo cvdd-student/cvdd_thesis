@@ -1,0 +1,34 @@
+import collections
+
+def solve():
+    grid = []
+    start_row, start_col = None, None
+    with open("input.txt", "r") as f:
+        for i, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if 'S' in row:
+                start_row, start_col = i, row.index('S')
+    
+    queue = collections.deque([(start_row, start_col, 0)])
+    visited = set()
+    reachable_plots = set()
+    
+    while queue:
+        row, col, steps = queue.popleft()
+        if (row, col) in visited:
+            continue
+        visited.add((row, col))
+        
+        if steps == 64:
+            reachable_plots.add((row, col))
+            continue
+
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            new_row, new_col = row + dr, col + dc
+            if 0 <= new_row < len(grid) and 0 <= new_col < len(grid[0]) and grid[new_row][new_col] != '#' :
+                queue.append((new_row, new_col, steps + 1))
+    
+    return len(reachable_plots)
+
+print(solve())

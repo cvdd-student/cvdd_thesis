@@ -1,0 +1,42 @@
+def solve():
+    grid = []
+    start_row, start_col = -1, -1
+    with open("input.txt", "r") as f:
+        for i, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if "S" in row:
+                start_row, start_col = i, row.index("S")
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def is_valid(r, c):
+        return 0 <= r < rows and 0 <= c < cols and grid[r][c] != "#"
+
+    q = [(start_row, start_col, 0)]
+    reachable = set()
+    reachable.add((start_row, start_col))
+
+    while q:
+        r, c, steps = q.pop(0)
+        if steps == 64:
+            break
+
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if is_valid(nr, nc) and (nr, nc) not in reachable:
+                q.append((nr, nc, steps + 1))
+                reachable.add((nr, nc))
+
+    count = 0
+    for r, c in reachable:
+        if grid[r][c] == ".":
+            count += 1
+
+    return count
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

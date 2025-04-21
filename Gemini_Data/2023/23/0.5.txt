@@ -1,0 +1,56 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(list(line.strip()))
+
+    start_row, start_col = -1, -1
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == "#":
+                continue
+            if grid[r][c] == "S":
+                start_row, start_col = r, c
+                break
+        if start_row != -1:
+            break
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]) and grid[nr][nc] != "#":
+                neighbors.append((nr, nc))
+        return neighbors
+
+    def is_valid_move(r, c, nr, nc):
+        if grid[nr][nc] == "^":
+            return nr > r
+        elif grid[nr][nc] == "v":
+            return nr < r
+        elif grid[nr][nc] == "<":
+            return nc < c
+        elif grid[nr][nc] == ">":
+            return nc > c
+        return True
+
+    max_steps = 0
+    q = [(start_row, start_col, 0)]
+    visited = set([(start_row, start_col)])
+
+    while q:
+        r, c, steps = q.pop(0)
+        
+        if grid[r][c] == "O":
+            max_steps = max(max_steps, steps)
+            continue
+
+        neighbors = get_neighbors(r, c)
+        for nr, nc in neighbors:
+            if (nr, nc) not in visited and is_valid_move(r, c, nr, nc):
+                q.append((nr, nc, steps + 1))
+                visited.add((nr, nc))
+                
+    print(max_steps)
+
+solve()

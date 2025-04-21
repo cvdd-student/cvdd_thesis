@@ -1,0 +1,45 @@
+import collections
+
+def solve():
+    grid = []
+    start_row, start_col = -1, -1
+    with open("input.txt", "r") as f:
+        for i, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            if 'S' in row:
+                start_row, start_col = i, row.index('S')
+    
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def is_valid(row, col):
+        return 0 <= row < rows and 0 <= col < cols and grid[row][col] != '#'
+
+    queue = collections.deque([(start_row, start_col, 0)])
+    visited = set([(start_row, start_col)])
+    reachable = set()
+
+    while queue:
+        row, col, steps = queue.popleft()
+
+        if steps == 64:
+            reachable.add((row, col))
+            continue
+
+
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            new_row, new_col = row + dr, col + dc
+            if is_valid(new_row, new_col) and (new_row, new_col) not in visited:
+                queue.append((new_row, new_col, steps + 1))
+                visited.add((new_row, new_col))
+                
+    count = 0
+    for row, col in reachable:
+      if grid[row][col] == '.':
+        count +=1
+
+
+    print(count)
+
+solve()

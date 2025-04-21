@@ -1,0 +1,78 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+    start = None
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == "#":
+                continue
+            if grid[r][c] == "S":
+                start = (r, c)
+                break
+        if start:
+            break
+
+    def get_neighbors(r, c):
+        neighbors = []
+        if r > 0 and grid[r - 1][c] != "#":
+            neighbors.append((r - 1, c))
+        if r < rows - 1 and grid[r + 1][c] != "#":
+            neighbors.append((r + 1, c))
+        if c > 0 and grid[r][c - 1] != "#":
+            neighbors.append((r, c - 1))
+        if c < cols - 1 and grid[r][c + 1] != "#":
+            neighbors.append((r, c + 1))
+        return neighbors
+
+    def is_valid_move(r, c, prev_r, prev_c):
+        if r < 0 or r >= rows or c < 0 or c >= cols:
+            return False
+        if grid[r][c] == "#":
+            return False
+        
+        if (r, c) == (prev_r, prev_c):
+            return False
+
+        current_slope = grid[r][c]
+        if current_slope in "^>v<":
+            if current_slope == "^" and r > prev_r:
+                return False
+            elif current_slope == ">" and c < prev_c:
+                return False
+            elif current_slope == "v" and r < prev_r:
+                return False
+            elif current_slope == "<" and c > prev_c:
+                return False
+
+
+        return True
+
+    def dfs(r, c, path, steps):
+        max_steps = steps
+        if grid[r][c] == "O": # Assuming 'O' in input marks visited cells in output
+            return max_steps
+        
+        grid[r] = grid[r][:c] + "O" + grid[r][c+1:] #Mark current cell visited to avoid re-visiting
+
+        for nr, nc in get_neighbors(r, c):
+          if is_valid_move(nr, nc, r, c):
+            max_steps = max(max_steps, dfs(nr, nc, path + [(nr, nc)], steps + 1))
+
+
+        
+        return max_steps
+    
+
+
+    max_len = dfs(start[0], start[1], [], 0)
+
+    print(max_len)
+
+
+
+solve()

@@ -1,0 +1,66 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    bricks = []
+    for line in lines:
+        coords = line.split("~")
+        start_coords = [int(x) for x in coords[0].split(",")]
+        end_coords = [int(x) for x in coords[1].split(",")]
+        bricks.append((start_coords, end_coords))
+
+    # Calculate final positions
+    settled_bricks = {}
+    for i, (start_coords, end_coords) in enumerate(bricks):
+        z = min(start_coords[2], end_coords[2])
+        while z > 0:
+            found_collision = False
+            for j, (other_start, other_end) in enumerate(bricks):
+                if i == j:
+                    continue
+                other_z = min(other_start[2], other_end[2])
+                if start_coords[0] == other_start[0] and start_coords[1] == other_start[1] and start_coords[2] == other_z + 1:
+                    z = other_z + 1
+                    found_collision = True
+                    break
+            if not found_collision:
+                break
+        settled_bricks[i] = (start_coords, end_coords, z)
+
+    # Build support graph
+    support_graph = {}
+    for i, (start_coords, end_coords, z) in settled_bricks.items():
+        support_graph[i] = []
+        for j, (other_start, other_end, other_z) in settled_bricks.items():
+            if i == j:
+                continue
+            if other_z + 1 == z:
+                if start_coords[0] == other_start[0] and start_coords[1] == other_start[1]:
+                    support_graph[i].append(j)
+
+    safe_to_disintegrate = 0
+    for i in range(len(bricks)):
+        temp_support_graph = support_graph.copy()
+        del temp_support_graph[i]
+        
+        is_safe = True
+        for j in range(len(bricks)):
+            if i == j: continue
+            if j in support_graph[i]:
+                supported_by_i = True
+                for k in support_graph[j]:
+                    if k not in temp_support_graph:
+                        supported_by_i = False
+                        break
+                if not supported_by_i:
+                    is_safe = False
+                    break
+        
+        if is_safe:
+            safe_to_disintegrate +=1
+
+    print(safe_to_disintegrate)
+
+solve()

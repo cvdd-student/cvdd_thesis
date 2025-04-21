@@ -1,0 +1,40 @@
+def solve():
+    hailstones = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.split()
+            pos = [int(x) for x in parts[0].split(",")]
+            vel = [int(x) for x in parts[2].split(",")]
+            hailstones.append((pos[:2], vel[:2]))
+
+    count = 0
+    for i in range(len(hailstones)):
+        for j in range(i + 1, len(hailstones)):
+            pos1, vel1 = hailstones[i]
+            pos2, vel2 = hailstones[j]
+            
+            a = vel1[0] - vel2[0]
+            b = pos1[0] - pos2[0]
+            c = vel1[1] - vel2[1]
+            d = pos1[1] - pos2[1]
+            
+            if a == 0 and c == 0:
+                continue
+            
+            if a == 0:
+                t = -d / c
+            elif c == 0:
+                t = -b / a
+            else:
+                t = (d * a - b * c) / (a * c - b * c)
+            
+            if t < 0:
+                continue
+            
+            x = pos1[0] + vel1[0] * t
+            y = pos1[1] + vel1[1] * t
+            
+            if 200000000000000 <= x <= 400000000000000 and 200000000000000 <= y <= 400000000000000:
+                count += 1
+    return count
+print(solve())

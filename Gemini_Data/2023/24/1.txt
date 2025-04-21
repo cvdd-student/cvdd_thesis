@@ -1,0 +1,35 @@
+def solve():
+    hailstones = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split(" @ ")
+            pos_parts = parts[0].split(",")
+            vel_parts = parts[1].split(",")
+            x = int(pos_parts[0])
+            y = int(pos_parts[1])
+            vx = int(vel_parts[0])
+            vy = int(vel_parts[1])
+            hailstones.append((x, y, vx, vy))
+
+    count = 0
+    for i in range(len(hailstones)):
+        for j in range(i + 1, len(hailstones)):
+            x1, y1, vx1, vy1 = hailstones[i]
+            x2, y2, vx2, vy2 = hailstones[j]
+            
+            denom = vx1 - vx2
+            if denom == 0:
+                continue  # Parallel paths, no intersection
+            
+            t = (y1 - y2) / denom
+            
+            if t < 0: continue
+            
+            x_intersection = x1 + vx1 * t
+            y_intersection = y1 + vy1 * t
+            
+            if 200000000000000 <= x_intersection <= 400000000000000 and \
+               200000000000000 <= y_intersection <= 400000000000000:
+                count += 1
+    return count
+print(solve())

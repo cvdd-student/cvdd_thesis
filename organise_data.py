@@ -113,6 +113,8 @@ def clean_data(data):
                 flag_skip_line = True
             if line_clean[:1] == "#":
                 flag_skip_line = True
+            if "solve" in line:
+                flag_skip_line = True
             
             if flag_skip_line is not True:
                 item_new.append(line)
@@ -136,7 +138,7 @@ def process_data(list_data):
 
 
 def train_clf(train_feats, train_labels):
-    print("Training model...")
+    print("Training Logistic model...")
     clf = LogisticRegression(random_state=0).fit(train_feats, train_labels)
     print("OK")
     
@@ -150,7 +152,7 @@ def train_cls(train_feats, train_labels):
     cls = svm.LinearSVC()  # Accuracy around 0.835 on dev dataset
     #cls = svm.SVC(decision_function_shape='ovo')    # Accuracy around 0.827 on dev dataset
 
-    print("Training model...")
+    print("Training SVM model...")
     cls.fit(train_feats, train_labels)
     print("OK")
 
@@ -158,6 +160,7 @@ def train_cls(train_feats, train_labels):
 
 
 def main():
+    random.seed(31012001)
     gemini_data = get_data("Gemini_Data", "gemini")
     human_data = get_data("Human_Data", "human")
     full_data = gemini_data + human_data
@@ -179,17 +182,22 @@ def main():
         else:
             pre_labels.append("human")
     
-    accum = 0
-    for real, pred in zip(te_labels, pre_labels):
-        if real != pred:
-            print(te_items[accum])
-            print(real)
-        accum += 1
+    # accum = 0
+    # for real, pred in zip(te_labels, pre_labels):
+    #     if real != pred:
+    #         print(te_items[accum])
+    #         print(real)
+    #     accum += 1
     
     eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=pre_labels)
     print(eval_matrix)
     
-    print(list_gemini_prob)
+    print()
+    cls = train_cls(tr_feats, tr_labels)
+    cls_predictions = cls.predict(te_feats)
+    
+    eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=cls_predictions)
+    print(eval_matrix)
     
 
 if __name__ == "__main__":

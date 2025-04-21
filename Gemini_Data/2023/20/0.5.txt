@@ -1,0 +1,72 @@
+def solve():
+    modules = {}
+    lines = []
+    with open("input.txt", "r") as f:  # Replace "input.txt" with your input file
+        for line in f:
+            lines.append(line.strip())
+    
+    for line in lines:
+        parts = line.split("->")
+        name = parts[0].strip()
+        destinations = parts[1].strip().split(",")
+        modules[name] = destinations
+
+    def process_pulse(module_name, pulse_type):
+        nonlocal low_count, high_count
+        if module_name in modules:
+            destinations = modules[module_name]
+            if module_name.startswith("%"):
+                if pulse_type == "low":
+                    if flip_flops[module_name] == "off":
+                        flip_flops[module_name] = "on"
+                        process_pulse(module_name, "high")
+                    else:
+                        flip_flops[module_name] = "off"
+                        process_pulse(module_name, "low")
+                else:
+                    return
+            elif module_name.startswith("&"):
+                conjunctions[module_name][module_name] = pulse_type
+                all_high = True
+                for dest in conjunctions[module_name]:
+                    if conjunctions[module_name][dest] == "low":
+                        all_high = False
+                        break
+                if all_high:
+                    process_pulse("output", "low")
+                else:
+                    process_pulse("output", "high")
+            elif module_name == "broadcaster":
+                for dest in destinations:
+                    process_pulse(dest, pulse_type)
+            else:
+                for dest in destinations:
+                    process_pulse(dest, pulse_type)
+        else:
+            if pulse_type == "low":
+                nonlocal low_count
+                low_count += 1
+            else:
+                nonlocal high_count
+                high_count += 1
+
+    flip_flops = {}
+    conjunctions = {}
+
+    for module in modules:
+        if module.startswith("%"):
+            flip_flops[module] = "off"
+        elif module.startswith("&"):
+            conjunctions[module] = {}
+            for dest in modules[module]:
+                conjunctions[module][dest] = "low"
+
+    low_count = 0
+    high_count = 0
+    
+    for _ in range(1000):
+        process_pulse("button", "low")
+        
+    print(low_count * high_count)
+
+solve()

@@ -1,0 +1,67 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    bricks = []
+    for line in lines:
+        coords = line.split("~")
+        start_coords = [int(x) for x in coords[0].split(",")]
+        end_coords = [int(x) for x in coords[1].split(",")]
+        bricks.append((start_coords, end_coords))
+
+    # Simulate settling
+    settled_bricks = []
+    for i in range(len(bricks)):
+        start_coords, end_coords = bricks[i]
+        z = min(start_coords[2], end_coords[2])
+        settled_bricks.append((start_coords, end_coords, i))
+
+    settled_bricks.sort(key=lambda x: x[0][2])
+
+    final_bricks = []
+    for i in range(len(settled_bricks)):
+        start_coords, end_coords, index = settled_bricks[i]
+        
+        # Check for collisions
+        for j in range(i):
+            other_start, other_end, _ = settled_bricks[j]
+            
+            if (start_coords[0] == other_start[0] and start_coords[1] == other_start[1] and start_coords[2] == other_start[2]) or \
+               (end_coords[0] == other_start[0] and end_coords[1] == other_start[1] and end_coords[2] == other_start[2]) or \
+               (start_coords[0] == other_end[0] and start_coords[1] == other_end[1] and start_coords[2] == other_end[2]) or \
+               (end_coords[0] == other_end[0] and end_coords[1] == other_end[1] and end_coords[2] == other_end[2]):
+                
+                if start_coords[2] > other_end[2]:
+                    start_coords = (start_coords[0], start_coords[1], other_end[2] + 1)
+                elif end_coords[2] > other_end[2]:
+                    end_coords = (end_coords[0], end_coords[1], other_end[2] + 1)
+        final_bricks.append((start_coords, end_coords, index))
+
+    # Calculate support relationships
+    support_map = {}
+    for i in range(len(final_bricks)):
+        start_coords, end_coords, index = final_bricks[i]
+        for j in range(len(final_bricks)):
+            if i == j:
+                continue
+            other_start, other_end, other_index = final_bricks[j]
+            if other_start[2] + 1 == start_coords[2] and other_start[0] == start_coords[0] and other_start[1] == start_coords[1]:
+                if index not in support_map:
+                    support_map[index] = []
+                support_map[index].append(other_index)
+
+    safe_to_disintegrate = 0
+    for brick_index in support_map:
+        is_safe = True
+        for supported_brick in support_map.get(brick_index, []):
+            if supported_brick not in support_map or len(support_map.get(supported_brick, [])) == 0:
+                is_safe = False
+                break
+        if is_safe:
+            safe_to_disintegrate += 1
+
+    print(safe_to_disintegrate)
+
+solve()

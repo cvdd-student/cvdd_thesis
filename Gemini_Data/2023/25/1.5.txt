@@ -1,0 +1,64 @@
+def solve():
+    wiring_diagram = {}
+    with open("input.txt", "r") as file:
+        for line in file:
+            parts = line.strip().split(":")
+            component = parts[0].strip()
+            connections = [conn.strip() for conn in parts[1].split()]
+            wiring_diagram[component] = connections
+
+    def find_connected_components(graph, start_node):
+        visited = set()
+        queue = [start_node]
+        component = []
+        while queue:
+            node = queue.pop(0)
+            if node not in visited:
+                visited.add(node)
+                component.append(node)
+                for neighbor in graph.get(node, []):
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+        return component
+
+    def calculate_product(component_group1, component_group2):
+        return len(component_group1) * len(component_group2)
+
+    possible_disconnections = []
+    for i in wiring_diagram:
+      for j in wiring_diagram[i]:
+        possible_disconnections.append((i, j))
+
+    for i in range(len(possible_disconnections)):
+      for j in range(i+1,len(possible_disconnections)):
+        for k in range(j+1, len(possible_disconnections)):
+          
+          temp_diagram = wiring_diagram.copy()
+
+          a, b = possible_disconnections[i]
+          temp_diagram.get(a).remove(b) if b in temp_diagram.get(a, []) else None
+          temp_diagram.get(b).remove(a) if a in temp_diagram.get(b, []) else None
+          a, b = possible_disconnections[j]
+          temp_diagram.get(a).remove(b) if b in temp_diagram.get(a, []) else None
+          temp_diagram.get(b).remove(a) if a in temp_diagram.get(b, []) else None
+          a, b = possible_disconnections[k]
+          temp_diagram.get(a).remove(b) if b in temp_diagram.get(a, []) else None
+          temp_diagram.get(b).remove(a) if a in temp_diagram.get(b, []) else None
+
+
+          
+          components = list(temp_diagram.keys())
+          connected_components = []
+          visited = set()
+
+          for component in components:
+            if component not in visited:
+                connected_components.append(find_connected_components(temp_diagram, component))
+                visited.update(connected_components[-1])
+          if len(connected_components) == 2:
+             
+            result = calculate_product(connected_components[0],connected_components[1])
+            print(result)
+            return
+
+solve()

@@ -1,0 +1,85 @@
+def solve():
+    modules = {}
+    
+    def parse_line(line):
+        parts = line.split("->")
+        name = parts[0].strip()
+        destinations = [dest.strip() for dest in parts[1].split(",")]
+        return name, destinations
+    
+    with open("input.txt", "r") as f:
+      lines = f.readlines()
+    
+    for line in lines:
+      name, destinations = parse_line(line)
+      modules[name] = destinations
+
+
+    
+    def process_pulse(module_name, pulse_type):
+        nonlocal pulses_sent, total_low, total_high
+        if module_name not in modules:
+            return 
+        
+        if module_name.startswith("%"):
+            if pulse_type == "high":
+                return 
+            else:
+                
+                state = module_state.get(module_name, False)
+                module_state[module_name] = not state
+                pulse_type = "high" if not state else "low"
+        elif module_name.startswith("&"):
+            
+            dest_pulses = {}
+            for dest in modules.get(module_name, []):
+                dest_pulses[dest] = module_state_memory.get(dest, 'low')
+            
+            if all([pulse == "high" for pulse in dest_pulses.values()]):
+                pulse_type = "low"
+            else:
+                pulse_type = "high"
+            
+            for dest in modules.get(module_name, []):
+                module_state_memory[dest] = pulse_type
+
+
+        elif module_name == "broadcaster":
+            for dest in modules.get(module_name, []):
+                process_pulse(dest, pulse_type)
+        else:
+            # Handle other types as needed
+            pass
+
+        if pulse_type == 'low':
+            total_low +=1
+        else:
+            total_high +=1
+
+
+        pulses_sent.append((module_name, pulse_type))
+    
+
+    module_state = {}
+    module_state_memory = {}
+
+    
+    
+    
+    total_low = 0
+    total_high = 0
+    pulses_sent = []
+    
+    
+    for _ in range(1000):
+      process_pulse("button", "low")
+      while len(pulses_sent)> 0:
+        last_pulse = pulses_sent.pop(0)
+        process_pulse(last_pulse[0], last_pulse[1])
+        
+    
+    result = total_low * total_high
+
+    return result
+    
+print(solve())

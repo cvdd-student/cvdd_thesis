@@ -1,0 +1,90 @@
+def solve():
+    modules = {}
+    lines = []
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+    
+    for line in lines:
+        parts = line.strip().split(" -> ")
+        name = parts[0]
+        destinations = parts[1].split(", ")
+        modules[name] = destinations
+
+    def get_module_type(name):
+        if name.startswith("%"):
+            return "flip_flop"
+        elif name.startswith("&"):
+            return "conjunction"
+        elif name == "broadcaster":
+            return "broadcast"
+        else:
+            return None
+
+    flip_flops = {name: False for name, type in [(name,get_module_type(name)) for name in modules] if type == "flip_flop"}
+    conjunctions = {name: {} for name, type in [(name, get_module_type(name)) for name in modules] if type == "conjunction"}
+
+    def process_pulse(module_name, pulse_type):
+        nonlocal flip_flops,conjunctions
+        module_type = get_module_type(module_name)
+        if module_type == "flip_flop":
+            if pulse_type == "low":
+                flip_flops[module_name] = not flip_flops[module_name]
+                if flip_flops[module_name]:
+                    pulse_to_send = "high"
+                else:
+                    pulse_to_send = "low"
+            
+                for dest in modules.get(module_name, []):
+                   process_pulse(dest,pulse_to_send)
+
+        elif module_type == "conjunction":
+            conjunctions[module_name][module_name] = pulse_type
+            all_high = True
+            for dest in modules.get(module_name, []):
+                if conjunctions.get(module_name).get(dest, "low") != "high":
+                    all_high = False
+                    break
+            if all_high:
+                pulse_to_send = "low"
+            else:
+                pulse_to_send = "high"
+            for dest in modules.get(module_name, []):
+                process_pulse(dest,pulse_to_send)
+
+        elif module_type == "broadcast":
+            for dest in modules.get(module_name, []):
+                process_pulse(dest,pulse_type)
+                
+
+        
+    
+    low_count = 0
+    high_count = 0
+
+    for _ in range(1000):
+        process_pulse("broadcaster", "low")
+        
+        
+        
+        for module_name in flip_flops:
+            if modules.get(module_name):
+               continue
+           
+        for name in conjunctions:
+           
+           
+           if modules.get(name):
+             continue
+
+
+        # Count pulses sent, to make the calculation complete,  
+        # need a dictionary to count both types per step
+
+        low_count += 1
+        
+
+
+    
+    print(low_count * high_count)
+
+solve()

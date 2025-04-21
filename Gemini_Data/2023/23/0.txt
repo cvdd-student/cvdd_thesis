@@ -1,0 +1,52 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    start_row, start_col = -1, -1
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '#':
+                continue
+            if grid[r][c] == 'S':
+                start_row, start_col = r, c
+                break
+        if start_row != -1:
+            break
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] != '#':
+                neighbors.append((nr, nc))
+        return neighbors
+
+    def is_valid_move(r, c, nr, nc):
+        if grid[nr][nc] == '^':
+            return nr > r
+        elif grid[nr][nc] == 'v':
+            return nr < r
+        elif grid[nr][nc] == '>':
+            return nc > c
+        elif grid[nr][nc] == '<':
+            return nc < c
+        return True
+
+    def dfs(r, c, path):
+        max_len = len(path)
+        
+        for nr, nc in get_neighbors(r, c):
+            if (nr, nc) not in path:
+                if is_valid_move(r, c, nr, nc):
+                    max_len = max(max_len, dfs(nr, nc, path | {(nr, nc)}))
+        return max_len + 1
+
+    result = dfs(start_row, start_col, {(start_row, start_col)})
+    print(result - 1)  # Subtract 1 because the starting position is counted
+
+solve()

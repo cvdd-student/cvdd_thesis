@@ -1,0 +1,68 @@
+def solve():
+    wiring_diagram = {}
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split(":")
+            component = parts[0].strip()
+            connections = [conn.strip() for conn in parts[1].split()]
+            wiring_diagram[component] = connections
+
+    def find_connected_components(components, connections):
+        visited = set()
+        groups = []
+        
+        def dfs(component):
+            visited.add(component)
+            group.append(component)
+            for neighbor in connections.get(component, []):
+                if neighbor not in visited:
+                    dfs(neighbor)
+        
+        for component in components:
+            if component not in visited:
+                group = []
+                dfs(component)
+                groups.append(group)
+        return groups
+
+    def calculate_product(group1, group2):
+        return len(group1) * len(group2)
+
+    components = set()
+    for component in wiring_diagram:
+        components.add(component)
+        for connection in wiring_diagram[component]:
+            components.add(connection)
+
+
+    
+    best_product = 0
+    for wire1 in components:
+        for wire2 in components:
+            for wire3 in components:
+                if wire1 == wire2 or wire1 == wire3 or wire2 == wire3:
+                    continue
+
+                temp_wiring = wiring_diagram.copy()
+                if wire1 in temp_wiring and wire2 in temp_wiring[wire1]:
+                    temp_wiring[wire1].remove(wire2)
+                if wire2 in temp_wiring and wire1 in temp_wiring[wire2]:
+                    temp_wiring[wire2].remove(wire1)
+                if wire1 in temp_wiring and wire3 in temp_wiring[wire1]:
+                    temp_wiring[wire1].remove(wire3)
+                if wire3 in temp_wiring and wire1 in temp_wiring[wire3]:
+                    temp_wiring[wire3].remove(wire1)
+                if wire2 in temp_wiring and wire3 in temp_wiring[wire2]:
+                    temp_wiring[wire2].remove(wire3)
+                if wire3 in temp_wiring and wire2 in temp_wiring[wire3]:
+                    temp_wiring[wire3].remove(wire2)
+
+                groups = find_connected_components(components, temp_wiring)
+                if len(groups) == 2:
+                    product = calculate_product(groups[0], groups[1])
+                    best_product = max(best_product, product)
+
+    return best_product
+
+result = solve()
+print(result)

@@ -1,0 +1,63 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    bricks = {}
+    for i, line in enumerate(lines):
+        parts = line.split("~")
+        start_coords = tuple(map(int, parts[0].split(",")))
+        end_coords = tuple(map(int, parts[1].split(",")))
+        bricks[chr(ord('A') + i)] = (start_coords, end_coords)
+
+    # Simulate settling
+    settled_bricks = {}
+    for brick_id, (start_coords, end_coords) in bricks.items():
+        z = start_coords[2]
+        while z > 0:
+            current_z = z
+            new_z = -1
+            for other_id, (other_start, other_end) in settled_bricks.items():
+                if other_start[2] <= current_z and current_z < other_end[2]:
+                    if new_z == -1 or other_start[2] > new_z:
+                        new_z = other_start[2]
+            if new_z != -1:
+                z = new_z
+            else:
+                z -=1
+                
+        settled_bricks[brick_id] = (start_coords, (end_coords[0],end_coords[1],z))
+    
+    support_map = {}
+    for brick_id, (start, end) in settled_bricks.items():
+        support_map[brick_id] = set()
+        for other_id, (other_start, other_end) in settled_bricks.items():
+          if other_id == brick_id:
+            continue
+          if other_start[2] == end[2] + 1:
+            support_map[other_id].add(brick_id)
+
+    safe_to_remove = 0
+    for brick_id, support_set in support_map.items():
+        temp_support_map = support_map.copy()
+        temp_support_map.pop(brick_id)
+        can_remove = True
+        for supported_brick, supported_supporters in temp_support_map.items():
+            if brick_id in supported_supporters:
+                found_other_support = False
+                for other_support in supported_supporters:
+                    if other_support != brick_id:
+                        found_other_support = True
+                        break
+                if not found_other_support:
+                    can_remove = False
+                    break
+
+        if can_remove:
+            safe_to_remove += 1
+
+    print(safe_to_remove)
+    
+
+solve()

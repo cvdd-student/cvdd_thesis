@@ -1,0 +1,90 @@
+def solve():
+    modules = {}
+    module_types = {}
+    
+    def parse_input(line):
+      parts = line.strip().split("->")
+      name = parts[0].strip()
+      destinations = [d.strip() for d in parts[1].split(",")]
+      
+      type_match = re.match(r"([%&]?)(\w+)", name)
+      if type_match:
+          type_char = type_match.group(1)
+          module_name = type_match.group(2)
+          module_types[module_name] = type_char
+      else:
+          module_types[name] = None
+          
+      modules[name] = destinations
+    
+    import re
+    with open("input.txt", "r") as f:
+      for line in f:
+          parse_input(line)
+      
+    
+    def process_pulse(module_name, pulse_type):
+      nonlocal pulses_sent
+      if module_name == "button":
+        pulses_sent["low"] += 1
+        return pulse_type
+      elif module_name in modules:
+        destination_modules = modules[module_name]
+      
+        if module_types.get(module_name) == "%":
+          if pulse_type == "low":
+            modules[module_name] = "off" if modules[module_name] == "on" else "on"
+            next_pulse_type = "high" if modules[module_name] == "on" else "low"
+            pulses_sent[next_pulse_type] += 1
+            
+          for dest in destination_modules:
+             process_pulse(dest,next_pulse_type)
+          
+        elif module_types.get(module_name) == "&":
+            remembered_pulses = {}
+            for dest in destination_modules:
+                if dest in remembered_pulses: continue
+                if (dest, "low") in remembered_pulses.items():
+                  remembered_pulses[dest] = "low"
+                
+                if dest in module_types:
+                    pulse_to_send = "low" if modules[dest] == "on" else "high"
+                    process_pulse(dest, pulse_type)
+                    remembered_pulses[dest] = pulse_to_send
+                else:
+                    remembered_pulses[dest] = "low"
+                    
+            if all(pulse == "high" for pulse in remembered_pulses.values()):
+                pulses_sent["low"] += 1
+            else:
+                pulses_sent["high"] += 1
+
+            for dest in destination_modules:
+              process_pulse(dest, "low" if all(pulse == "high" for pulse in remembered_pulses.values()) else "high") 
+            
+          
+        elif module_name == "broadcaster":
+           
+            for dest in destination_modules:
+              process_pulse(dest, pulse_type)
+        else:
+           
+            pulses_sent[pulse_type] +=1
+    
+    pulses_sent = {"low": 0, "high": 0}
+    
+    for _ in range(1000):
+        process_pulse("button", "low")
+    
+        
+    
+    low_count = pulses_sent["low"]
+    high_count = pulses_sent["high"]
+
+    
+    result = low_count * high_count
+    print(result)
+
+
+import re
+solve()

@@ -1,0 +1,70 @@
+import collections
+
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(list(line.strip()))
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
+                neighbors.append((nr, nc))
+        return neighbors
+
+    def is_valid_step(r, c):
+        return 0 <= r < len(grid) and 0 <= c < len(grid[0]) and grid[r][c] != '#'
+
+
+    def is_slope_step(r, c, next_r, next_c):
+        char = grid[r][c]
+        if char in ['^', 'v', '<', '>']:
+            if char == '^' and next_r > r: return False
+            if char == 'v' and next_r < r: return False
+            if char == '<' and next_c > c: return False
+            if char == '>' and next_c < c: return False
+        return True
+
+
+    start_r, start_c = None, None
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == '.':
+                if start_r is None:
+                    start_r, start_c = r, c
+                    break
+        if start_r is not None: break
+
+    end_r, end_c = None, None
+    for r in range(len(grid) - 1, -1, -1):
+        for c in range(len(grid[0])):
+            if grid[r][c] == '.':
+                end_r, end_c = r, c
+                break
+        if end_r is not None: break
+
+
+    queue = collections.deque([(start_r, start_c, 0)])
+    visited = set([(start_r, start_c)])
+
+    max_steps = 0
+
+    while queue:
+        r, c, steps = queue.popleft()
+        
+        if r == end_r and c == end_c:
+            max_steps = max(max_steps, steps)
+            continue
+
+        for nr, nc in get_neighbors(r, c):
+            if (nr, nc) not in visited and is_valid_step(nr,nc) and is_slope_step(r, c, nr, nc):
+                queue.append((nr, nc, steps + 1))
+                visited.add((nr,nc))
+    
+    return max_steps
+
+
+result = solve()
+print(result)

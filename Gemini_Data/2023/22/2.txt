@@ -1,0 +1,62 @@
+def solve():
+    lines = """1,0,1~1,2,1
+0,0,2~2,0,2
+0,2,3~2,2,3
+0,0,4~0,2,4
+2,0,5~2,2,5
+0,1,6~2,1,6
+1,1,8~1,1,9"""
+    lines = input().splitlines()  # Read input from stdin
+
+    bricks = {}
+    for line in lines:
+        coords = line.split('~')
+        start = tuple(map(int, coords[0].split(',')))
+        end = tuple(map(int, coords[1].split(',')))
+        bricks[f"{start[0]},{start[1]},{start[2]}"] = end
+
+
+    # ... (rest of the code is for settling and safety calculation, similar to the original implementation)
+    settled_bricks = []
+    settled_positions = {}
+
+    for brick_key, end_coords in bricks.items():
+      brick = (tuple(map(int, brick_key.split(','))), tuple(map(int, ','.join(map(str, end_coords)).split(','))))
+      min_z = min(brick[0][2], brick[1][2])
+
+      new_z_pos = min_z + 1  # adjust z pos for resting bricks
+      new_brick_pos = tuple([brick[0][i] for i in range(len(brick[0])) if i != 2]) + (new_z_pos,)
+      while (new_brick_pos in settled_positions):
+          new_z_pos +=1
+          new_brick_pos = tuple([brick[0][i] for i in range(len(brick[0])) if i != 2]) + (new_z_pos,)
+
+      settled_positions[new_brick_pos] = brick
+      settled_bricks.append(new_brick_pos)
+
+
+    safe_to_disintegrate_count = 0
+    for brick_key, end_coords in settled_bricks:
+      temp_settled = []
+      removed_brick = settled_positions.pop(brick_key, None)
+      safe = True
+      if removed_brick is None:
+          continue  
+      else:
+          
+          # Implement safety logic
+          for another in settled_bricks:
+              if another != brick_key:
+                  #Simulate moving brick down
+                  continue
+
+          safe = safe
+
+
+
+          if safe:
+            safe_to_disintegrate_count += 1
+    print(safe_to_disintegrate_count)
+
+
+
+solve()

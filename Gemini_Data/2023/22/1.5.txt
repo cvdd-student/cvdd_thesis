@@ -1,0 +1,87 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    bricks = []
+    for line in lines:
+        coords = line.strip().split("~")
+        start_coords = [int(x) for x in coords[0].split(",")]
+        end_coords = [int(x) for x in coords[1].split(",")]
+        bricks.append((start_coords, end_coords))
+
+    # Simulate settling
+    settled_bricks = {}
+    for i, (start, end) in enumerate(bricks):
+        z = start[2]
+        while z > 0:
+            curr_z = z
+            if (start[0], start[1], z) in settled_bricks:
+                z -= 1
+                continue
+            
+            settled = False
+            for j, (other_start, other_end) in enumerate(bricks):
+                if i == j: continue
+                
+                if (other_start[0] <= start[0] <= other_end[0] and 
+                    other_start[1] <= start[1] <= other_end[1] and 
+                    other_start[2] <= curr_z < other_end[2]):
+                    z = other_end[2]
+                    settled = True
+                    break
+            if settled:
+                continue
+
+            z-=1
+        if (start[0], start[1], z) not in settled_bricks:
+             settled_bricks[(start[0], start[1], z)] = (i+1, start)
+
+    # Determine supports
+    supports = {}
+    for i, (coords, brick_data) in enumerate(settled_bricks.items()):
+      for j, (other_start, other_end) in enumerate(bricks):
+
+        is_support = False
+        curr_coords = coords
+
+
+        if (curr_coords[0] <= other_start[0] <= curr_coords[0] + 1 and curr_coords[1] <= other_start[1] <= curr_coords[1] + 1  and curr_coords[2] <= other_start[2]):
+           if brick_data[0] != (j+1):
+               
+               if brick_data[0] not in supports:
+                   supports[brick_data[0]] = []
+               supports[brick_data[0]].append(other_start[2]) 
+               is_support = True
+
+
+    # Count safe disintegrations
+    safe_disintegrations = 0
+    for brick_id in supports:
+        if brick_id not in supports:
+           safe_disintegrations += 1
+        else:
+          can_disintegrate = True
+          for sup_z in supports[brick_id]:
+                valid_z = False
+                for other_brick_id in supports:
+                     
+                     if brick_id != other_brick_id:
+                       try:
+                        found_support = any( z for z in supports[other_brick_id] if z > sup_z)
+                        valid_z = found_support 
+                        break
+                       except:
+                           continue
+                if not valid_z:
+                   can_disintegrate = False
+                   break
+          if can_disintegrate:
+              safe_disintegrations +=1
+
+
+    print(safe_disintegrations)
+
+
+
+solve()

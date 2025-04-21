@@ -1,0 +1,58 @@
+def solve():
+    wiring_diagram = {}
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split(":")
+            component = parts[0].strip()
+            connections = [conn.strip() for conn in parts[1].split()]
+            wiring_diagram[component] = connections
+
+    def find_connected_components(components, connections):
+        visited = set()
+        component_groups = []
+
+        def dfs(component):
+            visited.add(component)
+            group.append(component)
+            for connection in connections.get(component, []):
+                if connection not in visited:
+                    dfs(connection)
+
+        for component in components:
+            if component not in visited:
+                group = []
+                dfs(component)
+                component_groups.append(group)
+        return component_groups
+
+    all_components = set()
+    for component in wiring_diagram:
+        all_components.add(component)
+        for connection in wiring_diagram[component]:
+            all_components.add(connection)
+
+    def calculate_product(group1, group2):
+        return len(group1) * len(group2)
+
+    best_product = 0
+    for i in range(len(all_components)):
+        for j in range(i + 1, len(all_components)):
+            for k in range(j + 1, len(all_components)):
+                disconnections = [(all_components.pop(i), all_components.pop(j-1), all_components.pop(k-2))]
+                
+                temp_wiring = wiring_diagram.copy()
+                for component1, component2 in disconnections:
+                    if component1 in temp_wiring and component2 in temp_wiring[component1]:
+                        temp_wiring[component1].remove(component2)
+                    if component2 in temp_wiring and component1 in temp_wiring[component2]:
+                        temp_wiring[component2].remove(component1)
+                
+                groups = find_connected_components(all_components, temp_wiring)
+                if len(groups) == 2:
+                    product = calculate_product(groups[0], groups[1])
+                    best_product = max(best_product, product)
+    
+    return best_product
+
+result = solve()
+print(result)
