@@ -2,12 +2,11 @@ from sklearn import svm
 from sklearn import metrics
 import organise_data
 
+
 def train_cls(train_feats, train_labels):
     '''Initiate and fit a SVM classifier, then return
     the classifier.'''
-    # Init the classifier, decide what type is the best.
-    cls = svm.LinearSVC()  # Accuracy around 0.835 on dev dataset
-    #cls = svm.SVC(decision_function_shape='ovo')    # Accuracy around 0.827 on dev dataset
+    cls = svm.LinearSVC()
 
     print("Training SVM model...")
     cls.fit(train_feats, train_labels)
@@ -17,11 +16,15 @@ def train_cls(train_feats, train_labels):
 
 
 def main():
+    # Get necessary data
     tr_feats, tr_labels, te_feats, te_labels, transformers = organise_data.make_feats()
+
+    # Initiate and train the SVM classifier
     cls = train_cls(tr_feats, tr_labels)
-    cls_predictions = cls.predict(te_feats)
-    
-    eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=cls_predictions)
+    pre_labels = cls.predict(te_feats)
+
+    # Create and show evaluation matrix
+    eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=pre_labels)
     print(eval_matrix)
 
 

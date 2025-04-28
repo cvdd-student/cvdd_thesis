@@ -2,11 +2,10 @@ import os
 import organise_data
 import perform_logreg
 
+
 def file_select():
-    """
-    Displays the files in the input folder,
-    and returns the file chosen.
-    """
+    '''Displays the files in the input folder,
+    and returns the file chosen.'''
     files = os.listdir("input")
     for i in range(len(files)):
         filepath = "input/" + files[i]
@@ -26,10 +25,7 @@ def file_select():
 
 
 def get_data():
-    """
-    Gets a file from file_select() and returns it as read data.
-    Input: None
-    """
+    '''Gets a filepath from file_select() and returns it as read data.'''
     selected_file = file_select()
     with open(selected_file, "r") as file:
         data = file.read()
@@ -39,11 +35,11 @@ def get_data():
 def main():
     tr_feats, tr_labels, te_feats, te_labels, transformers = organise_data.make_feats()
     clf = perform_logreg.train_clf(tr_feats, tr_labels)
-    
+
     input_file = get_data()
     input_count_vec = transformers[0].transform([input_file])
     input_tfidf = transformers[1].transform(input_count_vec)
-    
+
     clf_predictions = clf.predict_proba(input_tfidf)
     print("Probability of being Gemini: " + str(clf_predictions[0][0]))
 
