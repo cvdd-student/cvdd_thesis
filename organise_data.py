@@ -128,8 +128,8 @@ def clean_data(data):
                 flag_skip_line = True
             if line_clean[:1] == "#":
                 flag_skip_line = True
-            if "solve" in line:
-                flag_skip_line = True
+            #if "solve" in line:
+            #    flag_skip_line = True
 
             if flag_skip_line is not True:
                 item_new.append(line)
@@ -164,7 +164,7 @@ def process_data(list_data):
 
 def make_feats():
     # Set the seed to keep consistent results
-    random.seed(31012001)
+    #random.seed(31012001)
 
     # Get the data
     gemini_data = get_data("Gemini_Data", "gemini")
