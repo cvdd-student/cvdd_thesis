@@ -9,7 +9,7 @@ def get_run_results():
     tr_feats, tr_labels, te_feats, te_labels, transformers = organise_data.make_feats()
 
     # Initiate and train the SVM classifier
-    cls = perform_svm.train_cls(tr_feats, tr_labels)
+    cls = perform_svm.train_cls(tr_feats, tr_labels, quiet_mode=True)
 
     # Get the sorted dictionary of the classifier
     list_words_ids = []
@@ -49,6 +49,7 @@ def count_word_occurences(list_wordweights, data):
 def main():
     int_iterations = 100
     dict_wordweights = dict()
+    print("Running SVM classifications...")
     for i in range(int_iterations):
         list_wordweights_new = get_run_results()
         for weight, word in list_wordweights_new:
@@ -56,18 +57,20 @@ def main():
                 dict_wordweights[word] = weight
             else:
                 dict_wordweights[word] += weight
-
     for word in dict_wordweights:
         dict_wordweights[word] = dict_wordweights[word] / int_iterations
+    print("OK")
 
     list_wordweights = dict_wordweights.items()
     list_wordweights = sorted(list_wordweights, key=lambda x: x[1])
 
     # Collect the amount of times the words appear in our data
+    print("Collecting word occurences...")
     data_gemini = organise_data.get_data("Gemini_Data", "a")
     data_human = organise_data.get_data("Human_Data", "a")
     counters_gemini = count_word_occurences(list_wordweights, data_gemini)
     counters_human = count_word_occurences(list_wordweights, data_human)
+    print("OK")
 
     list_total_data = []
     for i in range(len(list_wordweights)):
@@ -79,12 +82,14 @@ def main():
     filename += str(time.time())
     filename += ".tsv"
 
+    print("Exporting data to the svm_reports folder...")
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, "w") as file:
         file.write("word\tcoef\tocc_gemini\tocc_human\n")
         for item in list_total_data:
             file.write(str(item[0]) + "\t" + str(item[1]) + "\t" + str(item[2]) + "\t" + str(item[3]))
             file.write("\n")
+    print("OK")
 
 
 if __name__ == "__main__":
