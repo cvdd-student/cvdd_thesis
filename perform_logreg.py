@@ -28,6 +28,26 @@ def main():
             pre_labels.append("gemini")
         else:
             pre_labels.append("human")
+    
+    # Evaluation metrics
+    baseline_labels = []
+    for i in range(len(te_labels)):
+        baseline_labels.append("human")
+    
+    accuracy_baseline = metrics.accuracy_score(y_true=te_labels, y_pred=baseline_labels)
+    precision_baseline = metrics.precision_score(y_true=te_labels, y_pred=baseline_labels, average='macro', zero_division=0.0)
+    recall_baseline = metrics.recall_score(y_true=te_labels, y_pred=baseline_labels, average='macro')
+    f1score_baseline = metrics.f1_score(y_true=te_labels, y_pred=baseline_labels, average='macro', zero_division=0.0)
+    
+    accuracy = metrics.accuracy_score(y_true=te_labels, y_pred=pre_labels)
+    precision = metrics.precision_score(y_true=te_labels, y_pred=pre_labels, average='macro', zero_division=0.0)
+    recall = metrics.recall_score(y_true=te_labels, y_pred=pre_labels, average='macro')
+    f1score = metrics.f1_score(y_true=te_labels, y_pred=pre_labels, average='macro', zero_division=0.0)
+    
+    print("Accuracy: " + str(accuracy) + " (Baseline: " + str(accuracy_baseline) + ")")
+    print("Precision: " + str(precision)  + " (Baseline: " + str(precision_baseline) + ")")
+    print("Recall: " + str(recall)  + " (Baseline: " + str(recall_baseline) + ")")
+    print("F1: " + str(f1score)  + " (Baseline: " + str(f1score_baseline) + ")")
 
     # Create and show evaluation matrix
     eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=pre_labels)
