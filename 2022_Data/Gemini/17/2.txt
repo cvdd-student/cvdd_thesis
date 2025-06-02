@@ -1,0 +1,78 @@
+def solve():
+    jet_pattern = input()
+    rock_shapes = [
+        [
+            [1, 1, 1],
+            [0, 1, 0],
+            [1, 1, 1],
+        ],
+        [
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 1, 0],
+        ],
+        [
+            [1, 1, 1, 1],
+        ],
+        [
+            [1, 1],
+            [1, 1],
+        ],
+        [
+            [0, 0, 0, 1],
+            [1, 0, 0, 1],
+            [0, 1, 1, 0],
+        ],
+    ]
+
+    def check_move(cave, rock_pos, new_pos):
+        for y, row in enumerate(rock_shape):
+            for x, block in enumerate(row):
+                new_x = rock_pos[0] + x
+                new_y = rock_pos[1] + y
+                if (new_x < 0 or new_x >= 7 or new_y >= len(cave) or
+                        new_y >= 0 and cave[new_y][new_x] == "#"):
+                    return False
+        return True
+    
+    cave = [(["."] * 7) for _ in range(0)]
+    rock_index = 0
+    jet_index = 0
+    rock_count = 0
+
+
+    while rock_count < 2022:
+        rock_shape = rock_shapes[rock_index % 5]
+        rock_pos = (2, len(cave))
+        
+        while True:
+            direction = jet_pattern[jet_index % len(jet_pattern)]
+            jet_index += 1
+
+            if direction == ">":
+                new_pos = (rock_pos[0] + 1, rock_pos[1])
+                if check_move(cave, new_pos, new_pos):
+                    rock_pos = new_pos
+            elif direction == "<":
+                new_pos = (rock_pos[0] - 1, rock_pos[1])
+                if check_move(cave, new_pos, new_pos):
+                    rock_pos = new_pos
+
+
+            new_pos = (rock_pos[0], rock_pos[1] - 1)
+            if check_move(cave, rock_pos, new_pos):
+                rock_pos = new_pos
+            else:
+                for y, row in enumerate(rock_shape):
+                    for x, block in enumerate(row):
+                        if block == 1:
+                            cave[rock_pos[1] + y][rock_pos[0] + x] = "#"
+                break
+        
+        rock_index += 1
+        rock_count += 1
+
+    return max([row.index("#") if '#' in row else -1 for row in cave])
+            
+
+print(solve())

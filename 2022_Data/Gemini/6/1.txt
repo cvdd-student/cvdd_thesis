@@ -1,0 +1,10 @@
+def solve():
+    datastream = input()
+    for i in range(3, len(datastream)):
+        window = datastream[i - 3:i + 1]
+        if len(set(window)) == 4:
+            return i + 1
+    return -1  # Should not reach here if the input is valid
+
+result = solve()
+print(result)

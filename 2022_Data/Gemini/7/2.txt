@@ -1,0 +1,92 @@
+def solve():
+    input_data = """$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k
+$ cd ..
+$ cd .."""
+    
+    # Using a list for better handling; more suitable for actual file input
+    
+    commands = input_data.strip().split("\n")
+
+    current_dir = []
+    file_sizes = {}  # Stores file sizes, key is full path.
+
+    for command in commands:
+        parts = command.strip().split()
+
+        if parts[0] == "$" and parts[1] == "cd":
+            if parts[2] == "..":
+                current_dir.pop()
+            elif parts[2] == "/":
+                current_dir = []
+            else:
+                current_dir.append(parts[2])
+        elif parts[0] == "$" and parts[1] == "ls":
+            continue  # Skip ls commands
+
+        elif parts[0] == "dir":
+            continue  # Skip directories for now
+
+        else:  # it's a file
+            size = int(parts[0])
+            filename = parts[1]
+            full_path = "/".join(current_dir + [filename])
+            file_sizes[full_path] = size
+
+    total_sizes = {}
+
+    def calculate_total_size(current_dir):
+        total = 0
+        for item in file_sizes:
+          parts = item.split('/')
+          if len(parts) > 2 and len(current_dir) > 0: 
+              current_prefix = list(parts[:1] + parts[1:(len(parts)-len(current_dir)-1)])  #Removes item
+
+              dir_items =  (item for item in file_sizes.keys() if current_prefix and current_prefix[0] +'/'+('/'.join(current_prefix[1:])) ==item[1:].strip("/"))
+
+              is_dir = True if len(next(dir_items)) !=0  else False  #if next items not in dir
+          if parts[0] == "/" and len(parts) == 2:
+              total += file_sizes.get(item, 0)
+          elif current_prefix == list(item.split('/'))[:-1] : 
+            total+=file_sizes.get(item, 0)
+        return total
+
+
+
+    for item in file_sizes.keys():
+        parts = item.split('/')
+
+        prefix_string = "/" +"/".join(parts[:-1])  
+
+        if len(parts) > 2:
+            current_size = calculate_total_size([item]) if prefix_string == '/' else calculate_total_size(["/".join(parts[:-1])])
+
+            
+            total_sizes[prefix_string]=current_size
+
+    total = sum(size for size in total_sizes.values() if size <= 100000)
+    return total
+
+
+print(solve())

@@ -1,0 +1,30 @@
+def solve():
+    lines = [line.strip() for line in open("input.txt")]
+    monkeys = {}
+    for line in lines:
+        parts = line.split(": ")
+        name = parts[0]
+        value = parts[1]
+        monkeys[name] = value
+    
+    def eval_monkey(name):
+        value = monkeys[name]
+        if value.isdigit():
+            return int(value)
+        else:
+            parts = value.split()
+            op1 = parts[0]
+            op2 = parts[2]
+            if parts[1] == '+':
+                return eval_monkey(op1) + eval_monkey(op2)
+            elif parts[1] == '-':
+                return eval_monkey(op1) - eval_monkey(op2)
+            elif parts[1] == '*':
+                return eval_monkey(op1) * eval_monkey(op2)
+            elif parts[1] == '/':
+                return eval_monkey(op1) // eval_monkey(op2)
+
+    root_value = eval_monkey("root")
+    return root_value
+
+print(solve())

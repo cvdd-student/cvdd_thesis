@@ -10,6 +10,7 @@ def find_and_print_info(data, name):
     amt_prints = 0
     amt_whitespaces = 0
     amt_function_definitions = 0
+    amt_def_solve = 0
     for item, label in data:
         for line in item.split("\n"):
             lines_amt += 1
@@ -27,6 +28,9 @@ def find_and_print_info(data, name):
                     amt_comments += 1
                 elif char == " ":
                     amt_whitespaces += 1
+        
+        if "def solve()" in item:
+            amt_def_solve += 1
     
     average_chars_per_line = total_chars / lines_amt
     average_lines_per_file = lines_amt / len(data)
@@ -46,6 +50,7 @@ def find_and_print_info(data, name):
     print("Avg. imports per file: " + str(average_imports_per_file))
     print("Avg. prints per file: " + str(average_prints_per_file))
     print("Avg. whitespaces per line: " + str(average_whitespaces_per_line))
+    print("def solve(): " + str(amt_def_solve))
     print()
 
 

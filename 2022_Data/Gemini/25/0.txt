@@ -1,0 +1,58 @@
+def snafu_to_decimal(snafu_num):
+    decimal_val = 0
+    power = 1
+    for digit in reversed(snafu_num):
+        if digit == '=':
+            decimal_val += -2 * power
+        elif digit == '-':
+            decimal_val += -1 * power
+        elif digit == '0':
+            decimal_val += 0 * power
+        elif digit == '1':
+            decimal_val += 1 * power
+        elif digit == '2':
+            decimal_val += 2 * power
+        power *= 5
+    return decimal_val
+
+def decimal_to_snafu(decimal_num):
+    snafu_num = ""
+    while decimal_num > 0:
+        remainder = decimal_num % 5
+        decimal_num //= 5
+        if remainder == 0:
+            snafu_num = "0" + snafu_num
+        elif remainder == 1:
+            snafu_num = "1" + snafu_num
+        elif remainder == 2:
+            snafu_num = "2" + snafu_num
+        elif remainder == 3:
+            decimal_num += 1
+            snafu_num = "-" + snafu_num
+        elif remainder == 4:
+            decimal_num += 2
+            snafu_num = "=" + snafu_num
+    return snafu_num
+
+def solve():
+    snafu_nums = [
+        "1=-0-2",
+        "12111",
+        "2=0=",
+        "21",
+        "2=01",
+        "111",
+        "20012",
+        "112",
+        "1=-1=",
+        "1-12",
+        "12",
+        "1=",
+        "122"
+    ]
+    decimal_sum = sum(snafu_to_decimal(num) for num in snafu_nums)
+    result = decimal_to_snafu(decimal_sum)
+    return result
+
+if __name__ == "__main__":
+    print(solve())

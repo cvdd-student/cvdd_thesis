@@ -19,10 +19,10 @@ def train_cls(train_feats, train_labels, quiet_mode=False):
 
 
 def main():
+    random.seed("31012001")
+    
     # Get necessary data
     tr_feats, tr_labels, te_feats, te_labels, transformers = organise_data.make_feats()
-
-    random.seed()
 
     # Initiate and train the SVM classifier
     cls = train_cls(tr_feats, tr_labels)
@@ -50,6 +50,14 @@ def main():
 
     # Create and show evaluation matrix
     eval_matrix = metrics.confusion_matrix(y_true=te_labels, y_pred=pre_labels)
+    print(eval_matrix)
+    
+    eval_2022_feats, eval_2022_labels = organise_data.make_2022_feats(transformers)
+    
+    pre_2022_labels = cls.predict(eval_2022_feats)
+    
+    # Create and show evaluation matrix
+    eval_matrix = metrics.confusion_matrix(y_true=eval_2022_labels, y_pred=pre_2022_labels)
     print(eval_matrix)
 
 

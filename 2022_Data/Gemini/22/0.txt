@@ -1,0 +1,49 @@
+def solve():
+    lines = []
+    instructions = ""
+    while True:
+        try:
+            line = input()
+            if line:
+                lines.append(line)
+            else:
+                break
+        except EOFError:
+            break
+    instructions = input()
+
+    grid = [list(line) for line in lines]
+    
+    row, col = -1, -1
+    facing = 0  # 0: right, 1: down, 2: left, 3: up
+
+    for r in range(len(grid)):
+        for c in range(len(grid[r])):
+            if grid[r][c] == '.':
+                if row == -1:
+                    row, col = r, c
+                    break
+        if row != -1:
+            break
+
+    instructions_list = [int(c) if c.isdigit() else c for c in instructions]
+
+    for instruction in instructions_list:
+        if isinstance(instruction, int):
+            dr, dc = (0, 1) if facing == 0 else (1, 0) if facing == 1 else (0, -1) if facing == 2 else (-1, 0)
+            for _ in range(instruction):
+                nr, nc = row + dr, col + dc
+                nr = (nr % len(grid))
+                nc = (nc % len(grid[0]))
+                if grid[nr][nc] == '#':
+                    break
+                row, col = nr, nc
+            
+        elif instruction == 'R':
+            facing = (facing + 1) % 4
+        elif instruction == 'L':
+            facing = (facing - 1) % 4
+
+    print(1000 * (row + 1) + 4 * (col + 1) + facing)
+
+solve()

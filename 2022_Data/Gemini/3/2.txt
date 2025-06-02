@@ -1,0 +1,32 @@
+def priority(item):
+    if 'a' <= item <= 'z':
+        return ord(item) - ord('a') + 1
+    elif 'A' <= item <= 'Z':
+        return ord(item) - ord('A') + 27
+    else:
+        return 0
+
+def solve():
+    total_priority = 0
+    rucksacks = []
+    
+    try:
+      while True:
+        line = input()
+        rucksacks.append(line)
+    except EOFError:
+      pass
+    
+    
+    for rucksack in rucksacks:
+        comp1 = rucksack[:len(rucksack) // 2]
+        comp2 = rucksack[len(rucksack) // 2:]
+        
+        for item in comp1:
+            if item in comp2:
+                total_priority += priority(item)
+                break
+    
+    print(total_priority)
+
+solve()

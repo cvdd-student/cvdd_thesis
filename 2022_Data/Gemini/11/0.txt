@@ -1,0 +1,47 @@
+def solve():
+    with open("input.txt", "r") as f:
+        data = f.read().strip()
+
+    monkeys = []
+    for block in data.split("\n\n"):
+        lines = block.splitlines()
+        items = [int(x) for x in lines[1].split(": ")[1].split(", ")]
+        operation = lines[2].split(": ")[1].split(" ")
+        test = int(lines[3].split(": ")[1])
+        if_true = int(lines[4].split(": ")[1])
+        if_false = int(lines[5].split(": ")[1])
+        monkeys.append({
+            "items": items,
+            "operation": operation,
+            "test": test,
+            "if_true": if_true,
+            "if_false": if_false,
+            "inspections": 0
+        })
+
+    for _ in range(20):
+        for i in range(len(monkeys)):
+            while monkeys[i]["items"]:
+                item = monkeys[i]["items"].pop(0)
+                monkeys[i]["inspections"] += 1
+                
+                if monkeys[i]["operation"][0] == "old":
+                    if monkeys[i]["operation"][1] == "*":
+                        new_worry = eval(f"item * item")
+                    elif monkeys[i]["operation"][1] == "+":
+                        new_worry = eval(f"item + item")
+                else:
+                    new_worry = eval(f"item {monkeys[i]['operation'][1]} {int(monkeys[i]['operation'][2])}")
+                
+                new_worry //= 3
+                
+                if new_worry % monkeys[i]["test"] == 0:
+                    monkeys[if_true := monkeys[i]["if_true"]]["items"].append(new_worry)
+                else:
+                    monkeys[if_false := monkeys[i]["if_false"]]["items"].append(new_worry)
+
+    inspections = [m["inspections"] for m in monkeys]
+    most_active = sorted(inspections, reverse=True)[:2]
+    return most_active[0] * most_active[1]
+
+print(solve())

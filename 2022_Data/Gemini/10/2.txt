@@ -1,0 +1,30 @@
+def solve():
+    instructions = [line.strip() for line in __import__('sys').stdin.readlines()]
+
+    X = 1
+    cycle = 0
+    signal_strengths = []
+    cycle_targets = [20, 60, 100, 140, 180, 220]
+
+    for instruction in instructions:
+        parts = instruction.split()
+        command = parts[0]
+        
+        cycle += 1
+
+        if command == "noop":
+            if cycle in cycle_targets:
+                signal_strengths.append(cycle * X)
+        elif command == "addx":
+            value = int(parts[1])
+            cycle += 1
+            if cycle in cycle_targets:
+                signal_strengths.append(cycle * X)
+            X += value
+    
+    return sum(signal_strengths)
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

@@ -1,0 +1,48 @@
+import collections
+
+def solve():
+    grid = []
+    start = None
+    end = None
+    for y, line in enumerate(open("input.txt").readlines()):
+        row = []
+        for x, char in enumerate(line.strip()):
+            if char == 'S':
+                char = 'a'
+                start = (x, y)
+            elif char == 'E':
+                char = 'z'
+                end = (x, y)
+            row.append(char)
+        grid.append(row)
+
+    height = {char: i for i, char in enumerate('abcdefghijklmnopqrstuvwxyz')}
+    
+    def get_neighbors(pos):
+        x, y = pos
+        neighbors = []
+        for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid):
+                if height.get(grid[ny][nx]) is not None and height[grid[ny][nx]] <= height[grid[y][x]] + 1:
+                    neighbors.append((nx, ny))
+        return neighbors
+
+    queue = collections.deque([(start, 0)])
+    visited = set([start])
+    
+    while queue:
+        (x, y), dist = queue.popleft()
+        if (x, y) == end:
+            return dist
+        for nx, ny in get_neighbors((x, y)):
+            if (nx, ny) not in visited:
+                visited.add((nx, ny))
+                queue.append(((nx, ny), dist + 1))
+    
+    return -1
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

@@ -1,0 +1,39 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    rocks = set()
+    for line in lines:
+        coords = line.strip().split(" -> ")
+        for i in range(len(coords) - 1):
+            c1 = tuple(map(int, coords[i].split(",")))
+            c2 = tuple(map(int, coords[i + 1].split(",")))
+            x1, y1 = c1
+            x2, y2 = c2
+            if x1 == x2:
+                for y in range(min(y1, y2), max(y1, y2) + 1):
+                    rocks.add((x1, y))
+            else:
+                for x in range(min(x1, x2), max(x1, x2) + 1):
+                    rocks.add((x, y1))
+
+    sand_source = (500, 0)
+    count = 0
+    while True:
+        sand = sand_source
+        while True:
+            if sand[1] + 1 not in [y for _,y in rocks] + [y for x, y in rocks] and sand[1] + 1 >= 0:
+                sand = (sand[0], sand[1] + 1)
+            elif sand[1] + 1 in [y for _,y in rocks] + [y for x, y in rocks] or sand[1] + 1 >= 10000000 :
+                if sand[0] - 1 not in [x for x, _ in rocks] + [x for x,_ in rocks] and sand[1] + 1 >= 0:
+                    sand = (sand[0] - 1, sand[1] + 1)
+                elif sand[0] + 1 not in [x for x, _ in rocks] + [x for x,_ in rocks] and sand[1] + 1 >= 0:
+                    sand = (sand[0] + 1, sand[1] + 1)
+                else:
+                    rocks.add(sand)
+                    count += 1
+                    break
+        if sand == sand_source and sand not in rocks:
+            return count
+    
+print(solve())

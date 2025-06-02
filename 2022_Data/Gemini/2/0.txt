@@ -1,0 +1,50 @@
+def solve():
+    strategy_guide = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            strategy_guide.append(line.strip())
+
+    total_score = 0
+    for round_data in strategy_guide:
+        opponent_choice, your_choice = round_data[0], round_data[2]
+
+        your_shape_score = 0
+        outcome_score = 0
+
+        if your_choice == 'X':
+            your_shape_score = 1
+        elif your_choice == 'Y':
+            your_shape_score = 2
+        elif your_choice == 'Z':
+            your_shape_score = 3
+
+        if opponent_choice == 'A':  # Rock
+            if your_choice == 'X':
+                outcome_score = 3
+            elif your_choice == 'Y':
+                outcome_score = 6
+            elif your_choice == 'Z':
+                outcome_score = 0
+        elif opponent_choice == 'B':  # Paper
+            if your_choice == 'X':
+                outcome_score = 0
+            elif your_choice == 'Y':
+                outcome_score = 3
+            elif your_choice == 'Z':
+                outcome_score = 6
+        elif opponent_choice == 'C':  # Scissors
+            if your_choice == 'X':
+                outcome_score = 6
+            elif your_choice == 'Y':
+                outcome_score = 0
+            elif your_choice == 'Z':
+                outcome_score = 3
+
+        total_score += your_shape_score + outcome_score
+
+    return total_score
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

@@ -1,0 +1,64 @@
+def compare_packets(left, right):
+    """Compares two packets and returns True if left is in the right order."""
+
+    def is_int(x):
+        return isinstance(x, int)
+
+    def to_list(x):
+        if is_int(x):
+            return [x]
+        return x
+
+    left = to_list(left)
+    right = to_list(right)
+
+    while left and right:
+        left_item = left.pop(0)
+        right_item = right.pop(0)
+
+        if is_int(left_item) and is_int(right_item):
+            if left_item < right_item:
+                return True
+            elif left_item > right_item:
+                return False
+        else:
+            result = compare_packets(left_item, right_item)
+            if result is not None:
+                return result
+
+    return left == []  # Left is shorter, so it's in the right order
+
+
+def parse_packets(input_data):
+    packets = []
+    current_packet = []
+    for line in input_data.splitlines():
+        line = line.strip()
+        if line:
+            current_packet.append(eval(line))
+        else:
+            packets.append(current_packet)
+            current_packet = []
+    packets.append(current_packet)
+    return packets
+
+
+def solve():
+    with open("input.txt", "r") as f:
+        input_data = f.read()
+
+    packets = parse_packets(input_data)
+    
+    correct_order_indices = []
+    for i in range(len(packets)):
+        left = packets[i][0]
+        right = packets[i][1]
+        if compare_packets(left, right):
+            correct_order_indices.append(i + 1)
+
+    return sum(correct_order_indices)
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

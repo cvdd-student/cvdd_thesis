@@ -1,0 +1,65 @@
+def snafu_to_decimal(snafu_number):
+    decimal_value = 0
+    power_of_five = 1
+    for digit in reversed(snafu_number):
+        if digit == '=':
+            decimal_value += -2 * power_of_five
+        elif digit == '-':
+            decimal_value += -1 * power_of_five
+        elif digit == '0':
+            decimal_value += 0 * power_of_five
+        elif digit == '1':
+            decimal_value += 1 * power_of_five
+        elif digit == '2':
+            decimal_value += 2 * power_of_five
+        else:
+            raise ValueError(f"Invalid SNAFU digit: {digit}")
+        power_of_five *= 5
+    return decimal_value
+
+
+def decimal_to_snafu(decimal_number):
+    snafu_number = ""
+    while decimal_number != 0:
+        remainder = decimal_number % 5
+        decimal_number //= 5
+        if remainder == 0:
+            snafu_number = "0" + snafu_number
+        elif remainder == 1:
+            snafu_number = "1" + snafu_number
+        elif remainder == 2:
+            snafu_number = "2" + snafu_number
+        elif remainder == 3:
+            decimal_number += 1
+            snafu_number = "-" + snafu_number
+        elif remainder == 4:
+            decimal_number += 2
+            snafu_number = "=" + snafu_number
+    return snafu_number
+
+if __name__ == "__main__":
+    # Example input (replace with your actual input data)
+    snafu_numbers = [
+        "1=-0-2", "12111", "2=0=", "21", "2=01", "111", "20012", "112", "1=-1=", "1-12", "12", "1=", "122"
+    ]
+
+    total_decimal = sum(snafu_to_decimal(number) for number in snafu_numbers)
+    
+    print(decimal_to_snafu(total_decimal))
+    
+    
+    input_data = open("input.txt","r").read().split('\n')
+    #Input is just a list of string numbers.
+
+    input_numbers = []
+    for line in input_data:
+        input_numbers.append(line.rstrip('\n'))
+
+
+    sum_decimal = 0
+    for num_string in input_numbers:
+        sum_decimal+=snafu_to_decimal(num_string)
+        
+    final_output = decimal_to_snafu(sum_decimal)
+    
+    print(final_output)

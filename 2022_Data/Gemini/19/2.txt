@@ -1,0 +1,107 @@
+def solve():
+    blueprints = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            blueprint = {}
+            parts = line.strip().split(":")
+            blueprint_id = int(parts[0].split()[1])
+            recipe_parts = parts[1].strip().split(".")
+            for part in recipe_parts:
+                parts2 = part.strip().split()
+                robot_type = parts2[0].strip()
+                cost_ore = int(parts2[6].strip().split()[0].strip().replace(",", ""))
+                costs = parts2[2].strip().replace(",", "")
+
+                if robot_type in blueprint:
+                  if len(blueprint[robot_type]) == 0:
+                    blueprint[robot_type] = [cost_ore]
+                  elif(costs != " ore"):
+                    blueprint[robot_type].append(int(costs.split()[1].replace(",","")))
+                else:
+                  if costs == " ore":
+                    blueprint[robot_type] = [cost_ore]
+                  elif costs != " ore":
+                    blueprint[robot_type] = [cost_ore]
+            blueprints.append(blueprint)
+            blueprint ={}
+
+    total_quality = 0
+    for i, blueprint in enumerate(blueprints):
+        max_geodes = max_geodes_possible(blueprint,24)
+        total_quality += (i + 1) * max_geodes
+    
+    return total_quality
+
+
+
+def max_geodes_possible(blueprint, time):
+
+    best_geodes = 0
+    for _ in range(10):
+        robot_amounts, resources = solve_for_geodes(blueprint, time)
+
+        current_geodes = robot_amounts[3]
+        best_geodes = max(best_geodes, current_geodes)
+  
+    return best_geodes
+
+def solve_for_geodes(blueprint, time):
+    
+    
+    
+    robot_amounts = [1, 0, 0, 0] # ore, clay, obsidian, geode
+    resources = [0, 0, 0, 0] # ore, clay, obsidian, geode
+    
+
+    for minute in range(time):
+        
+        # Ore production first
+
+        resources[0] += robot_amounts[0]
+        
+        
+        if resources[0] >= blueprint['ore robot'][0] and robot_amounts[0] < 32: 
+
+          
+          robot_amounts[0] +=1
+
+          resources[0]-= blueprint['ore robot'][0]
+
+
+        # Produce all the others according to rules, taking one at a time and prioritizing 
+        
+        if resources[1] >= blueprint['clay robot'][0] and robot_amounts[1] < 32 and minute+1 >=1: 
+          resources[1] -= blueprint['clay robot'][0]
+          robot_amounts[1] +=1
+
+
+        if resources[1] >= blueprint['obsidian robot'][1] and resources[0] >= blueprint['obsidian robot'][0] and robot_amounts[2] < 32 :
+
+          
+          resources[2] +=robot_amounts[2]
+          resources[1] -=blueprint['obsidian robot'][1]
+          resources[0] -= blueprint['obsidian robot'][0]
+          robot_amounts[2] += 1
+
+
+
+
+        if resources[2] >= blueprint['geode robot'][1] and resources[0] >= blueprint['geode robot'][0]and robot_amounts[3] <32:
+
+           resources[3] +=robot_amounts[3]
+           resources[2]-=blueprint['geode robot'][1]
+           resources[0] -=blueprint['geode robot'][0]
+           robot_amounts[3] += 1
+
+
+
+  
+
+
+        resources[1] += robot_amounts[1] * 1 
+        resources[2] += robot_amounts[2] * 1
+        resources[3] += robot_amounts[3] * 1
+    
+    return robot_amounts, resources
+
+print(solve())

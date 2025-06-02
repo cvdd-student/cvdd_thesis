@@ -1,0 +1,88 @@
+from itertools import product
+
+def solve():
+    valves = {}
+    tunnels = {}
+    with open("input.txt") as f:
+        for line in f:
+            parts = line.split()
+            valve_name = parts[1].rstrip(",")
+            flow_rate = int(parts[4].split("=")[1].split(";")[0])
+            connections = [p.rstrip(",") for p in parts[9:] if p != "tunnels"]
+            valves[valve_name] = flow_rate
+            tunnels[valve_name] = connections
+
+    adj = {}
+    for valve, connections in tunnels.items():
+        adj[valve] = []
+        for connection in connections:
+            adj[valve].append(connection)
+
+    def calculate_pressure(path, remaining_time):
+        current_pressure = 0
+        open_valves = set()
+        current_valve = 'AA'  # Start node
+        
+        
+        for minute in range(1,remaining_time+1):
+
+            # choose best valve for the time left, keeping in mind current situation
+
+            
+            best_action = None
+            max_pressure = 0
+
+
+            #Check opening current valve if needed.
+            if current_valve in path and current_valve not in open_valves and remaining_time >= minute:
+              flow = valves.get(current_valve, 0)
+              open_valves.add(current_valve)
+              next_available_action = (path[current_valve].get("pressure",0) if current_valve in path else 0)
+
+
+            # find a valve reachable, updating next available actions.
+              
+              
+              next_pressure_gains = {valve: calculate_pressure([x for x in path], (remaining_time - minute)) for valve in adj.get(current_valve,[])}
+
+
+
+              new_max_pressure = 0
+
+
+
+              for other_valve, possible_actions in next_pressure_gains.items():
+
+
+                    other_flow_rate =valves.get(other_valve, 0)
+                    
+                    
+                    
+                    remaining = (remaining_time - minute)
+
+                    new_pressure = possible_actions if possible_actions is not None else (remaining_time - minute)
+
+
+
+                    
+
+            
+              current_pressure += next_pressure_gains
+        return current_pressure
+
+
+
+    max_pressure = 0
+
+    
+
+
+    max_pressure = calculate_pressure([], 30)
+
+
+
+    print(max_pressure)
+
+
+if __name__ == "__main__":
+    solve()

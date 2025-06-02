@@ -1,0 +1,30 @@
+def solve():
+    lava_scan = []
+    while True:
+        try:
+            line = input()
+            coords = tuple(map(int, line.split(',')))
+            lava_scan.append(coords)
+        except EOFError:
+            break
+
+    surface_area = 0
+    for x, y, z in lava_scan:
+        count = 0
+        if (x, y, z - 1) not in lava_scan:
+            count += 1
+        if (x, y, z + 1) not in lava_scan:
+            count += 1
+        if (x, y - 1, z) not in lava_scan:
+            count += 1
+        if (x, y + 1, z) not in lava_scan:
+            count += 1
+        if (x - 1, y, z) not in lava_scan:
+            count += 1
+        if (x + 1, y, z) not in lava_scan:
+            count += 1
+        surface_area += count
+        
+    return surface_area
+
+print(solve())

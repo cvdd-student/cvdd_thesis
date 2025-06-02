@@ -140,7 +140,7 @@ def clean_data(data):
 
 
 def process_data(list_data):
-    '''Shuffled and divides a list of lists [item, label] into
+    '''Shuffles and divides a list of lists [item, label] into
     four separate lists: Test items, test labels,
     training items and training labels. These are
     then returned.
@@ -179,3 +179,20 @@ def make_feats():
     tr_feats, te_feats, transformers = convert_to_feats(tr_items, te_items)
 
     return tr_feats, tr_labels, te_feats, te_labels, transformers
+
+
+def make_2022_feats(transformers):
+    # Get the data
+    gemini_data = get_data("2022_Data/Gemini", "gemini")
+    human_data = get_data("2022_Data/Human", "human")
+
+    # Merge the data and clean it up
+    full_data = gemini_data + human_data
+    full_data = clean_data(full_data)
+
+    random.shuffle(full_data)
+    eval_2022_items, eval_2022_labels = separate_items_labels(full_data)
+    eval_2022_count_vec = transformers[0].transform(eval_2022_items)
+    eval_2022_feats = transformers[1].transform(eval_2022_count_vec)
+    
+    return eval_2022_feats, eval_2022_labels

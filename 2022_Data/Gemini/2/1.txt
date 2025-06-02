@@ -1,0 +1,24 @@
+def solve():
+    strategy_guide = [line.strip() for line in open("input.txt")]
+    
+    score = 0
+    for round_data in strategy_guide:
+        opponent_play, your_play = round_data.split()
+        
+        opponent_shape = {"A": 1, "B": 2, "C": 3}[opponent_play]
+        your_shape = {"X": 1, "Y": 2, "Z": 3}[your_play]
+        
+        round_score = your_shape
+        
+        if opponent_shape == your_shape:
+            round_score += 3
+        elif (opponent_shape == 1 and your_shape == 2) or \
+             (opponent_shape == 2 and your_shape == 3) or \
+             (opponent_shape == 3 and your_shape == 1):
+            round_score += 6
+        
+        score += round_score
+        
+    print(score)
+
+solve()

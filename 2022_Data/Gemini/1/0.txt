@@ -1,0 +1,19 @@
+def solve():
+    calories_per_elf = []
+    current_elf_calories = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            line = line.strip()
+            if line:
+                current_elf_calories.append(int(line))
+            else:
+                calories_per_elf.append(sum(current_elf_calories))
+                current_elf_calories = []
+        calories_per_elf.append(sum(current_elf_calories))  # Add the last elf's calories
+
+    max_calories = max(calories_per_elf)
+    return max_calories
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

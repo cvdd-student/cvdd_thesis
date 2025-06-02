@@ -1,0 +1,65 @@
+import itertools
+
+def solve():
+    valves = {}
+    lines = """Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+Valve BB has flow rate=13; tunnels lead to valves CC, AA
+Valve CC has flow rate=2; tunnels lead to valves DD, BB
+Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
+Valve EE has flow rate=3; tunnels lead to valves FF, DD
+Valve FF has flow rate=0; tunnels lead to valves EE, GG
+Valve GG has flow rate=0; tunnels lead to valves FF, HH
+Valve HH has flow rate=22; tunnel leads to valve GG
+Valve II has flow rate=0; tunnels lead to valves AA, JJ
+Valve JJ has flow rate=21; tunnel leads to valve II"""
+
+    for line in lines.strip().split('\n'):
+        parts = line.split()
+        valve_name = parts[1].replace("Valve", "").replace(" has", "").replace("=", "").strip()
+        flow_rate = int(parts[4].replace(";", "").replace("rate=", "").strip())
+        tunnels = [p.replace("valve", "").strip() for p in parts[9:] if p.startswith("valve")]
+        valves[valve_name] = {"flow_rate": flow_rate, "tunnels": tunnels}
+
+    max_pressure = 0
+    for path in itertools.permutations(valves.keys()):
+        current_pressure = 0
+        current_valves = set()
+        current_location = "AA"
+        time_elapsed = 0
+        
+        for i in range(len(path)):
+            current_time = time_elapsed + 1
+            if current_time > 30:
+                break
+
+            next_valve = path[i]
+            
+            if next_valve != current_location:
+                
+                best_time_next_valve = float('inf')
+                best_next_valve = None
+                
+                for tunnel_valve in valves[current_location]["tunnels"]:
+                    if tunnel_valve == next_valve:
+                        best_time_next_valve = 1
+                        break
+                
+                
+                
+                if best_time_next_valve == float('inf') : continue
+                time_elapsed = time_elapsed + best_time_next_valve
+
+            if time_elapsed > 30:
+                break
+
+            if path[i] not in current_valves:
+                current_valves.add(path[i])
+            if time_elapsed <= 30:
+                current_pressure += valves[path[i]]["flow_rate"] * (30 - time_elapsed)
+
+
+        max_pressure = max(max_pressure, current_pressure)
+    
+    print(max_pressure)
+
+solve()

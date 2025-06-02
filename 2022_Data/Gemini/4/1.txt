@@ -1,0 +1,16 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    count = 0
+    for line in lines:
+        r1, r2 = line.strip().split(",")
+        s1, e1 = map(int, r1.split("-"))
+        s2, e2 = map(int, r2.split("-"))
+
+        if (s1 <= s2 and e1 >= e2) or (s2 <= s1 and e2 >= e1):
+            count += 1
+    
+    print(count)
+
+solve()

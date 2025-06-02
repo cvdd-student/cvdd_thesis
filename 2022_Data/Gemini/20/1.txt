@@ -1,0 +1,32 @@
+def mix_file(encrypted_file):
+    """Mixes the encrypted file according to the given rules."""
+    numbers = [int(x) for x in encrypted_file]
+    n = len(numbers)
+    for i in range(n):
+        num = numbers[i]
+        offset = num
+        idx = (i + offset) % n
+        if idx < 0:
+          idx += n
+        numbers.pop(i)
+        numbers.insert(idx, num)
+    return numbers
+
+def find_grove_coordinates(mixed_file):
+    """Finds the grove coordinates."""
+    try:
+        zero_index = mixed_file.index(0)
+        thousandth = mixed_file[(zero_index + 1000) % len(mixed_file)]
+        two_thousandth = mixed_file[(zero_index + 2000) % len(mixed_file)]
+        three_thousandth = mixed_file[(zero_index + 3000) % len(mixed_file)]
+        return thousandth + two_thousandth + three_thousandth
+    except ValueError:
+        return "0"  # Or handle the error appropriately.  This should never happen if the input is valid
+
+if __name__ == "__main__":
+    with open("input.txt", "r") as file:  # Replace "input.txt" with your file
+        encrypted_file = file.readlines()
+
+    mixed_file = mix_file(encrypted_file)
+    grove_coordinates_sum = find_grove_coordinates(mixed_file)
+    print(grove_coordinates_sum)

@@ -1,0 +1,51 @@
+def solve():
+    commands = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            commands.append(line.strip())
+
+    current_dir = []
+    files = {}
+    
+    def get_size(path):
+        size = 0
+        for item in files:
+            if item.startswith(tuple(path)):
+                if item.endswith(".txt") or item.endswith(".dat") or item.endswith(".log") or item.endswith(".lst") or item.endswith(".ext") or item.endswith(".i"):
+                    size += files[item]
+        return size
+
+    for command in commands:
+        if command.startswith("$ cd"):
+            parts = command.split()
+            target = parts[2]
+            if target == "/":
+                current_dir = []
+            elif target == "..":
+                current_dir.pop()
+            else:
+                current_dir.append(target)
+        elif command.startswith("$ ls"):
+            next_line = commands.pop(commands.index(command) + 1)
+            while next_line and not next_line.startswith("$"):
+                parts = next_line.split()
+                if parts[0] == "dir":
+                    item = tuple(current_dir + [parts[1]])
+                    files[item] = 0
+                else:
+                    size = int(parts[0])
+                    item = tuple(current_dir + [parts[1]])
+                    files[item] = size
+                try:
+                    next_line = commands.pop(commands.index(next_line) + 1)
+                except IndexError:
+                    next_line = None
+                
+    total_size = 0
+    for item in files:
+        size = get_size(item)
+        if size <= 100000:
+            total_size += size
+    print(total_size)
+
+solve()

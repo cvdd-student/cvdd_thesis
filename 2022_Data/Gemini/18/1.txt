@@ -1,0 +1,22 @@
+def solve():
+    cubes = []
+    for line in iter(input, ""):
+        x, y, z = map(int, line.split(","))
+        cubes.append((x, y, z))
+
+    total_surface_area = 0
+    for x, y, z in cubes:
+        exposed_sides = 6  # Initial assumption: all 6 sides are exposed
+
+        # Check adjacent cubes for shared sides
+        for dx, dy, dz in [(0, 0, 0), (1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]:
+            nx, ny, nz = x + dx, y + dy, z + dz
+            if (nx, ny, nz) in cubes:
+                exposed_sides -= 1
+        
+        total_surface_area += exposed_sides
+
+    print(total_surface_area)
+
+
+solve()

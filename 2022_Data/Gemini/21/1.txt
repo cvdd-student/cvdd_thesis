@@ -1,0 +1,39 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    monkeys = {}
+    for line in lines:
+        name, job = line.split(":")
+        monkeys[name] = job.strip()
+    
+    def evaluate(name, monkeys):
+        job = monkeys[name]
+        if job.isdigit():
+            return int(job)
+        
+        parts = job.split()
+        if len(parts) == 1:
+          return int(job)
+        op1_name = parts[0]
+        op2_name = parts[2]
+        op = parts[1]
+
+        val1 = evaluate(op1_name,monkeys)
+        val2 = evaluate(op2_name,monkeys)
+
+        if op == "+":
+            return val1 + val2
+        elif op == "-":
+            return val1 - val2
+        elif op == "*":
+            return val1 * val2
+        elif op == "/":
+            return val1 // val2
+        
+    result = evaluate("root",monkeys)
+    print(result)
+
+solve()

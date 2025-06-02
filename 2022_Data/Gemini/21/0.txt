@@ -1,0 +1,34 @@
+def solve():
+    lines = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            lines.append(line.strip())
+
+    monkeys = {}
+    for line in lines:
+        name, job = line.split(":")
+        monkeys[name] = job.strip()
+
+    def evaluate(name):
+        job = monkeys[name]
+        if job.isdigit():
+            return int(job)
+        parts = job.split()
+        if len(parts) == 1:
+            return evaluate(parts[0])
+        else:
+            op1 = evaluate(parts[0])
+            op2 = evaluate(parts[2])
+            if parts[1] == "+":
+                return op1 + op2
+            elif parts[1] == "-":
+                return op1 - op2
+            elif parts[1] == "*":
+                return op1 * op2
+            elif parts[1] == "/":
+                return op1 // op2
+
+    root_value = evaluate("root")
+    print(root_value)
+
+solve()

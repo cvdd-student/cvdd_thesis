@@ -1,0 +1,54 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    elves = set()
+    for r, row in enumerate(grid):
+        for c, char in enumerate(row):
+            if char == "#":
+                elves.add((r, c))
+
+    directions = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
+    
+    for round_num in range(10):
+        proposed_moves = {}
+        for elf in elves:
+            r, c = elf
+            possible_moves = []
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if (nr, nc) not in elves:
+                    possible_moves.append((nr, nc))
+            
+            if not possible_moves:
+                continue
+            
+            for dr, dc in [(0, -1), (1, -1), (1, 0), (1, 1)]:
+                nr, nc = r + dr, c + dc
+                if (nr, nc) in possible_moves:
+                    proposed_moves[elf] = (nr, nc)
+                    break
+            
+        
+        new_elves = set()
+        for elf, move in proposed_moves.items():
+            if proposed_moves[elf] == move and proposed_moves.get(move) == move:
+                new_elves.add(move)
+        
+        elves = new_elves
+        directions = directions[1:] + [directions[0]]
+
+    min_r, max_r = min(r for r, c in elves), max(r for r, c in elves)
+    min_c, max_c = min(c for r, c in elves), max(c for r, c in elves)
+
+    count = 0
+    for r in range(min_r, max_r + 1):
+        for c in range(min_c, max_c + 1):
+            if (r, c) not in elves:
+                count += 1
+    
+    print(count)
+
+solve()

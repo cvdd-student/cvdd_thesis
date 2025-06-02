@@ -1,6 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 import organise_data
+import random
 
 
 def train_clf(train_feats, train_labels):
@@ -14,6 +15,8 @@ def train_clf(train_feats, train_labels):
 
 
 def main():
+    random.seed("31012001")
+
     # Get necessary data
     tr_feats, tr_labels, te_feats, te_labels, transformers = organise_data.make_feats()
 

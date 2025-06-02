@@ -1,0 +1,67 @@
+import collections
+
+def solve():
+    grid = []
+    start_pos = None
+    end_pos = None
+    with open("input.txt", "r") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            for x, char in enumerate(row):
+                if char == 'E':
+                    start_pos = (y, x)
+                elif char == 'G':
+                    end_pos = (y, x)
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def get_blizzard_positions(grid):
+        blizzards = []
+        for y in range(rows):
+            for x in range(cols):
+                if grid[y][x] in ['>', '<', '^', 'v']:
+                    blizzards.append((y, x))
+        return blizzards
+
+    def move_blizzards(grid):
+        new_grid = [['.' for _ in range(cols)] for _ in range(rows)]
+        blizzards = get_blizzard_positions(grid)
+        for y, x in blizzards:
+            if grid[y][x] == '>':
+                new_x = (x + 1) % cols
+                new_grid[y][new_x] = '>'
+            elif grid[y][x] == '<':
+                new_x = (x - 1 + cols) % cols
+                new_grid[y][new_x] = '<'
+            elif grid[y][x] == '^':
+                new_y = (y - 1 + rows) % rows
+                new_grid[new_y][x] = '^'
+            elif grid[y][x] == 'v':
+                new_y = (y + 1) % rows
+                new_grid[new_y][x] = 'v'
+        return new_grid
+
+    def is_valid(y, x):
+        return 0 <= y < rows and 0 <= x < cols and grid[y][x] != '#'
+
+    q = collections.deque([(start_pos, 0)])
+    visited = set([start_pos])
+    
+    while q:
+        (y, x), steps = q.popleft()
+        if (y, x) == end_pos:
+            return steps
+
+        for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0), (0, 0)]:
+            new_y, new_x = y + dy, x + dx
+            if is_valid(new_y, new_x):
+                new_grid = move_blizzards(grid)
+                if new_grid[new_y][new_x] == '.':
+                    if (new_y, new_x) not in visited:
+                        q.append(((new_y, new_x), steps + 1))
+                        visited.add((new_y, new_x))
+        grid = move_blizzards(grid)
+
+print(solve())

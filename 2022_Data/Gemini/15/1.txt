@@ -1,0 +1,48 @@
+import math
+
+def manhattan_distance(p1, p2):
+    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+def solve():
+    sensors_and_beacons = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.strip().split(": closest beacon is at ")
+            sensor_coords = tuple(map(int, parts[0].replace("Sensor at x=", "").replace(" y=", "").split(",")))
+            beacon_coords = tuple(map(int, parts[1].split(",")))
+            sensors_and_beacons.append((sensor_coords, beacon_coords))
+
+    row = 2000000
+    covered_positions = set()
+    for sensor, beacon in sensors_and_beacons:
+        distance = manhattan_distance(sensor, beacon)
+        
+        for x in range(sensor[0] - distance -1, sensor[0] + distance + 2):
+          
+          y_diff = abs(sensor[1] - row)
+          dist_x = distance - y_diff
+          
+          if dist_x >= 0:
+            
+            
+            possible_covered = [x]
+            if x - dist_x >=0:
+              possible_covered.append(x - dist_x)
+
+            if x + dist_x < int(100000000):
+              possible_covered.append(x + dist_x)
+
+
+            for i in possible_covered:
+                if 0 <= i < int(100000000):
+                    
+                  
+                  covered_positions.add(i)
+                  
+
+
+    return len(covered_positions)
+
+
+
+print(solve())

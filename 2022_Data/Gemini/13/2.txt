@@ -1,0 +1,61 @@
+import sys
+
+def compare_packets(left, right):
+    """Compares two packets and returns -1 if left < right, 1 if left > right, 0 if equal."""
+    
+    if isinstance(left, int) and isinstance(right, int):
+        if left < right:
+            return -1
+        elif left > right:
+            return 1
+        else:
+            return 0
+    
+    elif isinstance(left, list) and isinstance(right, list):
+        for i in range(min(len(left), len(right))):
+            result = compare_packets(left[i], right[i])
+            if result != 0:
+                return result
+        if len(left) < len(right):
+            return -1
+        elif len(left) > len(right):
+            return 1
+        else:
+            return 0
+            
+    elif isinstance(left, int):
+        return compare_packets([left], right)
+    else:
+        return compare_packets(left, [right])
+    
+
+def parse_packets(input_data):
+  packets = []
+  current_packet = []
+  for line in input_data.strip().split("\n"):
+      line = line.strip()
+      if line:
+          current_packet.append(eval(line))
+      else:
+          if current_packet:
+              packets.append(current_packet)
+              current_packet = []
+  if current_packet:
+    packets.append(current_packet)
+  return packets
+
+def main():
+  input_data = sys.stdin.read()
+  packets = parse_packets(input_data)
+  
+  correct_order_indices = []
+  for i in range(len(packets)):
+    left_packet = packets[i][0]
+    right_packet = packets[i][1]
+    if compare_packets(left_packet,right_packet) == -1:
+        correct_order_indices.append(i + 1)
+
+  print(sum(correct_order_indices))
+
+if __name__ == "__main__":
+  main()

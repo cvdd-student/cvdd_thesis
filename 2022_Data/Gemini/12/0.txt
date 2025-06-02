@@ -1,0 +1,50 @@
+import heapq
+
+def solve():
+    grid = []
+    start = None
+    end = None
+    for i, line in enumerate(open("input.txt", "r").readlines()):
+        row = list(line.strip())
+        grid.append(row)
+        if 'S' in row:
+            start = (i, row.index('S'))
+        if 'E' in row:
+            end = (i, row.index('E'))
+
+    def get_elevation(char):
+        if char == 'S':
+            return ord('a') - ord('a')
+        elif char == 'E':
+            return ord('z') - ord('a')
+        else:
+            return ord(char) - ord('a')
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
+                if get_elevation(grid[nr][nc]) <= get_elevation(grid[r][c]) + 1:
+                    neighbors.append((nr, nc))
+        return neighbors
+
+    distances = {(r, c): float('inf') for r in range(len(grid)) for c in range(len(grid[0]))}
+    distances[start] = 0
+    priority_queue = [(0, start)]
+
+    while priority_queue:
+        dist, current = heapq.heappop(priority_queue)
+        if current == end:
+            return dist
+        if dist > distances[current]:
+            continue
+        for neighbor in get_neighbors(*current):
+            new_dist = dist + 1
+            if new_dist < distances[neighbor]:
+                distances[neighbor] = new_dist
+                heapq.heappush(priority_queue, (new_dist, neighbor))
+
+    return -1  # Should not happen if a path exists
+
+print(solve())

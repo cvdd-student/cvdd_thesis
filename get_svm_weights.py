@@ -17,6 +17,9 @@ def get_run_results():
         list_words_ids.append([transformers[0].vocabulary_[word], word])
     list_words_ids = sorted(list_words_ids)
 
+    print(list_words_ids)
+    exit()
+
     # Get the list of classifier coefficients (weights)
     list_weights = []
     for coef in cls.coef_:

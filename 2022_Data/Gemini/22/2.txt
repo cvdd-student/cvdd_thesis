@@ -1,0 +1,63 @@
+def solve():
+    grid = []
+    instructions = ""
+
+    while True:
+        line = input()
+        if line == "":
+            break
+        grid.append(line)
+    instructions = input()
+
+    row, col = -1, -1
+    facing = 0  # 0: right, 1: down, 2: left, 3: up
+
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if grid[i][j] == ".":
+                row = i
+                col = j
+                break
+        if row != -1:
+            break
+    
+    for instruction in instructions:
+        if instruction.isdigit():
+            steps = int(instruction)
+            for _ in range(steps):
+                next_row, next_col = row, col
+                if facing == 0:
+                    next_col += 1
+                elif facing == 1:
+                    next_row += 1
+                elif facing == 2:
+                    next_col -= 1
+                elif facing == 3:
+                    next_row -= 1
+                
+                if next_row < 0:
+                    next_row = len(grid) + next_row
+                elif next_row >= len(grid):
+                    next_row = next_row - len(grid)
+
+                if next_col < 0:
+                    next_col = len(grid[0]) + next_col
+                elif next_col >= len(grid[0]):
+                    next_col = next_col - len(grid[0])
+                
+                if grid[next_row][next_col] == '#':
+                    break
+                row, col = next_row, next_col
+
+            
+        else:
+            if instruction == 'R':
+                facing = (facing + 1) % 4
+            elif instruction == 'L':
+                facing = (facing - 1) % 4
+
+    password = (row + 1) * 1000 + (col + 1) * 4 + facing
+
+    print(password)
+    
+solve()

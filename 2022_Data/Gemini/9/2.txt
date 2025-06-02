@@ -1,0 +1,35 @@
+def solve():
+    motions = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            direction, amount = line.strip().split()
+            motions.append((direction, int(amount)))
+
+    head_x, head_y = 0, 0
+    tail_x, tail_y = 0, 0
+    visited = {(0, 0)}
+
+    for direction, amount in motions:
+        for _ in range(amount):
+            if direction == "U":
+                head_y += 1
+            elif direction == "D":
+                head_y -= 1
+            elif direction == "L":
+                head_x -= 1
+            elif direction == "R":
+                head_x += 1
+            
+            dx = head_x - tail_x
+            dy = head_y - tail_y
+            
+            if abs(dx) > 1 or abs(dy) > 1:
+                tail_x += 1 if dx > 0 else -1 if dx < 0 else 0
+                tail_y += 1 if dy > 0 else -1 if dy < 0 else 0
+
+            visited.add((tail_x, tail_y))
+
+
+    print(len(visited))
+
+solve()

@@ -1,0 +1,41 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    stacks_data = []
+    for line in lines:
+        if '[' in line:
+            stacks_data.append(line.strip())
+        elif line.strip() == "":
+            break
+        elif "move" in line:
+            pass
+        else:
+            pass
+
+    num_stacks = int(lines[-1].strip().split()[-1])
+
+    stacks = [[] for _ in range(num_stacks)]
+
+    for stack_line in reversed(stacks_data):
+        for i in range(num_stacks):
+            crate = stack_line[4 * i + 1]
+            if crate != ' ':
+                stacks[i].append(crate)
+
+
+    for line in lines:
+        if "move" in line:
+            parts = line.strip().split()
+            count = int(parts[1])
+            from_stack = int(parts[3]) - 1
+            to_stack = int(parts[5]) - 1
+            
+            #using pop() and insert() to simulate "moving" the crates.
+            for _ in range(count):
+                stacks[to_stack].append(stacks[from_stack].pop())
+
+    top_crates = "".join([s[-1] for s in stacks if s])
+    print(top_crates)
+
+solve()

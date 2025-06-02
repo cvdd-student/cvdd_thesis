@@ -1,0 +1,62 @@
+def compare_packets(left, right):
+    """Compares two packets and returns -1 if left is smaller, 1 if right is smaller, 0 if equal."""
+
+    def is_integer(x):
+        return isinstance(x, int)
+
+    if is_integer(left) and is_integer(right):
+        if left < right:
+            return -1
+        elif left > right:
+            return 1
+        else:
+            return 0
+
+    if isinstance(left, list) and isinstance(right, list):
+        for i in range(min(len(left), len(right))):
+            res = compare_packets(left[i], right[i])
+            if res != 0:
+                return res
+        if len(left) < len(right):
+            return -1
+        elif len(left) > len(right):
+            return 1
+        else:
+            return 0
+
+    if is_integer(left):
+        left = [left]
+    if is_integer(right):
+        right = [right]
+    return compare_packets(left, right)
+
+def parse_packets(lines):
+    packets = []
+    current_packet = []
+    for line in lines:
+        line = line.strip()
+        if line:
+            current_packet.append(eval(line))
+        elif current_packet:
+            packets.append(current_packet)
+            current_packet = []
+    if current_packet:
+        packets.append(current_packet)
+    return packets
+
+
+def solve():
+    with open("input.txt", "r") as f:  # Replace "input.txt" with your input file
+        lines = f.readlines()
+
+    packets = parse_packets(lines)
+    correct_order_count = 0
+    for i in range(len(packets)):
+        left = packets[i][0]
+        right = packets[i][1]
+        if compare_packets(left, right) == -1:
+            correct_order_count += i + 1
+    return correct_order_count
+
+
+print(solve())

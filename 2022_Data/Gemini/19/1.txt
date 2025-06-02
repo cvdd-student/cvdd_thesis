@@ -1,0 +1,57 @@
+def solve():
+    blueprints = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.split(": ")
+            blueprint_id = int(parts[0].split(" ")[1])
+            costs = {}
+            for cost_line in parts[1].strip().split(". "):
+                parts2 = cost_line.split(" ")
+                robot_type = parts2[0].split(" ")[0]
+                cost_parts = parts2[2].split(" ")
+                costs[robot_type] = {}
+                for i in range(len(cost_parts)):
+                  if cost_parts[i].isdigit():
+                    costs[robot_type][cost_parts[i-1]] = int(cost_parts[i])
+            blueprints.append((blueprint_id, costs))
+    
+    total_quality_level = 0
+    for blueprint_id, costs in blueprints:
+        max_geodes = 0
+        for i in range(32):
+            robots = [0] * 4  # [ore, clay, obsidian, geode]
+            resources = [0] * 4
+            resources[0] = 1
+            time = 0
+            geodes = 0
+            while time < 24:
+                time += 1
+                # Build the most valuable robot that's possible
+                best_robot = None
+                best_value = -1
+                for robot_type in ["ore", "clay", "obsidian", "geode"]:
+                  if costs.get(robot_type) and resources[0] >= costs[robot_type].get("ore", 0) and resources[1] >= costs[robot_type].get("clay", 0) and resources[2] >= costs[robot_type].get("obsidian", 0) :
+                    value = robots[3] if robot_type == "geode" else 0 #prioritize geodes
+                    if value > best_value:
+                      best_robot = robot_type
+                      best_value = value
+                
+                if best_robot is not None:
+                  if resources[0] >= costs[best_robot].get("ore", 0) and resources[1] >= costs[best_robot].get("clay", 0) and resources[2] >= costs[best_robot].get("obsidian", 0) :
+                    robots[ord(best_robot[0]) - ord('o')] += 1
+                    resources[0] -= costs[best_robot].get("ore", 0)
+                    resources[1] -= costs[best_robot].get("clay", 0)
+                    resources[2] -= costs[best_robot].get("obsidian", 0)
+                      
+
+                for r in range(4):
+                    resources[r] += robots[r]
+                geodes += robots[3]
+
+            max_geodes = max(max_geodes, geodes)
+
+        total_quality_level += blueprint_id * max_geodes
+
+    return total_quality_level
+
+print(solve())

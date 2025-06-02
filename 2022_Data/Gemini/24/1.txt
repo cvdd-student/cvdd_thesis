@@ -1,0 +1,84 @@
+import collections
+
+def solve():
+    grid = []
+    start_pos = None
+    end_pos = None
+    with open("input.txt", "r") as f:
+        for y, line in enumerate(f):
+            row = list(line.strip())
+            grid.append(row)
+            for x, char in enumerate(row):
+                if char == 'E':
+                    start_pos = (y, x)
+                elif char == 'G':
+                    end_pos = (y, x)
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    def get_blizzard_positions(grid):
+      blizzards = []
+      for y in range(rows):
+          for x in range(cols):
+              if grid[y][x] in ['>', '<', '^', 'v']:
+                  blizzards.append((y, x))
+      return blizzards
+      
+    def move_blizzard(grid, blizzards):
+        new_grid = [list(row) for row in grid]
+        for y, x in blizzards:
+            if grid[y][x] == '>':
+                nx = (x + 1) % cols
+                new_grid[y][x] = '.'
+                new_grid[y][nx] = '>'
+            elif grid[y][x] == '<':
+                nx = (x - 1 + cols) % cols
+                new_grid[y][x] = '.'
+                new_grid[y][nx] = '<'
+            elif grid[y][x] == '^':
+                ny = (y - 1 + rows) % rows
+                new_grid[y][x] = '.'
+                new_grid[ny][x] = '^'
+            elif grid[y][x] == 'v':
+                ny = (y + 1) % rows
+                new_grid[y][x] = '.'
+                new_grid[ny][x] = 'v'
+        return new_grid
+
+    def get_next_positions(grid, pos):
+        y, x = pos
+        moves = []
+        for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            ny, nx = y + dy, x + dx
+            if 0 <= ny < rows and 0 <= nx < cols and grid[ny][nx] == '.':
+                moves.append((ny, nx))
+        return moves
+
+    q = collections.deque([(start_pos, 0)])
+    visited = {start_pos}
+    
+    while q:
+        curr_pos, curr_time = q.popleft()
+        if curr_pos == end_pos:
+            return curr_time
+        
+        new_grid = [list(row) for row in grid]
+
+        # Calculate blizzard positions
+        blizzards = get_blizzard_positions(grid)
+
+        for _ in range(1):  # Simulate one minute for blizzards
+            new_grid = move_blizzard(new_grid, blizzards)
+            
+        
+        possible_moves = get_next_positions(new_grid, curr_pos)
+        for next_pos in possible_moves:
+            if next_pos not in visited:
+                q.append((next_pos, curr_time + 1))
+                visited.add(next_pos)
+
+    return -1  # Should not happen if the solution exists
+
+result = solve()
+print(result)

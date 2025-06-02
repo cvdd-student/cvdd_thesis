@@ -1,0 +1,78 @@
+def solve():
+    grid = []
+    with open("input.txt") as f:
+        for line in f:
+            grid.append(list(line.strip()))
+
+    elves = set()
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == "#":
+                elves.add((r, c))
+
+    directions = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)]
+    direction_index = 0
+
+    for round_num in range(10):
+        proposed_moves = {}
+        for elf in elves:
+            r, c = elf
+            possible_moves = []
+            for dr, dc in directions[direction_index % 8 : direction_index % 8 + 4]:
+                new_r, new_c = r + dr, c + dc
+                if (new_r, new_c) not in elves:
+                    possible_moves.append((new_r, new_c))
+                    break
+
+            if not possible_moves:
+                continue
+            proposed_moves[elf] = possible_moves[0]
+
+        new_elves = set()
+        for elf, dest in proposed_moves.items():
+            if proposed_moves.get(dest, None) == dest:
+              continue 
+            new_elves.add(dest)
+
+        for elf in elves:
+            if proposed_moves.get(elf) is not None:
+              
+              if proposed_moves[elf] not in new_elves:
+                new_elves.add(elf)
+
+
+            
+
+
+            
+        
+            
+
+
+            
+
+            
+        elves = new_elves.copy()
+
+
+        
+        direction_index +=1
+
+    
+    min_r, min_c = min(elves, key=lambda p: p[0])[0], min(elves, key=lambda p: p[1])[1]
+    max_r, max_c = max(elves, key=lambda p: p[0])[0], max(elves, key=lambda p: p[1])[1]
+   
+
+    empty_count = 0
+    for r in range(min_r, max_r + 1):
+        for c in range(min_c, max_c + 1):
+            if (r, c) not in elves:
+                empty_count += 1
+                
+
+    return empty_count
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

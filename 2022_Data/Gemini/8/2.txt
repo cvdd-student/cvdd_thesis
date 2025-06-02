@@ -1,0 +1,63 @@
+def is_visible(grid, row, col):
+    height = grid[row][col]
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    # Check left
+    visible_left = True
+    for c in range(col - 1, -1, -1):
+        if grid[row][c] >= height:
+            visible_left = False
+            break
+
+    # Check right
+    visible_right = True
+    for c in range(col + 1, cols):
+        if grid[row][c] >= height:
+            visible_right = False
+            break
+    
+    # Check up
+    visible_up = True
+    for r in range(row - 1, -1, -1):
+        if grid[r][col] >= height:
+            visible_up = False
+            break
+
+    # Check down
+    visible_down = True
+    for r in range(row + 1, rows):
+        if grid[r][col] >= height:
+            visible_down = False
+            break
+            
+    return visible_left or visible_right or visible_up or visible_down
+
+
+def solve():
+    grid_str = []
+    while line := input():
+        grid_str.append(line)
+
+
+    grid = []
+    for line in grid_str:
+        row = []
+        for char in line:
+            row.append(int(char))
+        grid.append(row)
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    visible_count = 0
+    for r in range(rows):
+        for c in range(cols):
+            if r == 0 or r == rows - 1 or c == 0 or c == cols - 1:
+                visible_count += 1
+            elif is_visible(grid, r, c):
+              visible_count += 1
+
+    print(visible_count)
+    
+solve()

@@ -1,0 +1,90 @@
+def solve():
+    jet_pattern = input()
+    rock_shapes = [
+        [
+            ["####"],
+        ],
+        [
+            [".#."],
+            ["###"],
+            [".#."],
+        ],
+        [
+            ["..#"],
+            ["..#"],
+            ["###"],
+        ],
+        [
+            ["#"],
+            ["#"],
+            ["#"],
+            ["#"],
+        ],
+        [
+            ["##"],
+            ["##"],
+        ],
+    ]
+
+    def simulate_rock(rock_shape, jet_pattern_index):
+        rock_y = 0
+        rock_x = 2
+        jet_index = jet_pattern_index
+        while True:
+            # Jet push
+            dx = 1 if jet_pattern[jet_index % len(jet_pattern)] == ">" else -1
+            new_rock_x = rock_x + dx
+            valid_move = True
+            for y in range(len(rock_shape)):
+                for x in range(len(rock_shape[y])):
+                    if rock_shape[y][x] == "#" and (
+                        new_rock_x + x < 0
+                        or new_rock_x + x >= 7
+                        or grid[rock_y + y][new_rock_x + x] == "#"
+                    ):
+                        valid_move = False
+                        break
+                if not valid_move:
+                    break
+            if valid_move:
+                rock_x = new_rock_x
+            jet_index += 1
+
+            # Fall
+            new_rock_y = rock_y + 1
+            valid_move = True
+            for y in range(len(rock_shape)):
+                for x in range(len(rock_shape[y])):
+                    if rock_shape[y][x] == "#" and (
+                        new_rock_y + y >= len(grid)
+                        or grid[new_rock_y + y][rock_x + x] == "#"
+                    ):
+                        valid_move = False
+                        break
+                if not valid_move:
+                    break
+            if valid_move:
+                rock_y = new_rock_y
+            else:
+                for y in range(len(rock_shape)):
+                    for x in range(len(rock_shape[y])):
+                        if rock_shape[y][x] == "#":
+                            grid[rock_y + y][rock_x + x] = "#"
+                return rock_y
+
+        return rock_y
+
+    grid = [["." for _ in range(7)] for _ in range(2000)]
+    rock_count = 0
+    rock_type_index = 0
+    highest_rock_y = 0
+    for _ in range(2022):
+        highest_rock_y = simulate_rock(rock_shapes[rock_type_index % 5], rock_count)
+        rock_count += 1
+        rock_type_index += 1
+
+    tower_height = highest_rock_y
+    return tower_height
+
+
+print(solve())

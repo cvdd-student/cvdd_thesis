@@ -1,0 +1,28 @@
+def solve():
+    instructions = [line.strip() for line in open("input.txt")]  # Replace "input.txt" with your input file
+
+    x = 1
+    cycle = 0
+    signal_strengths = []
+
+    for instruction in instructions:
+        if instruction.startswith("noop"):
+            cycle += 1
+            if cycle in (20, 60, 100, 140, 180, 220):
+                signal_strengths.append(cycle * x)
+        elif instruction.startswith("addx"):
+            cycle += 1
+            if cycle in (20, 60, 100, 140, 180, 220):
+                signal_strengths.append(cycle * x)
+            cycle += 1
+            value = int(instruction.split()[1])
+            x += value
+            if cycle in (20, 60, 100, 140, 180, 220):
+                signal_strengths.append(cycle * x)
+
+    return sum(signal_strengths)
+
+
+if __name__ == "__main__":
+    result = solve()
+    print(result)

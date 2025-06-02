@@ -1,0 +1,42 @@
+def mix_file(file_content):
+    """Mixes the encrypted file according to the given rules."""
+    numbers = [int(line) for line in file_content]
+    n = len(numbers)
+    
+    for i in range(n):
+        current_number = numbers[i]
+        move_positions = current_number
+        
+        # Handle potential overflow/underflow
+        move_positions %= (n - 1) if n > 1 else 0
+        
+        if move_positions == 0:
+            continue
+        
+        index = (i + move_positions) % n
+        
+        # Remove the number from its original position
+        removed_number = numbers.pop(i)
+        
+        # Insert the number at the calculated index
+        numbers.insert(index, removed_number)
+        
+    return numbers
+
+def find_grove_coordinates(mixed_file):
+    """Finds the grove coordinates based on the mixed file."""
+    zero_index = mixed_file.index(0)
+    
+    thousandth_number = mixed_file[(zero_index + 1000) % len(mixed_file)]
+    two_thousandth_number = mixed_file[(zero_index + 2000) % len(mixed_file)]
+    three_thousandth_number = mixed_file[(zero_index + 3000) % len(mixed_file)]
+    
+    return thousandth_number + two_thousandth_number + three_thousandth_number
+
+if __name__ == "__main__":
+    with open("input.txt", "r") as file:
+        file_content = file.readlines()
+    
+    mixed_file = mix_file(file_content)
+    grove_coordinates_sum = find_grove_coordinates(mixed_file)
+    print(grove_coordinates_sum)

@@ -1,0 +1,65 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    stacks_str = []
+    for i in range(0, lines.index("\n")):
+        stacks_str.append(lines[i].rstrip("\n"))
+    
+    #print(stacks_str)
+
+
+    num_stacks = len(stacks_str[-1].split())
+    stacks = []
+
+    
+    for i in range(0, num_stacks):
+      
+        stack = []
+        for j in range(len(stacks_str)-2,-1,-1):
+            if(stacks_str[j][i*4+1] != ' '):
+                stack.append(stacks_str[j][i*4+1])
+
+        
+        stacks.append(stack)
+
+
+
+    for line in lines[lines.index("\n") + 1:]:
+
+      line = line.rstrip('\n')
+
+
+      if(len(line)>0):
+
+        split_line = line.split(' ')
+
+        count = int(split_line[1])
+        from_stack = int(split_line[3]) - 1
+        to_stack = int(split_line[5]) -1
+
+        #new method, take all count elements from from stack, 
+        #put in to stack with all at once rather than in loop for efficiency
+
+
+
+        crates_to_move = stacks[from_stack][-count:]
+        stacks[to_stack].extend(crates_to_move)
+        stacks[from_stack] = stacks[from_stack][:-count]
+
+      
+      # print("new state", stacks)
+
+    final_result = ""
+
+    for stack in stacks:
+
+      if (len(stack)>0):
+        
+        final_result = final_result+stack[-1]
+
+    print(final_result)
+
+
+
+solve()

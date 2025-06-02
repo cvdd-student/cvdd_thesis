@@ -1,3 +1,4 @@
+MAIN DATA:
 https://github.com/jonathanpaulson/AdventOfCode
 https://github.com/fuglede/adventofcode
 https://github.com/LiquidFun/adventofcode
@@ -5,3 +6,8 @@ https://github.com/TessFerrandez/AdventOfCode-Python
 https://github.com/gahjelle/advent_of_code
 https://github.com/prositen/advent-of-code
 https://github.com/AbdeI1/AdventOfCode
+
+2022 NON-TRAINING DATA:
+https://github.com/maread99/aoc
+https://github.com/jromero132/advent-of-code
+https://github.com/Fadi88/AoC

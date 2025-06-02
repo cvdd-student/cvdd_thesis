@@ -1,0 +1,59 @@
+def solve():
+    rocks = []
+    with open("input.txt") as f:
+        for line in f:
+            coords = []
+            parts = line.strip().split(" -> ")
+            for part in parts:
+                x, y = map(int, part.split(","))
+                coords.append((x, y))
+            rocks.append(coords)
+
+    max_y = 0
+    for r in rocks:
+        for x, y in r:
+            max_y = max(max_y, y)
+
+    grid = {}
+    for r in rocks:
+        for i in range(len(r) - 1):
+            x1, y1 = r[i]
+            x2, y2 = r[i + 1]
+            dx = 1 if x1 < x2 else -1 if x1 > x2 else 0
+            dy = 1 if y1 < y2 else -1 if y1 > y2 else 0
+            x = x1
+            y = y1
+            while (x, y) != (x2, y2):
+                grid[(x, y)] = '#'
+                x += dx
+                y += dy
+            grid[(x, y)] = '#'
+            
+    source = (500, 0)
+    sand_count = 0
+    while True:
+        curr_sand = (500, 0)
+        while True:
+            if curr_sand[1] + 1 >= max_y + 2 :
+                break
+            next_pos = (curr_sand[0], curr_sand[1] + 1)
+            if next_pos not in grid:
+                curr_sand = next_pos
+            else:
+                next_pos_left = (curr_sand[0] - 1, curr_sand[1] + 1)
+                next_pos_right = (curr_sand[0] + 1, curr_sand[1] + 1)
+                if next_pos_left not in grid:
+                    curr_sand = next_pos_left
+                elif next_pos_right not in grid:
+                    curr_sand = next_pos_right
+                else:
+                    grid[curr_sand] = 'o'
+                    sand_count += 1
+                    break
+        if curr_sand == (500, 0) and (500, 1) in grid :
+            break
+
+
+    print(sand_count)
+
+solve()

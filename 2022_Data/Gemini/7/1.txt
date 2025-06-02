@@ -1,0 +1,80 @@
+def solve():
+    input_data = """$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k"""
+    # Replace input_data with your actual input.
+    
+    lines = input_data.strip().split('\n')
+    
+    current_dir = []
+    file_sizes = {}
+    
+    for line in lines:
+        if line.startswith('$ cd'):
+            if line == '$ cd /':
+                current_dir = []
+            elif line == '$ cd ..':
+                current_dir.pop()
+            else:
+                current_dir.append(line.split()[1])
+
+        elif line.startswith('dir'):
+            dir_name = line.split()[1]
+            full_path = '/'.join(current_dir + [dir_name])
+            if full_path not in file_sizes:
+                file_sizes[full_path] = 0
+        elif line != '$ ls' and not line.isspace():
+            size, file_name = line.split()
+            size = int(size)
+            full_path = '/'.join(current_dir + [file_name])
+            file_sizes[full_path] = size
+    
+    dir_sizes = {}
+    
+    def calculate_dir_size(path):
+        total_size = 0
+        for sub_path, size in file_sizes.items():
+            if sub_path.startswith(path + '/'):
+                total_size += size
+                
+                # Recursive call for subdirectories
+                if sub_path.split('/')[0] != "/":
+                    sub_path_split = sub_path.split('/')
+                    sub_path_parent = '/'.join(sub_path_split[:-1])
+                    total_size += calculate_dir_size(sub_path_parent)
+                    
+                
+        dir_sizes[path] = total_size
+        return total_size
+
+
+    calculate_dir_size('/')
+    
+    total_sum = 0
+    for path, size in dir_sizes.items():
+        if size <= 100000:
+            total_sum += size
+            
+    print(total_sum)
+    
+solve()

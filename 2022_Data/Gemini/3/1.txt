@@ -1,0 +1,30 @@
+def priority(item):
+    if 'a' <= item <= 'z':
+        return ord(item) - ord('a') + 1
+    elif 'A' <= item <= 'Z':
+        return ord(item) - ord('A') + 27
+    else:
+        return 0
+
+def solve():
+    rucksacks = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            rucksacks.append(line.strip())
+
+    total_priority = 0
+    for rucksack in rucksacks:
+        compartment1 = rucksack[:len(rucksack) // 2]
+        compartment2 = rucksack[len(rucksack) // 2:]
+        
+        common_item = None
+        for item in compartment1:
+            if item in compartment2 and common_item is None:
+                common_item = item
+        
+        total_priority += priority(common_item)
+        
+    print(total_priority)
+
+
+solve()

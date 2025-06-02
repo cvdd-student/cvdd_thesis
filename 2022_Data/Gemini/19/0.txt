@@ -1,0 +1,66 @@
+def solve():
+    blueprints = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            parts = line.split(":")
+            blueprint_id = int(parts[0].split()[1])
+            robot_costs = {}
+            for cost_line in parts[1].strip().split("."):
+                cost_line = cost_line.strip()
+                if not cost_line:
+                    continue
+                robot_type, cost_details = cost_line.split("Each ")
+                cost_details = cost_details.split()
+                resource_costs = {}
+                for i in range(0, len(cost_details), 2):
+                    resource_costs[cost_details[i]] = int(cost_details[i + 1])
+                robot_costs[robot_type.replace(" robot", "")] = resource_costs
+            blueprints.append((blueprint_id, robot_costs))
+
+    total_quality_level = 0
+    for blueprint_id, robot_costs in blueprints:
+        max_geodes = 0
+        for i in range(32):
+            geodes = simulate(robot_costs, 24)
+            max_geodes = max(max_geodes, geodes)
+        total_quality_level += blueprint_id * max_geodes
+    print(total_quality_level)
+
+def simulate(robot_costs, time_limit):
+    robots = {"ore": 1, "clay": 0, "obsidian": 0, "geode": 0}
+    resources = {"ore": 0, "clay": 0, "obsidian": 0, "geode": 0}
+    
+    for minute in range(time_limit):
+        # Collect resources
+        for resource, count in robots.items():
+            resources[resource] += count
+        
+        # Build robots
+        best_robot = None
+        best_increase = 0
+        for robot_type, cost in robot_costs.items():
+            if resources[list(cost.keys())[0]] >= cost[list(cost.keys())[0]] and \
+               (len(cost) == 1 or resources[list(cost.values())[0]] >= cost[list(cost.values())[0]]):
+                increase = 0
+                if robot_type == "geode":
+                    increase = 1
+                elif robot_type == "obsidian":
+                    increase = 1
+                elif robot_type == "clay":
+                    increase = 1
+                elif robot_type == "ore":
+                    increase = 1
+                if increase > best_increase:
+                    best_robot = robot_type
+                    best_increase = increase
+        if best_robot:
+            cost = robot_costs[best_robot]
+            if resources[list(cost.keys())[0]] >= cost[list(cost.keys())[0]] and \
+               (len(cost) == 1 or resources[list(cost.values())[0]] >= cost[list(cost.values())[0]]):
+                resources[list(cost.keys())[0]] -= cost[list(cost.keys())[0]]
+                if len(cost) > 1:
+                    resources[list(cost.values())[0]] -= cost[list(cost.values())[0]]
+                robots[best_robot] += 1
+    return resources["geode"]
+
+solve()

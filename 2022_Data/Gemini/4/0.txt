@@ -1,0 +1,20 @@
+def solve():
+    with open("input.txt", "r") as f:
+        lines = f.readlines()
+
+    count = 0
+    for line in lines:
+        a, b = line.strip().split(",")
+        a_start, a_end = map(int, a.split("-"))
+        b_start, b_end = map(int, b.split("-"))
+
+        # Check if a fully contains b
+        if a_start <= b_start and a_end >= b_end:
+            count += 1
+        # Check if b fully contains a
+        elif b_start <= a_start and b_end >= a_end:
+            count += 1
+
+    return count
+
+print(solve())

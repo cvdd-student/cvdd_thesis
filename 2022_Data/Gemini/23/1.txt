@@ -1,0 +1,69 @@
+def solve():
+    grid = []
+    with open("input.txt", "r") as f:
+        for line in f:
+            grid.append(line.strip())
+
+    elves = []
+    for r, row in enumerate(grid):
+        for c, char in enumerate(row):
+            if char == '#':
+                elves.append((r, c))
+
+    def get_neighbors(r, c):
+        neighbors = []
+        for dr in [-1, -1, -1, 0, 0, 1, 1, 1]:
+            for dc in [-1, 0, 1, -1, 1, -1, 0, 1]:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
+                    neighbors.append((nr, nc))
+        return neighbors
+
+    directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+    
+    for _ in range(10):
+        proposed_moves = {}
+        for r, c in elves:
+            neighbors = get_neighbors(r, c)
+            elf_count = sum(1 for nr, nc in neighbors if (nr, nc) in [(er, ec) for er, ec in elves])
+            if elf_count == 0:
+                continue
+
+            move_direction = None
+            for i, (dr, dc) in enumerate(directions):
+                nr, nc = r + dr, c + dc
+                if (nr, nc) not in [(er, ec) for er, ec in elves]:
+                    move_direction = (dr, dc)
+                    break
+            
+            if move_direction:
+                proposed_moves[(r, c)] = (r + move_direction[0], c + move_direction[1])
+            
+            
+        
+        new_elves = []
+        for (r, c), (nr, nc) in proposed_moves.items():
+            if (nr, nc) not in [ (nr2, nc2) for nr2, nc2 in proposed_moves.values() if (nr2,nc2) != (nr,nc)]:
+                new_elves.append((nr, nc))
+
+        
+        elves = new_elves
+        
+        directions.append(directions.pop(0))
+        
+    
+    min_r, max_r = min(r for r, _ in elves), max(r for r, _ in elves)
+    min_c, max_c = min(c for _, c in elves), max(c for _, c in elves)
+    
+    
+    empty_tiles = 0
+    for r in range(min_r, max_r + 1):
+        for c in range(min_c, max_c + 1):
+            if grid[r][c] == '.':
+                empty_tiles += 1
+    
+    return empty_tiles
+
+
+
+print(solve())

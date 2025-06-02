@@ -1,0 +1,16 @@
+def solve():
+    calories = []
+    elf_calories = []
+    with open("input.txt", "r") as file:
+        for line in file:
+            line = line.strip()
+            if line == "":
+                calories.append(sum(elf_calories))
+                elf_calories = []
+            elif line.isdigit():
+                elf_calories.append(int(line))
+    if elf_calories:
+      calories.append(sum(elf_calories))
+    
+    max_calories = max(calories) if calories else 0
+    return max_calories
