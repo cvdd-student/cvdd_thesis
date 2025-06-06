@@ -1,3 +1,8 @@
+# File name: get_svm_weights.py
+# Function: Runs the SVM classifier 100 times, then collects and averages the token weights.
+# A list of weights, along with token frequencies, is exported to the "svm_reports" folder.
+# Authors: C. Van der Deen, S4092597
+
 import organise_data
 import perform_svm
 import os
@@ -6,7 +11,7 @@ import time
 
 def get_run_results():
     # Get necessary data
-    tr_feats, tr_labels, te_feats, te_labels, transformers = organise_data.make_feats()
+    tr_feats, tr_labels, te_feats, te_labels, transformers, labels = organise_data.make_feats()
 
     # Initiate and train the SVM classifier
     cls = perform_svm.train_cls(tr_feats, tr_labels, quiet_mode=True)
@@ -16,9 +21,6 @@ def get_run_results():
     for word in transformers[0].vocabulary_:
         list_words_ids.append([transformers[0].vocabulary_[word], word])
     list_words_ids = sorted(list_words_ids)
-
-    print(list_words_ids)
-    exit()
 
     # Get the list of classifier coefficients (weights)
     list_weights = []

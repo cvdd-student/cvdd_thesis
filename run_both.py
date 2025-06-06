@@ -1,3 +1,8 @@
+# File name: run_both.py
+# Function: Runs both the SVM and the LogReg classifier, but does not take the
+# validation dataset into account. Deprecated.
+# Authors: C. Van der Deen, S4092597
+
 import organise_data
 import perform_logreg
 import perform_svm
@@ -6,7 +11,7 @@ from sklearn import metrics
 
 def main():
     # Get necessary data
-    tr_feats, tr_labels, te_feats, te_labels, transformers = organise_data.make_feats()
+    tr_feats, tr_labels, te_feats, te_labels, transformers, labels = organise_data.make_feats()
 
     # Initiate and train the SVM classifier
     cls = perform_svm.train_cls(tr_feats, tr_labels)

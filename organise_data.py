@@ -1,3 +1,7 @@
+# File name: organise_data.py
+# Function: Contains all the functions related to organising and processing the data.
+# Authors: C. Van der Deen, S4092597
+
 import os
 import random
 from math import ceil
@@ -128,8 +132,8 @@ def clean_data(data):
                 flag_skip_line = True
             if line_clean[:1] == "#":
                 flag_skip_line = True
-            #if "solve" in line:
-            #    flag_skip_line = True
+            # if "solve" in line:
+            #     flag_skip_line = True
 
             if flag_skip_line is not True:
                 item_new.append(line)
@@ -163,8 +167,8 @@ def process_data(list_data):
 
 
 def make_feats():
-    # Set the seed to keep consistent results
-    #random.seed(31012001)
+    # Set the seed to keep consistent results (UPDATE:  this is done within the SVM/LogReg functions now.)
+    # random.seed(31012001)
 
     # Get the data
     gemini_data = get_data("Gemini_Data", "gemini")
@@ -178,7 +182,7 @@ def make_feats():
     tr_items, tr_labels, te_items, te_labels = process_data(full_data)
     tr_feats, te_feats, transformers = convert_to_feats(tr_items, te_items)
 
-    return tr_feats, tr_labels, te_feats, te_labels, transformers
+    return tr_feats, tr_labels, te_feats, te_labels, transformers, [tr_items, te_items]
 
 
 def make_2022_feats(transformers):
@@ -194,5 +198,5 @@ def make_2022_feats(transformers):
     eval_2022_items, eval_2022_labels = separate_items_labels(full_data)
     eval_2022_count_vec = transformers[0].transform(eval_2022_items)
     eval_2022_feats = transformers[1].transform(eval_2022_count_vec)
-    
+
     return eval_2022_feats, eval_2022_labels
